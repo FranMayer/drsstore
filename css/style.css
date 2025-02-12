@@ -407,40 +407,25 @@ body {
 }
 
 /* Estilos para los Ítems del Carrito */
-.cart-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.cart-item button {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.cart-item button:hover {
-    background-color: #c82333;
-}
-
-
-#toggle-cart-btn {
+.btn-cart {
     position: fixed;
     bottom: 20px;
     right: 20px;
     background-color: var(--primary-color);
     color: white;
+    border-radius: 50px;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
     border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    z-index: 1000; 
+    font-size: 1.5rem;
+    transition: background 0.3s ease-in-out;
+    z-index: 1000;
 }
 
-#toggle-cart-btn:hover {
+.btn-cart:hover {
     background-color: var(--secondary-color);
 }
