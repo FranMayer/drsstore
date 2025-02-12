@@ -6,7 +6,6 @@
 
 body {
     font-family: 'Inter', sans-serif;
-    
 }
 
 :root {
@@ -43,6 +42,12 @@ body {
     transition: color 0.3s;
 }
 
+.header ul li a {
+    text-decoration: none;
+    color: var(--secondary-color);
+    
+}
+
 .header ul li:hover {
     color: var(--primary-color); 
 }
@@ -55,7 +60,7 @@ body {
     align-items: center;
     justify-content: center;
     text-align: center;
-    background: url('/multi/Herosection.jpg') no-repeat center center/cover;
+    background: url('/multi/Colapinto\ hero.webp') no-repeat center center/cover;
     color: white;
     position: relative;
 }
@@ -143,27 +148,42 @@ body {
 
 /* RELOJ */
 
-.countdown {
+.title-countdown {
     text-align: center;
-    background-color: white;
-    color: var(--secondary-color);
-    padding: 50px 20px;
+    margin-bottom: 2rem;
+}
+
+.countdown {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: grey; 
+    padding: 20px;
+    border-radius: 8px;
+    width: fit-content; 
+    margin: 0 auto; 
+}
+
+.countdown-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.logo {
+    width: 80px;
 }
 
 #reloj {
-    font-size: 3rem;
-    font-weight: bold;
-    background-color: var(--primary-color);
-    padding: 25px;
+    background-color: var(--primary-color); 
+    padding: 10px 20px;
     border-radius: 8px;
-    display: inline-block;
 }
 
 /*BENEFICIOS CSS*/
-
-
-
-
 
 .beneficios-envios {
     background-color: white;
@@ -193,7 +213,7 @@ body {
 }
 
 .beneficio:hover {
-    transform: translateY(-10px);
+    transform: translateY(-5px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
@@ -219,4 +239,208 @@ body {
 .logos-pago .logo {
     max-width: 120px; 
     height: auto;
+}
+
+
+/* Footer CSS*/
+
+.footer {
+    background-color: var(--secondary-color);
+    color: white;
+    text-align: center;
+    padding: 20px;
+    margin-top: 50px;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.footer-section {
+    flex: 1;
+    min-width: 200px;
+}
+
+.footer-section h3 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.footer-section a {
+    color: var(--primary-color);
+    text-decoration: none;
+    display: block;
+    margin-top: 5px;
+}
+
+.footer-section a:hover {
+    text-decoration: underline;
+}
+
+.social-icons a {
+    display: inline-block;
+    margin: 5px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* CATALOGO CSS*/
+
+/* Contenedor Principal */
+.bigbox {
+    display: flex; 
+    gap: 20px; 
+    padding: 20px;
+    max-width: 1700px; 
+    margin: 0 auto; 
+}
+
+
+.category-list {
+    flex: 1; 
+    max-width: 25%; 
+    background-color: #f8f9fa; 
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.category-list ul {
+    list-style: none; 
+    padding: 0;
+}
+
+.category-list li {
+    margin: 10px 0;
+    font-size: 1.1em;
+    color: #333;
+    cursor: pointer;
+}
+
+.category-list li:hover {
+    color: var(--primary-color); 
+}
+
+.product-grid {
+    flex: 3; 
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+
+}
+
+
+.product-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    width: calc(25% - 20px); 
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.product-image {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.product-title {
+    font-size: 1.2em;
+    margin: 10px 0;
+}
+
+.product-description {
+    font-size: 0.9em;
+    color: #555;
+}
+
+.product-price {
+    font-size: 1.1em;
+    color: #333;
+    font-weight: bold;
+}
+
+.product-stock {
+    font-size: 0.9em;
+    color: #777;
+}
+
+.add-to-cart {
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.add-to-cart:hover {
+    background-color: var(--primary-color);
+} 
+
+/* css carrito*/
+
+/* Estilos para el Carrito */
+.cart-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    width: 300px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out; /* Animación suave */
+}
+
+/* Clase para Ocultar el Carrito */
+.cart-container.hidden {
+    transform: translateX(120%); /* Mueve el carrito fuera de la pantalla */
+}
+
+/* Estilos para los Ítems del Carrito */
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.cart-item button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.cart-item button:hover {
+    background-color: #c82333;
+}
+
+
+#toggle-cart-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 1000; 
+}
+
+#toggle-cart-btn:hover {
+    background-color: var(--secondary-color);
 }
