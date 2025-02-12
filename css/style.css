@@ -429,3 +429,23 @@ body {
 .btn-cart:hover {
     background-color: var(--secondary-color);
 }
+
+/* ABOUT US CSS*/
+
+/* Contenedor Principal */
+.container__about {
+    display: flex;
+    gap: 20px; 
+    padding: 20px;
+    justify-content: center; 
+    margin-top: 3rem;
+}
+
+.about__content {
+    flex: 1; 
+    max-width: 50%; 
+    padding: 20px; 
+    background-color: #f8f9fa; 
+    border-radius: 8px; 
+    box-shadow: 0 2px 5px rgba(92, 91, 91, 0.1);
+}
