@@ -398,15 +398,14 @@ body {
     padding: 15px;
     width: 300px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease-in-out; /* Animación suave */
-}
+    transition: transform 0.3s ease-in-out; 
 
-/* Clase para Ocultar el Carrito */
+
 .cart-container.hidden {
-    transform: translateX(120%); /* Mueve el carrito fuera de la pantalla */
+    transform: translateX(120%); 
 }
 
-/* Estilos para los Ítems del Carrito */
+
 .btn-cart {
     position: fixed;
     bottom: 20px;
@@ -448,4 +447,4 @@ body {
     background-color: #f8f9fa; 
     border-radius: 8px; 
     box-shadow: 0 2px 5px rgba(92, 91, 91, 0.1);
-}
+}}
