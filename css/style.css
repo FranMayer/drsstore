@@ -43,9 +43,12 @@ body {
 }
 
 .header ul li a {
-    text-decoration: none;
     color: var(--secondary-color);
-    
+}
+
+.header a {
+    text-decoration: none;
+    color: inherit;
 }
 
 .header ul li:hover {
@@ -89,6 +92,7 @@ body {
 .hero p {
     font-size: 1.2rem;
     margin-bottom: 20px;
+    color: white;
 }
 
 .btn {
@@ -398,7 +402,8 @@ body {
     padding: 15px;
     width: 300px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease-in-out; 
+    transition: transform 0.3s ease-in-out;
+ }
 
 
 .cart-container.hidden {
@@ -431,20 +436,37 @@ body {
 
 /* ABOUT US CSS*/
 
-/* Contenedor Principal */
 .container__about {
     display: flex;
-    gap: 20px; 
-    padding: 20px;
-    justify-content: center; 
-    margin-top: 3rem;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+    max-width: 1400px;
+    margin: 0 auto;
+    margin-top: 2rem;
 }
 
 .about__content {
-    flex: 1; 
-    max-width: 50%; 
-    padding: 20px; 
-    background-color: #f8f9fa; 
-    border-radius: 8px; 
-    box-shadow: 0 2px 5px rgba(92, 91, 91, 0.1);
-}}
+    flex: 1;
+    min-width: 250px;
+    max-width: 380px;
+    padding: 20px;
+    text-align: center;
+    border-left: 2px solid #d3d3d3;
+    border-right: 2px solid #d3d3d3;
+    border-bottom: 2px solid #d3d3d3;
+    border-radius: 0 0 15px 15px;
+}
+
+
+.about__content p {
+    color: var(--secondary-color);
+    font-size: 14px;
+}
+
+
+
+
+
+  
+
