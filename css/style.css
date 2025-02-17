@@ -459,10 +459,33 @@ body {
 }
 
 
-.about__content p {
-    color: var(--secondary-color);
-    font-size: 14px;
-}
+.container__about2 {
+    display: flex;
+    align-items: center; 
+    gap: 20px; 
+    max-width: 1200px;
+    margin: 6rem auto;
+  }
+  
+  .intern-div {
+    flex: 1; 
+  }
+  
+  .mecanic {
+    max-width: 350px; 
+    height: auto; 
+    border-radius: 20% 35% 70% 39%;
+  }
+
+  .mecanic1 {
+    max-width: 350px; 
+    height: auto; 
+    border-radius: 10% 35% 70% 89%;
+  }
+  
+
+  
+  
 
 
 
