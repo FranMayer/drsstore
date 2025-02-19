@@ -482,6 +482,35 @@ body {
     height: auto; 
     border-radius: 10% 35% 70% 89%;
   }
+
+  /* ENVIOS CSS*/
+
+  .container {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 20px;
+    max-width: 900px;
+    justify-content: center;
+    margin-top: 2rem;
+}
+.card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 280px;
+    text-align: center;
+    border-bottom: 1px solid grey;
+    
+}
+.card h3 {
+    color: #242932;
+}
+.icon {
+    font-size: 40px;
+    color: #009cde;
+    margin-bottom: 10px;
+}
   
 
   
