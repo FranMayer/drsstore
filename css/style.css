@@ -511,7 +511,20 @@ body {
     color: #009cde;
     margin-bottom: 10px;
 }
-  
+
+.howbuy__main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+    margin-top: 2rem;
+    text-align: center;
+}
+
+
 
   
   
