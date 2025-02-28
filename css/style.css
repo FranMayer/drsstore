@@ -152,6 +152,12 @@ body {
 
 /* RELOJ */
 
+.img-countdown{
+    max-width: 5rem;
+    margin-right: 1rem;
+    border-radius: 3px;
+}
+
 .title-countdown {
     text-align: center;
     margin-bottom: 2rem;
