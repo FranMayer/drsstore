@@ -23,3 +23,15 @@ categories.forEach(category => {
         }
     });
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+    const loader = document.querySelector('.loader-overlay');
+
+    // Mostrar loader al cargar la página
+    loader.style.display = 'flex';
+
+    // Simular carga (puede ser real si haces un fetch de productos)
+    setTimeout(() => {
+        loader.style.display = 'none';
+    }, 2500); 
+});

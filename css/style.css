@@ -193,51 +193,7 @@ body {
     border-radius: 8px;
 }
 
-/*BENEFICIOS CSS*/
-
-.beneficios-envios {
-    background-color: white;
-    color: var(--secondary-color);
-    padding: 60px 20px;
-    text-align: center;
-}
-
-.beneficios h2 {
-    font-size: 3rem;
-    margin-bottom: 60px;
-    font-weight: bold;
-}
-
-.beneficios {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
-}
-
-.beneficio {
-    background-color: #f8f8f8;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.beneficio:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-}
-
-.beneficio h3 {
-    font-size: 1.8rem;
-    margin-bottom: 15px;
-    color: var(--primary-color);
-}
-
-.beneficio p {
-    font-size: 1.1rem;
-    margin-bottom: 0;
-}
-
+/*LOGOS CSS*/
 
 .logos-pago {
     display: flex;
@@ -300,6 +256,39 @@ body {
 }
 
 /* CATALOGO CSS*/
+
+/*ESTILOS LOADER*/
+
+.loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    z-index: 9999;
+}
+
+.loader {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #009cde; /* Color de tu tienda */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 
 /* Contenedor Principal */
 .bigbox {
