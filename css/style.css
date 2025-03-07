@@ -152,46 +152,89 @@ body {
 
 /* RELOJ */
 
-.img-countdown{
-    max-width: 5rem;
-    margin-right: 1rem;
-    border-radius: 3px;
-}
-
 .title-countdown {
     text-align: center;
     margin-bottom: 2rem;
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .countdown {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: grey; 
-    padding: 20px;
-    border-radius: 8px;
-    width: fit-content; 
-    margin: 0 auto; 
+    background: linear-gradient(135deg, #242932, #009cde);
+    padding: 20px 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    width: fit-content;
+    margin: 0 auto;
+    gap: 1rem;
+    animation: fade-in 0.5s ease-out;
 }
 
 .countdown-container {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 15px;
     color: white;
     font-size: 2rem;
     font-weight: bold;
 }
 
+.img-countdown {
+    max-width: 5rem;
+    border-radius: 8px;
+    border: 2px solid var(--primary-color);
+}
+
 .logo {
-    width: 80px;
+    width: 70px;
+    opacity: 0.9;
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.1);
+}
+
+.reloj-wrapper {
+    background: rgba(0,0,0,0.8);
+    padding: 12px 24px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 140px;
+    transition: transform 0.3s ease, background 0.3s ease;
 }
 
 #reloj {
-    background-color: var(--primary-color); 
-    padding: 10px 20px;
-    border-radius: 8px;
+    font-family: 'Orbitron', sans-serif monospace;
+    width: 11ch;
+    font-size: 2.5rem;
+    color: #fff;
+    letter-spacing: 2px;
+    transition: transform 0.2s ease; 
+    font-variant-numeric: tabular-nums;  /* Esto es clave */
+    font-feature-settings: 'tnum';
+    font-family: 'Orbitron', sans-serif; 
 }
+
+.reloj-wrapper.tic {
+    transform: scale(1.1);
+    background: var(--primary-color);
+}
+
+/* Efecto fade-in para el section completo */
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 
 /*LOGOS CSS*/
 
