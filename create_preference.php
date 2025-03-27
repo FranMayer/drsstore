@@ -1,28 +1,50 @@
 <?php
-// Requiere el autoload generado por Composer
-require __DIR__ . '/vendor/autoload.php'; 
+use MercadoPago\MercadoPagoConfig;
+use MercadoPago\Client\Preference\PreferenceClient;
+use MercadoPago\Resources\Preference\Item;
+use MercadoPago\Resources\Preference;
 
-// Configura tu Access Token de Mercado Pago (coloca tu token aquí)
-MercadoPago\SDK::setAccessToken('TU_ACCESS_TOKEN'); 
 
-// Crear la preferencia de pago
-$preference = new MercadoPago\Preference();
+require __DIR__ . '/vendor/autoload.php';
 
-// Crear un item (producto)
-$item = new MercadoPago\Item();
-$item->title = 'Remera Ferrari'; // Nombre del producto
-$item->quantity = 1; // Cantidad
-$item->unit_price = 25.99; // Precio del producto
 
-// Agregar el item a la preferencia
-$preference->items = array($item);
 
-// Guardar la preferencia (esto genera la preferencia en Mercado Pago)
-$preference->save();
 
-// Mostrar el ID de la preferencia y el enlace de pago
-echo "ID de la preferencia: " . $preference->id . "<br>";
-echo "Link para pagar: <a href='" . $preference->init_point . "'>Pagar con Mercado Pago</a>";
+// Configurar Access Token
+MercadoPagoConfig::setAccessToken('APP_USR-8508290774659378-031115-a3cd92f304882b408fce3e5a0eff967a-192165018');
+
+// Crear cliente de preferencias
+$client = new PreferenceClient();
+
+// Definir los ítems de la compra
+$item = new Item();
+$item->id = "1234";
+$item->title = "Remera Ferrari";
+$item->quantity = 1;
+$item->currency_id = "ARS";
+$item->unit_price = 12500.0;
+
+// Crear la preferencia
+$preference = $client->create([
+    "items" => [$item],
+    "statement_descriptor" => "Tienda e-commerce",
+    "external_reference" => "DRS-STORE",
+    "back_urls" => [
+        "success" => "http://localhost/drs-store/aprove.html",
+        "failure" => "http://localhost/drs-store/err.html",
+        "pending" => "http://localhost/drs-store/pending.html"
+    ],
+    "auto_return" => "approved"
+]);
+
+header('Content-Type: application/json');
+
+
+// Retornar el ID de la preferencia en JSON
+echo json_encode(["preference_id" => $preference->id]);
+
+error_reporting(E_ALL & ~E_DEPRECATED);
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 ?>
-
-
