@@ -472,6 +472,36 @@ body {
     background-color: var(--secondary-color);
 }
 
+/* Estilos para el botón de Mercado Pago en el modal */
+#wallet_container {
+    margin-top: 20px;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background-color: #f1f1f1;
+    border-radius: 8px;
+}
+
+/* Estilo opcional para el botón si es necesario */
+.mp-checkout-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+}
+
+/* Hover effect */
+.mp-checkout-btn:hover {
+    background-color: var(--secondary-color);
+}
+
+
 /* ABOUT US CSS*/
 
 .container__about {
