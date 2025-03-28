@@ -4,7 +4,7 @@
 
 ## 🚀 Demo
 
-🔗 [Ver DRS Store en vivo](https://franmayer.github.io/drsstore/)
+🔗 [Ver DRS Store en vivo](https://drsstore-fran-mayers-projects.vercel.app)
 
 ## 🛠️ Tecnologías utilizadas
 
