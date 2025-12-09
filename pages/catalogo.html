@@ -1,198 +1,210 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Catálogo completo de DRS Store - Remeras, buzos y accesorios oficiales de Fórmula 1">
+    <meta name="theme-color" content="#00A0E3">
+    
+    <link rel="icon" href="/multi/favicon.ico" type="image/x-icon">
+    
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="icon" href="/multi/favicon.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    
+    <!-- Styles -->
+    <link href="/css/style.css" rel="stylesheet" type="text/css">
+    <link href="/css/mediaquery.css" rel="stylesheet" type="text/css">
 
-    <!--Bootstrap 5.3v-->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">   
-    <link  href="/css/style.css" rel="stylesheet" type="text/css" >
+    <!-- Mercado Pago SDK -->
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
 
-
-    <title>DRS Store - Catalogo completo - 2025</title>
-
-<script src="https://sdk.mercadopago.com/js/v2"></script>
+    <title>DRS Store - Catálogo Completo 2025</title>
 </head>
 
 <body>
-
-    <div class="loader-overlay">
+    <!-- Loader -->
+    <div class="loader-overlay" id="loader">
         <div class="loader"></div>
         <p>Cargando productos...</p>
     </div>
-    
-    <nav class="header">
-        <a href="/index.html"><img src="/multi/Logo.png" alt="Logo DRS"></a>
 
-        <ul>
+    <!-- Overlay para menú móvil -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+    
+    <nav class="header" id="mainHeader">
+        <a href="/index.html">
+            <img src="/multi/Logo.png" alt="DRS Store Logo">
+        </a>
+
+        <ul id="navMenu">
             <a href="/index.html"><li>Inicio</li></a>
-            <a href="about.html"><li>Sobre nosotros</li></a>
-            <a href="envios.html"><li>Envios</li></a>
+            <a href="about.html"><li>Nosotros</li></a>
+            <a href="envios.html"><li>Envíos</li></a>
             <a href="novedades.html"><li>Novedades</li></a>
         </ul>
-    </nav>
 
-  <!-- Carrito de Compras -->
-  <button class="btn btn-cart" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
-    🛒
-</button>
+        <div style="display: flex; align-items: center;">
+            <!-- Toggle de tema -->
+            <button class="theme-toggle" aria-label="Cambiar tema">
+                <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+                <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"/>
+                    <line x1="12" y1="1" x2="12" y2="3"/>
+                    <line x1="12" y1="21" x2="12" y2="23"/>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                    <line x1="1" y1="12" x2="3" y2="12"/>
+                    <line x1="21" y1="12" x2="23" y2="12"/>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                </svg>
+            </button>
 
-<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
-    <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="offcanvasRightLabel">Carrito de Compras</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body">
-        <ul id="cart-items" class="list-group mb-3"></ul> <!-- Lista de productos en el carrito -->
-        <h5>Total: <span id="cart-total">$0.00</span></h5>
-        <button id="checkout-btn" class="btn btn-primary w-100 mt-2">Pagar con Mercado Pago</button>
-        <button id="clear-cart" class="btn btn-danger w-100 mt-3">Vaciar Carrito</button>
-    </div>
-</div>
-
-  
-
-
-<div class="bigbox">
-        
-        <div class="category-list">
-            <h3>Categorias</h3>
-                <ul>
-                    <li>Remeras</li>
-                    <li>Buzos</li>
-                    <li>Gorras</li>
-                    <li>Tazas</li>
-                    <li>Llaveros</li>
-                    <li>Chops</li>
-                </ul>
-        </div>
-
-    <div class="product-grid">
-        <div class="no-products-message" style="display: none; text-align: center; margin-top: 20px; font-weight: bold;">
-            Por el momento no hay productos en esta categoría, ¡pronto tendremos novedades!
-        </div>
-
-        <div class="product-card" data-category="Remeras" data-id="1" data-stock="10" data-price="15200">
-            <img src="/multi/Remera FERRARI (Delantera).jpg" alt="Producto 1" class="product-image" loading="lazy">
-            <h3 class="product-title">Remera Ferrari </h3>
-            <p class="product-description">100% Algodon + DTF</p>
-            <p class="product-price">$15.200</p>
-            <p class="product-stock">Disponibles: <span>10</span></p>
-            <button class="add-to-cart">Añadir al carrito</button>
-        </div>
-    
-    
-        <div class="product-card" data-category="Remeras" data-id="2" data-stock="0" data-price="19.99">
-            <img src="/multi/Remera ASTON MARTIN (Delantera).png" alt="Producto 2" class="product-image" loading="lazy">
-            <h3 class="product-title">Remera Aston Martin</h3>
-            <p class="product-description">100% Algodon + DTF</p>
-            <p class="product-price">$15.200</p>
-            <p class="product-stock">Disponibles: <span>5</span></p>
-            <button class="add-to-cart">Añadir al carrito</button>
-        </div>
-
-        <div class="product-card" data-category="Remeras" data-id="2" data-stock="0" data-price="19.99">
-            <img src="/multi/Remera Alpine (Delantera).jpg" alt="Producto 2" class="product-image" loading="lazy">
-            <h3 class="product-title">Remera Alpine</h3>
-            <p class="product-description">100% Algodon + DTF</p>
-            <p class="product-price">$15.200</p>
-            <p class="product-stock">Disponibles: <span>6</span></p>
-            <button class="add-to-cart">Añadir al carrito</button>
-        </div>
-
-        <div class="product-card" data-category="Remeras" data-id="2" data-stock="0" data-price="19.99">
-            <img src="/multi/Remera WILLIAMS (Delantera).png" alt="Producto 2" class="product-image" loading="lazy">
-            <h3 class="product-title">Remera Williams</h3>
-            <p class="product-description">100% Algodon + DTF</p>
-            <p class="product-price">$15.200</p>
-            <p class="product-stock">Disponibles: <span>5</span></p>
-            <button class="add-to-cart">Añadir al carrito</button>
-        </div>
-
-        <div class="product-card" data-category="Remeras"  data-id="2" data-stock="0" data-price="19.99" loading="lazy">
-            <img src="/multi/Remera HAAS (Delantera).png" alt="Producto 2" class="product-image">
-            <h3 class="product-title">Remera Haas</h3>
-            <p class="product-description">100% Algodon + DTF</p>
-            <p class="product-price">$14.900</p>
-            <p class="product-stock">Disponibles: <span>9</span></p>
-            <button class="add-to-cart">Añadir al carrito</button>
-        </div>
-
-        <div class="product-card" data-category="Remeras"  data-id="2" data-stock="0" data-price="19.99">
-            <img src="/multi/Remera MCLAREN (Delantera) (1).png" alt="Producto 2" class="product-image" loading="lazy">
-            <h3 class="product-title">Remera McLaren</h3>
-            <p class="product-description">100% Algodon + DTF</p>
-            <p class="product-price">$15.000</p>
-            <p class="product-stock">Disponibles: <span>4</span></p>
-            <button class="add-to-cart">Añadir al carrito</button>
-        </div>
-
-        <div class="product-card" data-category="Remeras" data-id="2" data-stock="0" data-price="19.99">
-            <img src="/multi/Remera MERCEDES (Delantera).png" alt="Producto 2" class="product-image" loading="lazy">
-            <h3 class="product-title">Remera Mercedes Benz</h3>
-            <p class="product-description">100% Algodon + DTF</p>
-            <p class="product-price">$14.300</p>
-            <p class="product-stock">Disponibles: <span>6</span></p>
-            <button class="add-to-cart">Añadir al carrito</button>
-        </div>
-
-        <div class="product-card" data-category="Remeras" data-id="2" data-stock="0" data-price="19.99">
-            <img src="/multi/Remera RED BULL (Delantera).png" alt="Producto 2" class="product-image" loading="lazy">
-            <h3 class="product-title">Remera Red Bull</h3>
-            <p class="product-description">100% Algodon + DTF</p>
-            <p class="product-price">$15.900</p>
-            <p class="product-stock">Disponibles: <span>7</span></p>
-            <button class="add-to-cart">Añadir al carrito</button>
-        </div>
-    </div>
-</div><!--END big box-->
-
-<footer class="footer">
-    <div class="footer-container">
-        <!-- 🌍 Ubicación -->
-        <div class="footer-section">
-            <h3>Ubicación</h3>
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2863.025285640014!2d-64.18822168196978!3d-31.421563144925077!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9432a285d4a3836d%3A0x238e2b34731fb3fe!2sMontevideo%20157%2C%20X5000AWC%20X5000AWC%2C%20C%C3%B3rdoba!5e0!3m2!1ses-419!2sar!4v1739286623460!5m2!1ses-419!2sar" width="100%" height="150" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-        </div>
-
-        <!-- 📞 Contacto -->
-        <div class="footer-section">
-            <h3>Contacto</h3>
-            <p>Email: <a href="mailto:contacto@drsstore.com">contacto@drsstore.com</a></p>
-            <p>Tel: <a href="tel:+549XXXXXXXXX">+54 9 351 7883076</a></p>
-        </div>
-
-        <!-- 🔗 Redes Sociales -->
-        <div class="footer-section">
-            <h3>Síguenos</h3>
-            <div class="social-icons">
-                <a href="https://www.instagram.com/drs.storecba/" target="_blank">Instagram</a>
-                <a href="https://twitter.com/drsstore" target="_blank">X</a>
-                <a href="https://tiktok.com/@drsstore" target="_blank">TikTok</a>
+            <!-- Menú hamburguesa -->
+            <div class="menu-toggle" id="menuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
             </div>
         </div>
+    </nav>
+
+    <!-- Botón del Carrito Flotante -->
+    <button class="btn-cart" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+        🛒
+        <span class="cart-badge" id="cartBadge" style="display: none;">0</span>
+    </button>
+
+    <!-- Panel del Carrito (Offcanvas) -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasRightLabel">
+                🛒 Carrito de Compras
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul id="cart-items" class="list-group mb-3"></ul>
+            <div class="border-top pt-3">
+                <h5 class="d-flex justify-content-between">
+                    <span>Total:</span>
+                    <span id="cart-total" class="text-primary fw-bold">$0.00</span>
+                </h5>
+            </div>
+            <div id="wallet_container"></div>
+            <button id="checkout-btn" class="btn btn-primary w-100 mt-3">
+                💳 Pagar con Mercado Pago
+            </button>
+            <button id="clear-cart" class="btn btn-outline-danger w-100 mt-2">
+                🗑️ Vaciar Carrito
+            </button>
+        </div>
     </div>
-    <p class="footer-bottom">&copy; 2025 DRS Store - Todos los derechos reservados.</p>
-</footer>
 
+    <!-- Contenedor Principal -->
+    <div class="bigbox">
+        <!-- Sidebar de Categorías -->
+        <div class="category-list">
+            <h3>Categorías</h3>
+            <ul>
+                <!-- Las categorías se cargan dinámicamente -->
+                <li class="active" data-category="all">Ver todos</li>
+            </ul>
+        </div>
 
+        <!-- Grid de Productos -->
+        <div class="product-grid">
+            <!-- Mensaje cuando no hay productos -->
+            <div class="no-products-message" style="display: none;">
+                <p>🏎️ Por el momento no hay productos en esta categoría.</p>
+                <p>¡Pronto tendremos novedades!</p>
+            </div>
+            <!-- Los productos se cargan dinámicamente -->
+        </div>
+    </div>
 
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <!-- Ubicación -->
+            <div class="footer-section">
+                <h3>Ubicación</h3>
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2863.025285640014!2d-64.18822168196978!3d-31.421563144925077!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9432a285d4a3836d%3A0x238e2b34731fb3fe!2sMontevideo%20157%2C%20X5000AWC%20X5000AWC%2C%20C%C3%B3rdoba!5e0!3m2!1ses-419!2sar!4v1739286623460!5m2!1ses-419!2sar" 
+                    width="100%" 
+                    height="150" 
+                    style="border:0;" 
+                    allowfullscreen="" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+            <!-- Contacto -->
+            <div class="footer-section">
+                <h3>Contacto</h3>
+                <p>Email: <a href="mailto:contacto@drsstore.com">contacto@drsstore.com</a></p>
+                <p>Tel: <a href="tel:+5493517883076">+54 9 351 788-3076</a></p>
+            </div>
 
+            <!-- Redes Sociales -->
+            <div class="footer-section">
+                <h3>Síguenos</h3>
+                <div class="social-icons">
+                    <a href="https://www.instagram.com/drs.storecba/" target="_blank" rel="noopener" aria-label="Instagram">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                        </svg>
+                    </a>
+                    <a href="https://twitter.com/drsstore" target="_blank" rel="noopener" aria-label="X (Twitter)">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        </svg>
+                    </a>
+                    <a href="https://tiktok.com/@drsstore" target="_blank" rel="noopener" aria-label="TikTok">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <p class="footer-bottom">&copy; 2025 DRS Store - Todos los derechos reservados.</p>
+    </footer>
 
+    <!-- Botón WhatsApp flotante -->
+    <a href="https://wa.me/5493517883076?text=Hola!%20Quiero%20consultar%20sobre%20productos%20de%20DRS%20Store" 
+       class="whatsapp-float" 
+       target="_blank" 
+       rel="noopener"
+       aria-label="Contactar por WhatsApp">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+    </a>
 
-<script src="/js/pagos.js"></script>
-<script src="/js/filtrocat.js"></script>
-<script src="/js/main.js"></script>
-
-
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+    
+    <!-- DRS Store Scripts -->
+    <script src="/js/theme-toggle.js"></script>
+    <script src="/js/firebase-config.js"></script>
+    <script src="/js/products-service.js"></script>
+    <script src="/js/catalog.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/pagos.js"></script>
+    <script src="/js/animations.js"></script>
 </body>
 </html>

@@ -1,0 +1,648 @@
+/* =====================================================
+   DRS STORE - MEDIA QUERIES
+   Responsive Design para todos los dispositivos
+   ===================================================== */
+
+/* =====================================================
+   TABLETS (768px - 1024px)
+   ===================================================== */
+@media screen and (max-width: 1024px) {
+    /* Header */
+    .header {
+        padding: 0.75rem 1.5rem;
+    }
+
+    .header img {
+        height: 4rem;
+    }
+
+    .header ul {
+        gap: 1.5rem;
+    }
+
+    .header ul a {
+        font-size: 0.9rem;
+    }
+
+    /* Hero */
+    .hero-content {
+        padding: 1.5rem;
+    }
+
+    /* Countdown */
+    .countdown {
+        padding: 1.25rem 2rem;
+        gap: 1rem;
+    }
+
+    .countdown .logo {
+        width: 50px;
+    }
+
+    #reloj {
+        font-size: 1.8rem;
+    }
+
+    /* Catálogo */
+    .bigbox {
+        gap: 1.5rem;
+        padding: 1.5rem;
+    }
+
+    .category-list {
+        flex: 0 0 220px;
+    }
+
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    }
+
+    .product-image {
+        height: 240px;
+    }
+
+    /* About */
+    .container__about2 {
+        gap: 2rem;
+    }
+
+    .mecanic,
+    .mecanic1 {
+        max-width: 300px;
+    }
+}
+
+/* =====================================================
+   MOBILE LANDSCAPE & SMALL TABLETS (768px)
+   ===================================================== */
+@media screen and (max-width: 768px) {
+    /* Header - Menú hamburguesa */
+    .header {
+        padding: 0.75rem 1rem;
+    }
+
+    .menu-toggle {
+        display: flex;
+    }
+
+    .header ul {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 70%;
+        max-width: 300px;
+        height: 100vh;
+        background: var(--bg-primary);
+        flex-direction: column;
+        padding: 5rem 2rem 2rem;
+        gap: 0;
+        box-shadow: var(--shadow-lg);
+        transition: var(--transition-normal);
+        z-index: 1000;
+    }
+
+    .header ul.active {
+        right: 0;
+    }
+
+    .header ul a {
+        display: block;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 1rem;
+    }
+
+    .header ul a::after {
+        display: none;
+    }
+    
+    [data-theme="dark"] .header ul {
+        background: #1A1A1A;
+        box-shadow: -5px 0 30px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Overlay cuando menú está abierto */
+    .menu-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        visibility: hidden;
+        transition: var(--transition-normal);
+        z-index: 999;
+    }
+
+    .menu-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* Hero */
+    .hero {
+        min-height: 80vh;
+    }
+
+    .hero h1 {
+        font-size: 2rem;
+        letter-spacing: 1px;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
+
+    .btn {
+        padding: 0.875rem 2rem;
+        font-size: 0.875rem;
+    }
+
+    /* Novedades */
+    .novedades {
+        padding: var(--space-2xl) var(--space-md);
+    }
+
+    .novedades h2 {
+        font-size: 1.75rem;
+    }
+
+    .novedades p {
+        font-size: 1rem;
+    }
+
+    /* Countdown */
+    .title-countdown {
+        font-size: 1.25rem;
+        margin: var(--space-2xl) 0 var(--space-lg);
+    }
+
+    .countdown {
+        flex-direction: column;
+        padding: 1.5rem;
+        gap: 1rem;
+        margin: 0 1rem;
+        width: calc(100% - 2rem);
+    }
+
+    .countdown-container {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .img-countdown {
+        width: 3rem;
+        height: 3rem;
+    }
+
+    #reloj {
+        font-size: 1.5rem;
+    }
+
+    .countdown .logo {
+        width: 40px;
+    }
+
+    /* Logos pago */
+    .logos-pago {
+        gap: 1.5rem;
+        padding: var(--space-2xl) var(--space-md);
+    }
+
+    .logos-pago .logo {
+        max-width: 70px;
+    }
+
+    /* Footer */
+    .footer {
+        padding: var(--space-2xl) var(--space-md) var(--space-lg);
+    }
+
+    .footer-container {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        text-align: center;
+    }
+
+    .footer-section h3::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .social-icons {
+        justify-content: center;
+    }
+
+    /* Catálogo */
+    .bigbox {
+        flex-direction: column;
+        padding: 1rem;
+    }
+
+    .category-list {
+        flex: none;
+        width: 100%;
+        position: static;
+        margin-bottom: 1rem;
+    }
+
+    .category-list ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .category-list li {
+        padding: 0.5rem 1rem;
+        background: var(--bg-secondary);
+        border-radius: var(--radius-full);
+        margin: 0;
+        border: 1px solid var(--border-color);
+    }
+
+    .category-list li::before {
+        display: none;
+    }
+
+    .category-list li:hover,
+    .category-list li.active {
+        padding-left: 1rem;
+        background: var(--primary);
+        color: var(--white);
+        border-color: var(--primary);
+    }
+
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .product-image {
+        height: 200px;
+    }
+
+    .product-title {
+        font-size: 0.9rem;
+    }
+
+    .product-price {
+        font-size: 1.1rem;
+    }
+
+    .add-to-cart {
+        padding: 0.75rem;
+        font-size: 0.8rem;
+    }
+
+    /* Carrito flotante */
+    .btn-cart {
+        bottom: 1.5rem;
+        right: 1.5rem;
+        width: 55px;
+        height: 55px;
+    }
+
+    /* About */
+    .container__about {
+        padding: var(--space-2xl) var(--space-md);
+        gap: 1.5rem;
+    }
+
+    .about__content {
+        padding: 1.5rem;
+    }
+
+    .container__about2 {
+        flex-direction: column !important;
+        gap: 2rem;
+        padding: 0 var(--space-md);
+        margin: var(--space-2xl) auto;
+    }
+
+    .mecanic,
+    .mecanic1 {
+        max-width: 100%;
+        border-radius: var(--radius-lg);
+    }
+
+    /* Envios */
+    .envios__main {
+        padding: var(--space-2xl) var(--space-md);
+    }
+
+    .container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .card {
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .howbuy__main {
+        margin: var(--space-2xl) var(--space-md);
+        padding: var(--space-lg);
+    }
+
+    /* Novedades page */
+    .novedades__main {
+        margin: var(--space-md);
+        padding: var(--space-2xl) var(--space-md);
+        min-height: 50vh;
+    }
+
+    .novedades__title {
+        font-size: 1.5rem;
+    }
+
+    /* WhatsApp */
+    .whatsapp-float {
+        bottom: 1.5rem;
+        left: 1.5rem;
+        width: 55px;
+        height: 55px;
+    }
+
+    .whatsapp-float svg {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+/* =====================================================
+   MOBILE PORTRAIT (480px)
+   ===================================================== */
+@media screen and (max-width: 480px) {
+    /* Header */
+    .header img {
+        height: 3.5rem;
+    }
+
+    .header ul {
+        width: 80%;
+    }
+
+    /* Hero */
+    .hero {
+        min-height: 70vh;
+    }
+
+    .hero h1 {
+        font-size: 1.75rem;
+    }
+
+    .hero p {
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        font-size: 0.8rem;
+    }
+
+    /* Countdown */
+    .countdown {
+        padding: 1rem;
+    }
+
+    .reloj-wrapper {
+        padding: 0.75rem 1rem;
+    }
+
+    #reloj {
+        font-size: 1.25rem;
+    }
+
+    /* Catálogo */
+    .product-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
+
+    .product-card {
+        border-radius: var(--radius-md);
+    }
+
+    .product-image {
+        height: 160px;
+    }
+
+    .product-title {
+        font-size: 0.85rem;
+        padding: 0 0.75rem;
+        margin: 0.75rem 0 0.25rem;
+    }
+
+    .product-description {
+        font-size: 0.75rem;
+        padding: 0 0.75rem;
+    }
+
+    .product-price {
+        font-size: 1rem;
+        padding: 0 0.75rem;
+        margin: 0.5rem 0;
+    }
+
+    .product-stock {
+        font-size: 0.75rem;
+        padding: 0 0.75rem;
+    }
+
+    .add-to-cart {
+        width: calc(100% - 1.5rem);
+        margin: 0 0.75rem 0.75rem;
+        padding: 0.625rem;
+        font-size: 0.75rem;
+    }
+
+    /* Category list pills */
+    .category-list li {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+    }
+
+    /* About */
+    .about__content h2 {
+        font-size: 1.1rem;
+    }
+
+    .about__content p {
+        font-size: 0.9rem;
+    }
+
+    .intern-div p {
+        font-size: 0.95rem;
+    }
+
+    /* Cards */
+    .card {
+        padding: 1.5rem;
+    }
+
+    .card .icon {
+        font-size: 2.5rem;
+    }
+
+    .card h3 {
+        font-size: 1rem;
+    }
+
+    .card p {
+        font-size: 0.9rem;
+    }
+
+    /* Botones flotantes */
+    .btn-cart,
+    .whatsapp-float {
+        width: 50px;
+        height: 50px;
+    }
+
+    .btn-cart {
+        font-size: 1.25rem;
+    }
+
+    .whatsapp-float svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .btn-cart .cart-badge {
+        width: 20px;
+        height: 20px;
+        font-size: 0.65rem;
+    }
+}
+
+/* =====================================================
+   EXTRA SMALL DEVICES (320px)
+   ===================================================== */
+@media screen and (max-width: 320px) {
+    .header {
+        padding: 0.5rem;
+    }
+
+    .header img {
+        height: 3rem;
+    }
+
+    .hero h1 {
+        font-size: 1.5rem;
+    }
+
+    .product-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .product-image {
+        height: 220px;
+    }
+
+    .category-list ul {
+        justify-content: center;
+    }
+}
+
+/* =====================================================
+   LANDSCAPE ORIENTATION ON MOBILE
+   ===================================================== */
+@media screen and (max-height: 500px) and (orientation: landscape) {
+    .hero {
+        min-height: 100vh;
+        padding: 2rem;
+    }
+
+    .hero h1 {
+        font-size: 1.75rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .hero p {
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+
+    .novedades__main {
+        min-height: 80vh;
+    }
+}
+
+/* =====================================================
+   PRINT STYLES
+   ===================================================== */
+@media print {
+    .header,
+    .btn-cart,
+    .whatsapp-float,
+    .menu-toggle,
+    .footer {
+        display: none;
+    }
+
+    .hero {
+        min-height: auto;
+        padding: 2rem;
+    }
+
+    .hero::before,
+    .hero::after {
+        display: none;
+    }
+
+    body {
+        background: white;
+        color: black;
+    }
+
+    .product-card {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+}
+
+/* =====================================================
+   REDUCED MOTION
+   ===================================================== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .reveal,
+    .reveal-left,
+    .reveal-right {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* =====================================================
+   HIGH CONTRAST MODE
+   ===================================================== */
+@media (prefers-contrast: high) {
+    :root {
+        --primary: #0088CC;
+        --secondary: #000000;
+        --accent: #00FFFF;
+    }
+
+    .btn,
+    .add-to-cart,
+    .novedades__btn {
+        border: 2px solid currentColor;
+    }
+
+    .product-card,
+    .card,
+    .about__content {
+        border: 2px solid var(--secondary);
+    }
+}
+

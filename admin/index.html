@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <link rel="icon" href="/multi/favicon.ico" type="image/x-icon">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+    <title>DRS Store - Panel de Administración</title>
+    
+    <style>
+        :root {
+            --primary: #00A0E3;
+            --secondary: #242932;
+        }
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+        
+        .admin-header {
+            background: var(--secondary);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .admin-header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            margin: 0;
+        }
+        
+        .admin-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .card {
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 12px;
+        }
+        
+        .card-header {
+            background: var(--secondary);
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            border-radius: 12px 12px 0 0 !important;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background: #0080B8;
+            border-color: #0080B8;
+        }
+        
+        .product-thumb {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .status-active {
+            color: #28a745;
+        }
+        
+        .status-inactive {
+            color: #dc3545;
+        }
+        
+        .firebase-status {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        
+        .firebase-connected {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .firebase-disconnected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .stats-card h3 {
+            font-size: 2rem;
+            color: var(--primary);
+            margin: 0;
+        }
+        
+        .stats-card p {
+            color: #666;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="admin-header">
+        <h1>🏎️ DRS Store - Admin</h1>
+        <div>
+            <span class="firebase-status" id="firebaseStatus">⏳ Conectando...</span>
+            <a href="/index.html" class="btn btn-outline-light btn-sm ms-2">Ver tienda</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="admin-container">
+        <!-- Alerta de configuración -->
+        <div class="alert alert-warning" id="configAlert" style="display: none;">
+            <strong>⚠️ Firebase no está configurado.</strong> 
+            Los productos se cargan desde datos de ejemplo. 
+            <a href="#" data-bs-toggle="modal" data-bs-target="#configModal">Ver instrucciones de configuración</a>
+        </div>
+
+        <!-- Stats -->
+        <div class="row mb-4" id="statsRow">
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <h3 id="totalProducts">0</h3>
+                    <p>Productos</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <h3 id="totalCategories">0</h3>
+                    <p>Categorías</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <h3 id="lowStock">0</h3>
+                    <p>Stock bajo</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <h3 id="outOfStock">0</h3>
+                    <p>Sin stock</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>Productos</h2>
+            <div>
+                <button class="btn btn-outline-secondary me-2" id="importBtn">
+                    📥 Importar datos de ejemplo
+                </button>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">
+                    ➕ Nuevo Producto
+                </button>
+            </div>
+        </div>
+
+        <!-- Products Table -->
+        <div class="card">
+            <div class="card-header">
+                📦 Lista de Productos
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Imagen</th>
+                                <th>Nombre</th>
+                                <th>Categoría</th>
+                                <th>Precio</th>
+                                <th>Stock</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTable">
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Cargando...</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Nuevo/Editar Producto -->
+    <div class="modal fade" id="productModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Nuevo Producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="productForm">
+                        <input type="hidden" id="productId">
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Nombre *</label>
+                                <input type="text" class="form-control" id="productName" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Categoría *</label>
+                                <select class="form-select" id="productCategory" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Remeras">Remeras</option>
+                                    <option value="Buzos">Buzos</option>
+                                    <option value="Gorras">Gorras</option>
+                                    <option value="Tazas">Tazas</option>
+                                    <option value="Llaveros">Llaveros</option>
+                                    <option value="Chops">Chops</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Descripción</label>
+                            <textarea class="form-control" id="productDescription" rows="2"></textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Precio *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="productPrice" required min="0">
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Stock *</label>
+                                <input type="number" class="form-control" id="productStock" required min="0">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Estado</label>
+                                <select class="form-select" id="productActive">
+                                    <option value="true">Activo</option>
+                                    <option value="false">Inactivo</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">URL de Imagen *</label>
+                            <input type="text" class="form-control" id="productImage" required 
+                                   placeholder="/multi/nombre-imagen.jpg">
+                            <small class="text-muted">Sube la imagen a la carpeta /multi/ y coloca la ruta aquí</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveProduct">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Configuración Firebase -->
+    <div class="modal fade" id="configModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">🔧 Configuración de Firebase</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>Paso 1: Crear proyecto en Firebase</h6>
+                    <ol>
+                        <li>Ve a <a href="https://console.firebase.google.com/" target="_blank">Firebase Console</a></li>
+                        <li>Crea un nuevo proyecto (o usa uno existente)</li>
+                        <li>Ve a <strong>Configuración del proyecto > General</strong></li>
+                        <li>En "Tus apps", agrega una <strong>app web</strong></li>
+                    </ol>
+                    
+                    <h6>Paso 2: Crear base de datos Firestore</h6>
+                    <ol>
+                        <li>Ve a <strong>Firestore Database</strong> en el menú lateral</li>
+                        <li>Click en <strong>Crear base de datos</strong></li>
+                        <li>Selecciona <strong>Modo de prueba</strong> (para desarrollo)</li>
+                        <li>Selecciona la ubicación más cercana</li>
+                    </ol>
+                    
+                    <h6>Paso 3: Copiar configuración</h6>
+                    <p>Copia los valores de configuración y pegalos en <code>/js/firebase-config.js</code>:</p>
+                    <pre class="bg-light p-3 rounded"><code>const firebaseConfig = {
+    apiKey: "TU_API_KEY",
+    authDomain: "tu-proyecto.firebaseapp.com",
+    projectId: "tu-proyecto",
+    storageBucket: "tu-proyecto.appspot.com",
+    messagingSenderId: "123456789",
+    appId: "1:123456789:web:abcdef123456"
+};</code></pre>
+                    
+                    <h6>Paso 4: Importar productos</h6>
+                    <p>Una vez configurado, usa el botón <strong>"Importar datos de ejemplo"</strong> para cargar los productos iniciales.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- DRS Store Scripts -->
+    <script src="/js/firebase-config.js"></script>
+    <script src="/js/products-service.js"></script>
+    
+    <script>
+        // =====================================================
+        // PANEL DE ADMINISTRACIÓN
+        // =====================================================
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Inicializar Firebase
+            const firebaseOk = window.FirebaseConfig.init();
+            
+            // Actualizar estado de Firebase
+            const statusEl = document.getElementById('firebaseStatus');
+            const configAlert = document.getElementById('configAlert');
+            
+            if (firebaseOk) {
+                statusEl.textContent = '✅ Conectado';
+                statusEl.className = 'firebase-status firebase-connected';
+            } else {
+                statusEl.textContent = '⚠️ No configurado';
+                statusEl.className = 'firebase-status firebase-disconnected';
+                configAlert.style.display = 'block';
+            }
+            
+            // Cargar productos
+            await loadProducts();
+            
+            // Event listeners
+            document.getElementById('saveProduct').addEventListener('click', saveProduct);
+            document.getElementById('importBtn').addEventListener('click', importSampleProducts);
+        });
+        
+        // =====================================================
+        // CARGAR PRODUCTOS
+        // =====================================================
+        
+        async function loadProducts() {
+            try {
+                const products = await window.ProductsService.getAllAdmin();
+                const tbody = document.getElementById('productsTable');
+                
+                if (products.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="text-center py-4">
+                                No hay productos. <a href="#" data-bs-toggle="modal" data-bs-target="#productModal">Agregar uno</a>
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    tbody.innerHTML = products.map(p => `
+                        <tr>
+                            <td>
+                                <img src="${p.image}" alt="${p.name}" class="product-thumb" 
+                                     onerror="this.src='/multi/Logo.png'">
+                            </td>
+                            <td><strong>${p.name}</strong><br><small class="text-muted">${p.id}</small></td>
+                            <td>${p.category}</td>
+                            <td>$${p.price.toLocaleString('es-AR')}</td>
+                            <td>
+                                <span class="${p.stock === 0 ? 'text-danger' : p.stock <= 3 ? 'text-warning' : ''}">
+                                    ${p.stock}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="${p.active !== false ? 'status-active' : 'status-inactive'}">
+                                    ${p.active !== false ? '● Activo' : '○ Inactivo'}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary" onclick="editProduct('${p.id}')">
+                                    ✏️
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct('${p.id}')">
+                                    🗑️
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+                
+                // Actualizar estadísticas
+                updateStats(products);
+                
+            } catch (error) {
+                console.error('Error al cargar productos:', error);
+            }
+        }
+        
+        // =====================================================
+        // ESTADÍSTICAS
+        // =====================================================
+        
+        function updateStats(products) {
+            const active = products.filter(p => p.active !== false);
+            const categories = [...new Set(active.map(p => p.category))];
+            const lowStock = active.filter(p => p.stock > 0 && p.stock <= 3);
+            const outOfStock = active.filter(p => p.stock === 0);
+            
+            document.getElementById('totalProducts').textContent = active.length;
+            document.getElementById('totalCategories').textContent = categories.length;
+            document.getElementById('lowStock').textContent = lowStock.length;
+            document.getElementById('outOfStock').textContent = outOfStock.length;
+        }
+        
+        // =====================================================
+        // GUARDAR PRODUCTO
+        // =====================================================
+        
+        async function saveProduct() {
+            const id = document.getElementById('productId').value;
+            const productData = {
+                name: document.getElementById('productName').value,
+                category: document.getElementById('productCategory').value,
+                description: document.getElementById('productDescription').value,
+                price: parseInt(document.getElementById('productPrice').value),
+                stock: parseInt(document.getElementById('productStock').value),
+                image: document.getElementById('productImage').value,
+                active: document.getElementById('productActive').value === 'true'
+            };
+            
+            // Validación básica
+            if (!productData.name || !productData.category || !productData.price || !productData.image) {
+                alert('Por favor completa todos los campos requeridos');
+                return;
+            }
+            
+            try {
+                if (id) {
+                    await window.ProductsService.update(id, productData);
+                    alert('✅ Producto actualizado');
+                } else {
+                    await window.ProductsService.create(productData);
+                    alert('✅ Producto creado');
+                }
+                
+                // Cerrar modal y recargar
+                bootstrap.Modal.getInstance(document.getElementById('productModal')).hide();
+                resetForm();
+                await loadProducts();
+                
+            } catch (error) {
+                console.error('Error al guardar:', error);
+                alert('❌ Error: ' + error.message);
+            }
+        }
+        
+        // =====================================================
+        // EDITAR PRODUCTO
+        // =====================================================
+        
+        async function editProduct(id) {
+            try {
+                const product = await window.ProductsService.getById(id);
+                
+                if (product) {
+                    document.getElementById('modalTitle').textContent = 'Editar Producto';
+                    document.getElementById('productId').value = id;
+                    document.getElementById('productName').value = product.name;
+                    document.getElementById('productCategory').value = product.category;
+                    document.getElementById('productDescription').value = product.description || '';
+                    document.getElementById('productPrice').value = product.price;
+                    document.getElementById('productStock').value = product.stock;
+                    document.getElementById('productImage').value = product.image;
+                    document.getElementById('productActive').value = product.active !== false ? 'true' : 'false';
+                    
+                    new bootstrap.Modal(document.getElementById('productModal')).show();
+                }
+            } catch (error) {
+                console.error('Error al cargar producto:', error);
+                alert('❌ Error al cargar el producto');
+            }
+        }
+        
+        // =====================================================
+        // ELIMINAR PRODUCTO
+        // =====================================================
+        
+        async function deleteProduct(id) {
+            if (!confirm('¿Estás seguro de eliminar este producto?')) return;
+            
+            try {
+                await window.ProductsService.delete(id);
+                alert('✅ Producto eliminado');
+                await loadProducts();
+            } catch (error) {
+                console.error('Error al eliminar:', error);
+                alert('❌ Error: ' + error.message);
+            }
+        }
+        
+        // =====================================================
+        // IMPORTAR PRODUCTOS DE EJEMPLO
+        // =====================================================
+        
+        async function importSampleProducts() {
+            if (!window.FirebaseConfig.isInitialized()) {
+                alert('⚠️ Primero debes configurar Firebase');
+                new bootstrap.Modal(document.getElementById('configModal')).show();
+                return;
+            }
+            
+            if (!confirm('¿Importar los productos de ejemplo a Firebase?')) return;
+            
+            try {
+                await window.ProductsService.importSampleProducts();
+                alert('✅ Productos importados correctamente');
+                await loadProducts();
+            } catch (error) {
+                console.error('Error al importar:', error);
+                alert('❌ Error: ' + error.message);
+            }
+        }
+        
+        // =====================================================
+        // RESET FORM
+        // =====================================================
+        
+        function resetForm() {
+            document.getElementById('modalTitle').textContent = 'Nuevo Producto';
+            document.getElementById('productForm').reset();
+            document.getElementById('productId').value = '';
+        }
+        
+        // Reset form al abrir modal para nuevo producto
+        document.getElementById('productModal').addEventListener('show.bs.modal', function(e) {
+            if (!e.relatedTarget || !e.relatedTarget.hasAttribute('data-edit')) {
+                resetForm();
+            }
+        });
+    </script>
+</body>
+</html>
+
