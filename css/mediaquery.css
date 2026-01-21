@@ -1,6 +1,6 @@
 /* =====================================================
-   DRS STORE - MEDIA QUERIES
-   Responsive Design para todos los dispositivos
+   VOLT - MEDIA QUERIES
+   Responsive Design - Motorsport Culture
    ===================================================== */
 
 /* =====================================================
@@ -12,8 +12,8 @@
         padding: 0.75rem 1.5rem;
     }
 
-    .header img {
-        height: 4rem;
+    .logo-text {
+        font-size: 1.75rem;
     }
 
     .header ul {
@@ -27,6 +27,15 @@
     /* Hero */
     .hero-content {
         padding: 1.5rem;
+    }
+
+    .hero-brand {
+        font-size: clamp(4rem, 15vw, 8rem);
+    }
+
+    /* Categories */
+    .categories-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 
     /* Countdown */
@@ -81,6 +90,10 @@
         padding: 0.75rem 1rem;
     }
 
+    .logo-text {
+        font-size: 1.5rem;
+    }
+
     .menu-toggle {
         display: flex;
     }
@@ -92,13 +105,14 @@
         width: 70%;
         max-width: 300px;
         height: 100vh;
-        background: var(--bg-primary);
+        background: var(--volt-black);
         flex-direction: column;
         padding: 5rem 2rem 2rem;
         gap: 0;
-        box-shadow: var(--shadow-lg);
+        box-shadow: -5px 0 30px rgba(0, 0, 0, 0.5);
         transition: var(--transition-normal);
         z-index: 1000;
+        border-left: 1px solid var(--border-color);
     }
 
     .header ul.active {
@@ -110,22 +124,22 @@
         padding: 1rem 0;
         border-bottom: 1px solid var(--border-color);
         font-size: 1rem;
+        color: var(--volt-white);
+    }
+
+    .header ul a:hover {
+        color: var(--volt-red);
     }
 
     .header ul a::after {
         display: none;
-    }
-    
-    [data-theme="dark"] .header ul {
-        background: #1A1A1A;
-        box-shadow: -5px 0 30px rgba(0, 0, 0, 0.5);
     }
 
     /* Overlay cuando menú está abierto */
     .menu-overlay {
         position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, 0.5);
+        background: rgba(0, 0, 0, 0.7);
         opacity: 0;
         visibility: hidden;
         transition: var(--transition-normal);
@@ -142,9 +156,13 @@
         min-height: 80vh;
     }
 
-    .hero h1 {
-        font-size: 2rem;
-        letter-spacing: 1px;
+    .hero-brand {
+        font-size: clamp(3.5rem, 18vw, 6rem);
+    }
+
+    .hero-slogan {
+        font-size: 0.9rem;
+        letter-spacing: 0.2em;
     }
 
     .hero p {
@@ -154,6 +172,32 @@
     .btn {
         padding: 0.875rem 2rem;
         font-size: 0.875rem;
+    }
+
+    /* Categories */
+    .categories-section {
+        padding: var(--space-2xl) var(--space-md);
+    }
+
+    .categories-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .category-card {
+        padding: 1.5rem 1rem;
+    }
+
+    .category-card-icon {
+        font-size: 2.5rem;
+    }
+
+    .category-card h3 {
+        font-size: 0.9rem;
+    }
+
+    .category-card p {
+        font-size: 0.8rem;
     }
 
     /* Novedades */
@@ -222,6 +266,10 @@
         text-align: center;
     }
 
+    .footer-brand {
+        text-align: center;
+    }
+
     .footer-section h3::after {
         left: 50%;
         transform: translateX(-50%);
@@ -252,8 +300,8 @@
 
     .category-list li {
         padding: 0.5rem 1rem;
-        background: var(--bg-secondary);
-        border-radius: var(--radius-full);
+        background: var(--volt-gray);
+        border-radius: 0;
         margin: 0;
         border: 1px solid var(--border-color);
     }
@@ -265,9 +313,9 @@
     .category-list li:hover,
     .category-list li.active {
         padding-left: 1rem;
-        background: var(--primary);
-        color: var(--white);
-        border-color: var(--primary);
+        background: var(--volt-red);
+        color: var(--volt-white);
+        border-color: var(--volt-red);
     }
 
     .product-grid {
@@ -320,7 +368,6 @@
     .mecanic,
     .mecanic1 {
         max-width: 100%;
-        border-radius: var(--radius-lg);
     }
 
     /* Envios */
@@ -373,8 +420,8 @@
    ===================================================== */
 @media screen and (max-width: 480px) {
     /* Header */
-    .header img {
-        height: 3.5rem;
+    .logo-text {
+        font-size: 1.4rem;
     }
 
     .header ul {
@@ -386,8 +433,13 @@
         min-height: 70vh;
     }
 
-    .hero h1 {
-        font-size: 1.75rem;
+    .hero-brand {
+        font-size: clamp(3rem, 20vw, 5rem);
+    }
+
+    .hero-slogan {
+        font-size: 0.75rem;
+        letter-spacing: 0.15em;
     }
 
     .hero p {
@@ -398,6 +450,21 @@
     .btn {
         padding: 0.75rem 1.5rem;
         font-size: 0.8rem;
+    }
+
+    /* Categories */
+    .categories-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .category-card {
+        padding: 1.5rem;
+    }
+
+    .category-card.coming-soon::after {
+        font-size: 0.6rem;
+        padding: 0.2rem 1.5rem;
     }
 
     /* Countdown */
@@ -417,10 +484,6 @@
     .product-grid {
         grid-template-columns: 1fr 1fr;
         gap: 0.75rem;
-    }
-
-    .product-card {
-        border-radius: var(--radius-md);
     }
 
     .product-image {
@@ -478,6 +541,7 @@
     /* Cards */
     .card {
         padding: 1.5rem;
+        min-height: auto;
     }
 
     .card .icon {
@@ -523,12 +587,16 @@
         padding: 0.5rem;
     }
 
-    .header img {
-        height: 3rem;
+    .logo-text {
+        font-size: 1.25rem;
     }
 
-    .hero h1 {
-        font-size: 1.5rem;
+    .hero-brand {
+        font-size: 2.5rem;
+    }
+
+    .hero-slogan {
+        font-size: 0.65rem;
     }
 
     .product-grid {
@@ -553,9 +621,13 @@
         padding: 2rem;
     }
 
-    .hero h1 {
-        font-size: 1.75rem;
-        margin-bottom: 0.5rem;
+    .hero-brand {
+        font-size: 3rem;
+    }
+
+    .hero-slogan {
+        font-size: 0.8rem;
+        margin-bottom: 1rem;
     }
 
     .hero p {
@@ -583,11 +655,17 @@
     .hero {
         min-height: auto;
         padding: 2rem;
+        background: white;
     }
 
     .hero::before,
     .hero::after {
         display: none;
+    }
+
+    .hero-brand {
+        color: black;
+        text-shadow: none;
     }
 
     body {
@@ -628,9 +706,9 @@
    ===================================================== */
 @media (prefers-contrast: high) {
     :root {
-        --primary: #0088CC;
-        --secondary: #000000;
-        --accent: #00FFFF;
+        --volt-red: #FF0000;
+        --volt-black: #000000;
+        --volt-white: #FFFFFF;
     }
 
     .btn,
@@ -641,8 +719,8 @@
 
     .product-card,
     .card,
-    .about__content {
-        border: 2px solid var(--secondary);
+    .about__content,
+    .category-card {
+        border: 2px solid var(--volt-white);
     }
 }
-

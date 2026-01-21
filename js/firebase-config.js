@@ -7,13 +7,13 @@
 // CONFIGURACIÓN DE FIREBASE - TUS CREDENCIALES
 // =====================================================
 const firebaseConfig = {
-    apiKey: "AIzaSyBSLZvcaLW_hFu4MMoYXpI_aOHoXJ0mhTA",
-    authDomain: "drsstore-e7a7c.firebaseapp.com",
-    projectId: "drsstore-e7a7c",
-    storageBucket: "drsstore-e7a7c.firebasestorage.app",
-    messagingSenderId: "943658124864",
-    appId: "1:943658124864:web:a83d762ed723f0db7681a5",
-    measurementId: "G-HGQDR5J1SK"
+    apiKey: "AIzaSyBGDm4oqPL2ydPYpCNCxD5xyjDJ434IWts",
+    authDomain: "volt-store-65157.firebaseapp.com",
+    projectId: "volt-store-65157",
+    storageBucket: "volt-store-65157.firebasestorage.app",
+    messagingSenderId: "1065544282572",
+    appId: "1:1065544282572:web:5a0a876e06873e2fac6d69",
+    measurementId: "G-V8T1VZYLVB"
 };
 
 // =====================================================

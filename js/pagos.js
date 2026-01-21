@@ -62,10 +62,4 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
         console.log("No se encontró el botón de pago.");
     }
-
-    // Verifica si la respuesta fue exitosa antes de continuar
-    if (!response.ok) {
-        alert("Error al conectar con el servidor.");
-        return;
-    }
 });

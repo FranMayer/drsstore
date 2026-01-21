@@ -1,6 +1,6 @@
 /* =====================================================
-   DRS STORE - E-COMMERCE F1 
-   Rediseño completo 2025
+   VOLT - MOTORSPORT CULTURE
+   E-Commerce Streetwear & Racing
    ===================================================== */
 
 /* CSS Reset & Variables */
@@ -11,107 +11,56 @@
 }
 
 :root {
-    /* Colores principales - Basados en el logo DRS */
-    --primary: #00A0E3;        /* Azul celeste del logo */
-    --primary-dark: #0080B8;   /* Azul más oscuro */
-    --primary-light: #33B5EA;  /* Azul más claro */
-    --secondary: #242932;      /* Gris oscuro/negro del logo */
-    --secondary-light: #3A4150;
-    --accent: #00D4AA;         /* Verde turquesa complementario */
-    --accent-gold: #FFD700;    /* Dorado podio */
+    /* VOLT Brand Colors */
+    --volt-black: #0b0b0b;
+    --volt-gray: #2a2a2a;
+    --volt-white: #f2f2f2;
+    --volt-red: #c1121f;
+    --volt-red-dark: #9b0f19;
+    --volt-red-glow: rgba(193, 18, 31, 0.4);
     
-    /* Neutrales - Modo Claro (default) */
-    --bg-primary: #FFFFFF;
-    --bg-secondary: #F8F9FA;
-    --bg-card: #FFFFFF;
-    --text-primary: #212529;
-    --text-secondary: #495057;
-    --text-muted: #6C757D;
-    --border-color: #DEE2E6;
+    /* Colores principales */
+    --primary: var(--volt-red);
+    --primary-dark: var(--volt-red-dark);
+    --primary-light: #e01525;
+    --secondary: var(--volt-black);
+    --secondary-light: var(--volt-gray);
+    --accent: var(--volt-red);
+    
+    /* VOLT es dark-first - Fondos oscuros por defecto */
+    --bg-primary: var(--volt-black);
+    --bg-secondary: var(--volt-gray);
+    --bg-card: #1a1a1a;
+    --bg-footer: var(--volt-black);
+    --text-primary: var(--volt-white);
+    --text-secondary: #b5b5b5;
+    --text-muted: #777777;
+    --border-color: #3a3a3a;
     
     /* Colores fijos */
-    --white: #FFFFFF;
-    --gray-100: #F8F9FA;
-    --gray-200: #E9ECEF;
-    --gray-300: #DEE2E6;
-    --gray-400: #ADB5BD;
-    --gray-500: #6C757D;
-    --gray-600: #495057;
-    --gray-700: #343A40;
-    --gray-800: #212529;
-    --black: #0A0A0A;
+    --white: #f2f2f2;
+    --gray-100: #e5e5e5;
+    --gray-200: #d4d4d4;
+    --gray-300: #a3a3a3;
+    --gray-400: #737373;
+    --gray-500: #525252;
+    --gray-600: #404040;
+    --gray-700: #2a2a2a;
+    --gray-800: #1a1a1a;
+    --black: #0b0b0b;
     
-    /* Gradientes */
-    --gradient-hero: linear-gradient(135deg, rgba(36, 41, 50, 0.95) 0%, rgba(0, 160, 227, 0.85) 100%);
-    --gradient-card: linear-gradient(180deg, transparent 0%, rgba(36, 41, 50, 0.9) 100%);
-    --gradient-btn: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    /* Gradientes VOLT */
+    --gradient-hero: linear-gradient(180deg, rgba(11, 11, 11, 0.3) 0%, rgba(11, 11, 11, 0.95) 100%);
+    --gradient-card: linear-gradient(180deg, transparent 0%, rgba(11, 11, 11, 0.95) 100%);
+    --gradient-btn: linear-gradient(135deg, var(--volt-red) 0%, var(--volt-red-dark) 100%);
+    --gradient-red-glow: radial-gradient(ellipse at center, var(--volt-red-glow) 0%, transparent 70%);
     
-    /* Transición para cambio de tema */
-    --theme-transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* Modo Oscuro */
-[data-theme="dark"] {
-    --bg-primary: #0A0A0A;
-    --bg-secondary: #121212;
-    --bg-card: #1A1A1A;
-    --bg-footer: #0A0A0A;
-    --text-primary: #F8F9FA;
-    --text-secondary: #B0B0B0;
-    --text-muted: #808080;
-    --border-color: #2D2D2D;
-    
-    --gradient-hero: linear-gradient(135deg, rgba(10, 10, 10, 0.95) 0%, rgba(0, 160, 227, 0.7) 100%);
-}
-
-/* Ajustes específicos para modo oscuro */
-[data-theme="dark"] .header {
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-}
-
-[data-theme="dark"] .header img {
-    filter: brightness(1.1);
-}
-
-[data-theme="dark"] .product-card,
-[data-theme="dark"] .card,
-[data-theme="dark"] .about__content,
-[data-theme="dark"] .category-list,
-[data-theme="dark"] .howbuy__main {
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    border: 1px solid var(--border-color);
-}
-
-[data-theme="dark"] .about__content img,
-[data-theme="dark"] .card .icon {
-    filter: brightness(1.2);
-}
-
-[data-theme="dark"] .footer {
-    background: #0A0A0A;
-    border-top: 1px solid var(--border-color);
-}
-
-[data-theme="dark"] .countdown {
-    background: #0A0A0A;
-    border: 1px solid var(--border-color);
-}
-
-[data-theme="dark"] .logos-pago {
-    background: var(--bg-secondary);
-}
-
-[data-theme="dark"] .add-to-cart {
-    background: var(--primary);
-}
-
-[data-theme="dark"] .add-to-cart:hover {
-    background: var(--primary-dark);
-}
+    /* Transiciones */
+    --theme-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     
     /* Tipografía */
-    --font-primary: 'Outfit', sans-serif;
-    --font-display: 'Orbitron', sans-serif;
+    --font-primary: 'Barlow', sans-serif;
+    --font-display: 'Bebas Neue', sans-serif;
     
     /* Espaciados */
     --space-xs: 0.25rem;
@@ -129,10 +78,11 @@
     --radius-xl: 20px;
     --radius-full: 50px;
     
-    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
-    --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.2);
-    --shadow-glow: 0 0 30px rgba(0, 160, 227, 0.4);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
+    --shadow-glow: 0 0 40px var(--volt-red-glow);
+    --shadow-red: 0 4px 20px rgba(193, 18, 31, 0.3);
     
     /* Transiciones */
     --transition-fast: 0.2s ease;
@@ -152,6 +102,17 @@ body {
     line-height: 1.6;
     overflow-x: hidden;
     transition: var(--theme-transition);
+}
+
+/* Custom selection color */
+::selection {
+    background: var(--volt-red);
+    color: var(--volt-white);
+}
+
+::-moz-selection {
+    background: var(--volt-red);
+    color: var(--volt-white);
 }
 
 /* Utility classes for scroll animations */
@@ -196,8 +157,8 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 0.75rem 2rem;
-    background: var(--bg-primary);
-    box-shadow: var(--shadow-md);
+    background: var(--volt-black);
+    border-bottom: 1px solid var(--border-color);
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -207,6 +168,40 @@ body {
 .header.scrolled {
     padding: 0.5rem 2rem;
     box-shadow: var(--shadow-lg);
+}
+
+/* Logo VOLT */
+.logo-link {
+    text-decoration: none;
+}
+
+.logo-text {
+    font-family: var(--font-display);
+    font-size: 2.2rem;
+    font-weight: 400;
+    color: var(--volt-white);
+    letter-spacing: 0.15em;
+    transition: var(--transition-normal);
+}
+
+.logo-text:hover {
+    color: var(--volt-red);
+    text-shadow: 
+        0 0 20px var(--volt-red-glow),
+        2px 2px 0 var(--volt-white),
+        -2px -2px 0 var(--volt-red);
+    animation: logo-glitch 0.3s ease;
+}
+
+@keyframes logo-glitch {
+    0%, 100% { transform: translate(0); }
+    25% { transform: translate(-2px, 1px); }
+    50% { transform: translate(2px, -1px); }
+    75% { transform: translate(-1px, -1px); }
+}
+
+.header.scrolled .logo-text {
+    font-size: 1.6rem;
 }
 
 .header img {
@@ -319,7 +314,7 @@ body {
     display: block;
     width: 28px;
     height: 3px;
-    background: var(--secondary);
+    background: var(--volt-white);
     border-radius: 3px;
     transition: var(--transition-normal);
 }
@@ -337,7 +332,7 @@ body {
 }
 
 /* =====================================================
-   HERO SECTION
+   HERO SECTION - VOLT
    ===================================================== */
 .hero {
     min-height: 100vh;
@@ -345,48 +340,54 @@ body {
     align-items: center;
     justify-content: center;
     text-align: center;
-    background: url('/multi/Colapinto hero.webp') no-repeat center center/cover;
-    color: var(--white);
+    background: var(--volt-black);
+    color: var(--volt-white);
     position: relative;
     overflow: hidden;
 }
 
+/* Speed lines animadas */
+.hero::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        repeating-linear-gradient(
+            90deg,
+            transparent 0px,
+            transparent 100px,
+            rgba(193, 18, 31, 0.03) 100px,
+            rgba(193, 18, 31, 0.03) 102px
+        );
+    animation: speed-lines 3s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes speed-lines {
+    0% { transform: translateX(-102px); }
+    100% { transform: translateX(0); }
+}
+
+/* Glow inferior */
 .hero::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: var(--gradient-hero);
+    background: 
+        radial-gradient(ellipse at 50% 100%, var(--volt-red-glow) 0%, transparent 50%),
+        radial-gradient(circle at 20% 80%, rgba(193, 18, 31, 0.1) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(193, 18, 31, 0.1) 0%, transparent 40%);
     z-index: 1;
-}
-
-/* Efecto de partículas/líneas racing */
-.hero::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -50%;
-    width: 200%;
-    height: 100%;
-    background: repeating-linear-gradient(
-        90deg,
-        transparent,
-        transparent 50px,
-        rgba(255, 255, 255, 0.02) 50px,
-        rgba(255, 255, 255, 0.02) 51px
-    );
-    animation: racing-lines 20s linear infinite;
-    z-index: 1;
-}
-
-@keyframes racing-lines {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(50px); }
 }
 
 .hero-content {
     position: relative;
     z-index: 2;
-    max-width: 700px;
+    max-width: 900px;
     padding: 2rem;
     animation: hero-fade-in 1s ease-out;
 }
@@ -402,39 +403,129 @@ body {
     }
 }
 
+/* Título principal VOLT */
+.hero-brand {
+    font-family: var(--font-display);
+    font-size: clamp(6rem, 25vw, 16rem);
+    font-weight: 400;
+    line-height: 0.85;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--volt-white);
+    text-shadow: 0 0 80px var(--volt-red-glow);
+    margin-bottom: 0.5rem;
+    position: relative;
+    animation: volt-reveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+    cursor: default;
+}
+
+/* Animación de entrada épica */
+@keyframes volt-reveal {
+    0% {
+        opacity: 0;
+        transform: translateY(60px) scale(0.9);
+        filter: blur(10px);
+    }
+    50% {
+        filter: blur(0);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+/* Efecto hover - solo transición, sin animación */
+.hero-brand:hover {
+    color: var(--volt-red);
+    text-shadow: 
+        0 0 80px var(--volt-red-glow),
+        4px 4px 0 var(--volt-white),
+        -4px -4px 0 var(--volt-red);
+}
+
+.hero-brand::after {
+    content: '';
+    position: absolute;
+    bottom: 0.05em;
+    left: 50%;
+    transform: translateX(-50%) scaleX(0);
+    width: 80%;
+    height: 4px;
+    background: var(--volt-red);
+    box-shadow: 0 0 30px var(--volt-red-glow);
+    animation: line-reveal 0.8s 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes line-reveal {
+    to { transform: translateX(-50%) scaleX(1); }
+}
+
+/* Slogan */
+.hero-slogan {
+    font-family: var(--font-display);
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.4em;
+    color: var(--volt-red);
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fade-up 0.8s 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .hero h1 {
     font-family: var(--font-display);
     font-size: clamp(2.5rem, 6vw, 4rem);
-    font-weight: 700;
+    font-weight: 400;
     margin-bottom: 1rem;
     text-transform: uppercase;
     letter-spacing: 3px;
-    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-    background: linear-gradient(135deg, var(--white) 0%, var(--accent) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--volt-white);
 }
 
 .hero p {
-    font-size: 1.25rem;
-    margin-bottom: 2rem;
-    color: var(--gray-200);
+    font-size: 1.1rem;
+    margin-bottom: 2.5rem;
+    color: var(--text-secondary);
     max-width: 500px;
     margin-left: auto;
     margin-right: auto;
+    line-height: 1.8;
+    opacity: 0;
+    animation: fade-up 0.8s 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Botones */
+.hero .btn {
+    opacity: 0;
+    animation: fade-up 0.8s 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Botones VOLT */
 .btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    background: var(--gradient-btn);
-    color: var(--white);
-    padding: 1rem 2.5rem;
-    border-radius: var(--radius-full);
+    gap: 0.75rem;
+    background: var(--volt-red);
+    color: var(--volt-white);
+    padding: 1.1rem 2.8rem;
+    border-radius: 0;
     font-weight: 700;
+    clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
     font-size: 0.95rem;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -459,8 +550,9 @@ body {
 }
 
 .btn:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-glow);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(193, 18, 31, 0.5);
+    background: var(--volt-red-dark);
 }
 
 .btn:hover::before {
@@ -469,20 +561,162 @@ body {
 
 .btn-secondary {
     background: transparent;
-    border: 2px solid var(--white);
-    color: var(--white);
+    border: 2px solid var(--volt-white);
+    color: var(--volt-white);
+    clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
 }
 
 .btn-secondary:hover {
-    background: var(--white);
-    color: var(--secondary);
+    background: var(--volt-white);
+    color: var(--volt-black);
+    border-color: var(--volt-white);
+}
+
+/* =====================================================
+   SECCIÓN DE CATEGORÍAS - VOLT
+   ===================================================== */
+.categories-section {
+    background: var(--volt-gray);
+    padding: var(--space-3xl) var(--space-xl);
+}
+
+.categories-section .section-title {
+    text-align: center;
+    margin-bottom: var(--space-2xl);
+}
+
+.categories-section .section-title h2 {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    color: var(--volt-white);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+}
+
+.categories-section .section-title span {
+    color: var(--volt-red);
+}
+
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.category-card {
+    background: var(--volt-black);
+    border: 1px solid var(--border-color);
+    padding: 2.5rem 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: var(--theme-transition);
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+}
+
+.category-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--volt-red);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.category-card:hover {
+    border-color: var(--volt-red);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.4),
+        0 0 60px rgba(193, 18, 31, 0.15),
+        inset 0 0 60px rgba(193, 18, 31, 0.03);
+}
+
+.category-card:hover::before {
+    transform: scaleX(1);
+}
+
+/* Scan line effect on hover */
+.category-card:hover::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: linear-gradient(
+        180deg,
+        transparent 0%,
+        rgba(193, 18, 31, 0.03) 50%,
+        transparent 100%
+    );
+    animation: scan 1.5s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes scan {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+}
+
+.category-card-icon {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    display: block;
+}
+
+.category-card h3 {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: var(--volt-white);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.75rem;
+    transition: color 0.3s ease;
+}
+
+.category-card:hover h3 {
+    color: var(--volt-red);
+}
+
+.category-card p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.category-card.coming-soon {
+    opacity: 0.6;
+}
+
+.category-card.coming-soon::after {
+    content: 'Próximamente';
+    position: absolute;
+    top: 1rem;
+    right: -2rem;
+    background: var(--volt-gray);
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.25rem 2rem;
+    transform: rotate(45deg);
 }
 
 /* =====================================================
    SECCIÓN NOVEDADES (Bienvenida)
    ===================================================== */
 .novedades {
-    background: var(--bg-primary);
+    background: var(--volt-black);
     padding: var(--space-3xl) var(--space-xl);
     text-align: center;
     position: relative;
@@ -495,10 +729,9 @@ body {
     top: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 100px;
-    height: 4px;
-    background: var(--gradient-btn);
-    border-radius: var(--radius-full);
+    width: 80px;
+    height: 3px;
+    background: var(--volt-red);
 }
 
 .novedades-content {
@@ -522,7 +755,7 @@ body {
 }
 
 /* =====================================================
-   COUNTDOWN SECTION
+   COUNTDOWN SECTION - VOLT
    ===================================================== */
 .title-countdown {
     text-align: center;
@@ -530,7 +763,7 @@ body {
     font-family: var(--font-display);
     font-size: clamp(1.5rem, 3vw, 2rem);
     font-weight: 700;
-    color: var(--text-primary);
+    color: var(--volt-white);
     text-transform: uppercase;
     letter-spacing: 2px;
 }
@@ -539,9 +772,9 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: var(--secondary);
+    background: var(--volt-gray);
     padding: 1.5rem 2.5rem;
-    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-color);
     box-shadow: var(--shadow-lg);
     width: fit-content;
     margin: 0 auto;
@@ -556,23 +789,22 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
-    background: var(--gradient-btn);
+    height: 3px;
+    background: var(--volt-red);
 }
 
 .countdown-container {
     display: flex;
     align-items: center;
     gap: 1rem;
-    color: var(--white);
+    color: var(--volt-white);
 }
 
 .img-countdown {
     width: 4rem;
     height: 4rem;
     object-fit: cover;
-    border-radius: var(--radius-md);
-    border: 2px solid var(--primary);
+    border: 2px solid var(--volt-red);
 }
 
 .countdown .logo {
@@ -588,32 +820,30 @@ body {
 }
 
 .reloj-wrapper {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
+    background: var(--volt-black);
     padding: 1rem 1.5rem;
-    border-radius: var(--radius-lg);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-color);
     transition: var(--transition-normal);
 }
 
 #reloj {
     font-family: var(--font-display);
     font-size: clamp(1.5rem, 3vw, 2.2rem);
-    color: var(--white);
+    color: var(--volt-white);
     letter-spacing: 2px;
     font-variant-numeric: tabular-nums;
     font-feature-settings: 'tnum';
-    text-shadow: 0 0 20px rgba(0, 160, 227, 0.8);
+    text-shadow: 0 0 20px var(--volt-red-glow);
 }
 
 .reloj-wrapper.tic {
     transform: scale(1.05);
-    background: rgba(0, 160, 227, 0.3);
-    border-color: var(--primary);
+    background: rgba(193, 18, 31, 0.2);
+    border-color: var(--volt-red);
 }
 
 /* =====================================================
-   LOGOS DE PAGO
+   LOGOS DE PAGO - VOLT
    ===================================================== */
 .logos-pago {
     display: flex;
@@ -621,14 +851,16 @@ body {
     align-items: center;
     gap: 3rem;
     padding: var(--space-3xl) var(--space-xl);
-    background: var(--gray-100);
+    background: var(--volt-gray);
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .logos-pago .logo {
     max-width: 100px;
     height: auto;
-    filter: grayscale(100%);
-    opacity: 0.6;
+    filter: grayscale(100%) brightness(0) invert(1);
+    opacity: 0.5;
     transition: var(--transition-normal);
 }
 
@@ -639,13 +871,14 @@ body {
 }
 
 /* =====================================================
-   FOOTER
+   FOOTER - VOLT
    ===================================================== */
 .footer {
-    background: var(--secondary);
-    color: var(--white);
+    background: var(--volt-black);
+    color: var(--volt-white);
     padding: var(--space-3xl) var(--space-xl) var(--space-xl);
     position: relative;
+    border-top: 1px solid var(--border-color);
 }
 
 .footer::before {
@@ -654,8 +887,8 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
-    background: var(--gradient-btn);
+    height: 3px;
+    background: var(--volt-red);
 }
 
 .footer-container {
@@ -666,13 +899,40 @@ body {
     margin: 0 auto;
 }
 
+/* Logo en footer */
+.footer-brand {
+    text-align: left;
+}
+
+.footer-logo {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 400;
+    color: var(--volt-white);
+    letter-spacing: 0.15em;
+    margin-bottom: 0.25rem;
+}
+
+.footer-logo::after {
+    display: none;
+}
+
+.footer-tagline {
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--volt-red);
+    margin-bottom: 1rem;
+}
+
 .footer-section h3 {
     font-family: var(--font-display);
-    font-size: 1.1rem;
+    font-size: 0.9rem;
     margin-bottom: 1.5rem;
-    color: var(--white);
+    color: var(--volt-white);
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.1em;
     position: relative;
     padding-bottom: 0.75rem;
 }
@@ -682,58 +942,60 @@ body {
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 40px;
+    width: 30px;
     height: 2px;
-    background: var(--primary);
+    background: var(--volt-red);
 }
 
 .footer-section p {
-    color: var(--gray-400);
+    color: var(--text-secondary);
     margin-bottom: 0.5rem;
+    font-size: 0.9rem;
 }
 
 .footer-section a {
-    color: var(--accent);
+    color: var(--volt-white);
     text-decoration: none;
     transition: var(--transition-fast);
 }
 
 .footer-section a:hover {
-    color: var(--primary);
+    color: var(--volt-red);
 }
 
 .footer-section iframe {
-    border-radius: var(--radius-md);
-    border: 2px solid var(--gray-700);
+    border: 1px solid var(--border-color);
 }
 
 /* Iconos sociales */
 .social-icons {
     display: flex;
-    gap: 1rem;
+    gap: 0.75rem;
 }
 
 .social-icons a {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 44px;
-    height: 44px;
-    background: var(--gray-700);
-    border-radius: var(--radius-md);
-    color: var(--white);
+    width: 42px;
+    height: 42px;
+    background: var(--volt-gray);
+    border: 1px solid var(--border-color);
+    color: var(--volt-white);
     font-size: 0;
     transition: var(--transition-normal);
 }
 
 .social-icons a:hover {
-    background: var(--primary);
-    transform: translateY(-3px);
+    background: var(--volt-red);
+    border-color: var(--volt-red);
+    transform: translateY(-5px) rotate(-5deg);
+    box-shadow: 0 10px 20px rgba(193, 18, 31, 0.3);
 }
 
 .social-icons a svg {
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
     fill: currentColor;
 }
 
@@ -741,9 +1003,10 @@ body {
     text-align: center;
     margin-top: var(--space-2xl);
     padding-top: var(--space-xl);
-    border-top: 1px solid var(--gray-700);
-    color: var(--gray-500);
-    font-size: 0.9rem;
+    border-top: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
 }
 
 /* =====================================================
@@ -752,20 +1015,19 @@ body {
 .loader-overlay {
     position: fixed;
     inset: 0;
-    background: var(--bg-primary);
+    background: var(--volt-black);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     z-index: 9999;
-    transition: var(--theme-transition);
 }
 
 .loader {
     width: 60px;
     height: 60px;
-    border: 4px solid var(--gray-200);
-    border-top: 4px solid var(--primary);
+    border: 3px solid var(--volt-gray);
+    border-top: 3px solid var(--volt-red);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
     margin-bottom: 1.5rem;
@@ -773,7 +1035,7 @@ body {
 
 .loader-overlay p {
     font-family: var(--font-display);
-    color: var(--text-primary);
+    color: var(--volt-white);
     font-size: 1rem;
     letter-spacing: 1px;
 }
@@ -1270,22 +1532,60 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    min-height: 60vh;
-    background: linear-gradient(rgba(21, 21, 30, 0.85), rgba(21, 21, 30, 0.85)),
-                url('/multi/Semáforo-F1.jpg') center/cover no-repeat;
+    min-height: 80vh;
+    background: var(--volt-black);
     padding: var(--space-3xl);
-    margin: var(--space-xl);
-    border-radius: var(--radius-xl);
     text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Speed lines como en el hero */
+.novedades__main::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        repeating-linear-gradient(
+            90deg,
+            transparent 0px,
+            transparent 100px,
+            rgba(193, 18, 31, 0.03) 100px,
+            rgba(193, 18, 31, 0.03) 102px
+        );
+    animation: speed-lines 3s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Glow inferior */
+.novedades__main::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: 
+        radial-gradient(ellipse at 50% 100%, var(--volt-red-glow) 0%, transparent 50%),
+        radial-gradient(circle at 20% 80%, rgba(193, 18, 31, 0.1) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(193, 18, 31, 0.1) 0%, transparent 40%);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.novedades__main > * {
+    position: relative;
+    z-index: 2;
 }
 
 .novedades__title {
     font-family: var(--font-display);
-    font-size: clamp(1.5rem, 4vw, 2.5rem);
-    color: var(--white);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    color: var(--volt-white);
     margin-bottom: 2rem;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 0.1em;
 }
 
 .novedades__btn {

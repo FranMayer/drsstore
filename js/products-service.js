@@ -188,7 +188,12 @@ const ProductsService = {
         const products = [];
         
         snapshot.forEach(doc => {
-            products.push({ id: doc.id, ...doc.data() });
+            const data = doc.data();
+            // Limpiar URL de imagen (quitar comillas extras y espacios)
+            if (data.image) {
+                data.image = data.image.trim().replace(/^["']|["']$/g, '').trim();
+            }
+            products.push({ id: doc.id, ...data });
         });
         
         return products;
