@@ -65,11 +65,14 @@ document.addEventListener("DOMContentLoaded", function () {
                         cart.splice(index, 1);
                         updateCart();
                         resetButtons();
+                        // Notificar a catalog.js para actualizar los botones de las cards
+                        window.dispatchEvent(new CustomEvent('cartUpdated'));
                     }, 300);
                 } else {
                     cart.splice(index, 1);
                     updateCart();
                     resetButtons();
+                    window.dispatchEvent(new CustomEvent('cartUpdated'));
                 }
             }
         });
@@ -197,6 +200,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 cart.length = 0;
                 updateCart();
                 resetButtons();
+                // Notificar a catalog.js para actualizar todos los botones
+                window.dispatchEvent(new CustomEvent('cartUpdated'));
             }, items.length * 50 + 200);
         });
     }
@@ -245,4 +250,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Cargar carrito al iniciar
     updateCart();
+
+    // Escuchar actualizaciones del carrito desde catalog.js
+    window.addEventListener('cartUpdated', function() {
+        // Recargar carrito desde localStorage
+        cart = JSON.parse(localStorage.getItem("cart")) || [];
+        updateCart();
+    });
 });

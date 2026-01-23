@@ -93,15 +93,24 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Formatear precio
         const formattedPrice = product.price.toLocaleString('es-AR');
 
+        // Verificar si está en el carrito
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const inCart = cart.some(item => item.id === product.id);
+
         card.innerHTML = `
             <img src="${product.image}" alt="${product.name}" class="product-image" loading="lazy">
             <h3 class="product-title">${product.name}</h3>
             <p class="product-description">${product.description}</p>
             <p class="product-price">$${formattedPrice}</p>
             <p class="product-stock">Disponibles: <span>${product.stock}</span></p>
-            <button class="add-to-cart" ${product.stock === 0 ? 'disabled' : ''}>
-                ${product.stock === 0 ? 'Sin stock' : 'Añadir al carrito'}
-            </button>
+            <div class="product-buttons">
+                <button class="add-to-cart" ${product.stock === 0 ? 'disabled' : ''}>
+                    ${product.stock === 0 ? 'Sin stock' : 'Añadir al carrito'}
+                </button>
+                <button class="remove-from-cart" style="display: ${inCart ? 'flex' : 'none'};" title="Quitar del carrito">
+                    ✕
+                </button>
+            </div>
         `;
 
         return card;
@@ -156,18 +165,21 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     function initCartButtons() {
         const addToCartButtons = document.querySelectorAll('.add-to-cart');
+        const removeFromCartButtons = document.querySelectorAll('.remove-from-cart');
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
 
         addToCartButtons.forEach(button => {
             const productCard = button.closest('.product-card');
             const productId = productCard.getAttribute('data-id');
+            const removeBtn = productCard.querySelector('.remove-from-cart');
             
             // Verificar si ya está en el carrito
             const inCart = cart.some(item => item.id === productId);
             if (inCart) {
                 button.innerText = '✓ Añadido';
                 button.disabled = true;
-                button.style.background = 'var(--accent, #00D4AA)';
+                button.style.background = 'var(--volt-red, #c1121f)';
+                if (removeBtn) removeBtn.style.display = 'flex';
             }
 
             // Agregar evento click
@@ -175,6 +187,43 @@ document.addEventListener('DOMContentLoaded', async function() {
                 addToCart(this);
             });
         });
+
+        // Botones de quitar del carrito
+        removeFromCartButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                removeFromCart(this);
+            });
+        });
+    }
+
+    // =====================================================
+    // QUITAR DEL CARRITO (desde la card)
+    // =====================================================
+    
+    function removeFromCart(button) {
+        const productCard = button.closest('.product-card');
+        const productId = productCard.getAttribute('data-id');
+        const addBtn = productCard.querySelector('.add-to-cart');
+        const stock = parseInt(productCard.getAttribute('data-stock'));
+
+        // Obtener carrito y filtrar el producto
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        cart = cart.filter(item => item.id !== productId);
+        localStorage.setItem('cart', JSON.stringify(cart));
+
+        // Restaurar botón de añadir
+        if (stock > 0) {
+            addBtn.innerText = 'Añadir al carrito';
+            addBtn.disabled = false;
+            addBtn.style.background = '';
+        }
+
+        // Ocultar botón de quitar
+        button.style.display = 'none';
+
+        // Actualizar badge y notificar a main.js
+        updateCartBadge();
+        window.dispatchEvent(new CustomEvent('cartUpdated'));
     }
 
     // =====================================================
@@ -186,6 +235,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         const productId = productCard.getAttribute('data-id');
         const productTitle = productCard.querySelector('.product-title').innerText;
         const productPrice = parseFloat(productCard.getAttribute('data-price'));
+        const removeBtn = productCard.querySelector('.remove-from-cart');
 
         // Obtener carrito actual
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -210,7 +260,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Actualizar UI del botón
         button.innerText = '✓ Añadido';
         button.disabled = true;
-        button.style.background = 'var(--accent, #00D4AA)';
+        button.style.background = 'var(--volt-red, #c1121f)';
+
+        // Mostrar botón de quitar
+        if (removeBtn) removeBtn.style.display = 'flex';
 
         // Actualizar badge del carrito
         updateCartBadge();
@@ -260,6 +313,38 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.head.appendChild(styleSheet);
 
     // =====================================================
+    // ACTUALIZAR BOTONES SEGÚN EL CARRITO
+    // =====================================================
+    
+    function refreshButtonStates() {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const productCards = document.querySelectorAll('.product-card');
+
+        productCards.forEach(card => {
+            const productId = card.getAttribute('data-id');
+            const addBtn = card.querySelector('.add-to-cart');
+            const removeBtn = card.querySelector('.remove-from-cart');
+            const stock = parseInt(card.getAttribute('data-stock'));
+            
+            const inCart = cart.some(item => item.id === productId);
+
+            if (inCart) {
+                addBtn.innerText = '✓ Añadido';
+                addBtn.disabled = true;
+                addBtn.style.background = 'var(--volt-red, #c1121f)';
+                if (removeBtn) removeBtn.style.display = 'flex';
+            } else {
+                if (stock > 0) {
+                    addBtn.innerText = 'Añadir al carrito';
+                    addBtn.disabled = false;
+                    addBtn.style.background = '';
+                }
+                if (removeBtn) removeBtn.style.display = 'none';
+            }
+        });
+    }
+
+    // =====================================================
     // INICIALIZACIÓN
     // =====================================================
     
@@ -268,7 +353,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     await loadProducts();
     updateCartBadge();
 
-    // Escuchar actualizaciones del carrito
-    window.addEventListener('cartUpdated', updateCartBadge);
+    // Escuchar actualizaciones del carrito (desde main.js cuando se elimina)
+    window.addEventListener('cartUpdated', function() {
+        updateCartBadge();
+        refreshButtonStates();
+    });
 });
 
