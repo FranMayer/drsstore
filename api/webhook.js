@@ -3,6 +3,7 @@ import { MercadoPagoConfig, Payment } from 'mercadopago';
 import { Resend } from 'resend';
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
+import crypto from 'crypto';
 
 // Inicializar Firebase Admin (solo una vez)
 if (!getApps().length) {
@@ -27,6 +28,27 @@ export default async function handler(req, res) {
     }
 
     try {
+        // Verificar firma del webhook (seguridad)
+        const signature = req.headers['x-signature'];
+        const requestId = req.headers['x-request-id'];
+        
+        if (signature && process.env.MP_WEBHOOK_SECRET) {
+            const [ts, v1] = signature.split(',').map(part => part.split('=')[1]);
+            const dataId = req.query['data.id'] || req.body?.data?.id;
+            
+            // Crear el manifest para verificar
+            const manifest = `id:${dataId};request-id:${requestId};ts:${ts};`;
+            const hmac = crypto.createHmac('sha256', process.env.MP_WEBHOOK_SECRET);
+            hmac.update(manifest);
+            const expectedSignature = hmac.digest('hex');
+            
+            if (expectedSignature !== v1) {
+                console.log('⚠️ Firma inválida - posible ataque');
+                return res.status(401).json({ error: 'Firma inválida' });
+            }
+            console.log('✅ Firma verificada correctamente');
+        }
+
         const { type, data } = req.body;
 
         console.log('📩 Webhook recibido:', type, data);
