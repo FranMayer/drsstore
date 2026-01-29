@@ -7,6 +7,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!checkoutBtn) return;
 
+    // Detectar si estamos en producción o desarrollo
+    const isProduction = !window.location.hostname.includes('localhost');
+    
+    // URLs de la API
+    const API_URL = isProduction 
+        ? '/api/create-preference'  // Vercel serverless
+        : 'http://localhost:8080/create_preference.php';  // PHP local
+
+    // Public Key (usar variable de entorno en producción)
+    const MP_PUBLIC_KEY = 'APP_USR-66f346c3-5516-414f-85d6-59182bd5b8c0';
+
     checkoutBtn.addEventListener("click", async function () {
         // Obtener el carrito desde localStorage
         const cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -29,8 +40,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 price: item.price
             }));
 
-            // Enviar al backend PHP
-            const response = await fetch("http://localhost:8000/create_preference.php", {
+            // Enviar al backend
+            const response = await fetch(API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ items: items })
@@ -40,7 +51,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Verificar si hay error
             if (data.error) {
-                throw new Error(data.error);
+                console.log("📋 Detalles del error:", JSON.stringify(data, null, 2));
+                throw new Error(data.error + (data.details ? " - " + data.details : ""));
             }
 
             // Verificar si el id de la preferencia está llegando correctamente
@@ -50,11 +62,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             console.log("✅ Preferencia creada:", data.preference_id);
 
-            // =====================================================
-            // CONFIGURACIÓN - Reemplaza con tu Public Key
-            // =====================================================
-            // Obtén tu Public Key en: https://www.mercadopago.com.ar/developers/panel/app
-            const mp = new MercadoPago("APP_USR-ad9e51e0-00b7-4e8c-af15-60491863a48d", { 
+            // Inicializar Mercado Pago
+            const mp = new MercadoPago(MP_PUBLIC_KEY, { 
                 locale: "es-AR" 
             });
 

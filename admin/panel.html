@@ -10,7 +10,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Bootstrap 5.3 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -20,33 +20,155 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
-    <title>DRS Store - Panel de Administración</title>
+    <title>VOLT Store - Panel Admin</title>
     
     <style>
         :root {
-            --primary: #00A0E3;
-            --secondary: #242932;
+            --volt-black: #0a0a0a;
+            --volt-gray: #1a1a1a;
+            --volt-white: #ffffff;
+            --volt-red: #C1121F;
+            --volt-red-dark: #780000;
         }
         
         body {
-            font-family: 'Outfit', sans-serif;
-            background: #f5f5f5;
+            font-family: 'Barlow', sans-serif;
+            background: var(--volt-black);
             min-height: 100vh;
+            color: var(--volt-white);
+        }
+        
+        /* ============================================
+           LOGIN SCREEN
+        ============================================ */
+        .login-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: 
+                radial-gradient(ellipse at center, rgba(193, 18, 31, 0.15) 0%, transparent 70%),
+                var(--volt-black);
+        }
+        
+        .login-box {
+            background: var(--volt-gray);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 0;
+            padding: 3rem;
+            width: 100%;
+            max-width: 400px;
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
+        }
+        
+        .login-logo {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 3rem;
+            color: var(--volt-red);
+            text-align: center;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.1em;
+        }
+        
+        .login-subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+        }
+        
+        .login-input {
+            background: var(--volt-black);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: var(--volt-white);
+            padding: 1rem;
+            width: 100%;
+            margin-bottom: 1rem;
+            font-family: 'Barlow', sans-serif;
+        }
+        
+        .login-input:focus {
+            outline: none;
+            border-color: var(--volt-red);
+            box-shadow: 0 0 10px rgba(193, 18, 31, 0.3);
+        }
+        
+        .login-input::placeholder {
+            color: rgba(255,255,255,0.3);
+        }
+        
+        .login-btn {
+            width: 100%;
+            background: var(--volt-red);
+            color: white;
+            border: none;
+            padding: 1rem;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+        }
+        
+        .login-btn:hover {
+            background: var(--volt-red-dark);
+            transform: translateY(-2px);
+        }
+        
+        .login-error {
+            background: rgba(193, 18, 31, 0.2);
+            border: 1px solid var(--volt-red);
+            color: var(--volt-white);
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            display: none;
+            font-size: 0.9rem;
+        }
+        
+        .login-error.show {
+            display: block;
+            animation: shake 0.5s ease;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        /* ============================================
+           ADMIN PANEL (hidden until login)
+        ============================================ */
+        .admin-panel {
+            display: none;
+        }
+        
+        .admin-panel.authenticated {
+            display: block;
         }
         
         .admin-header {
-            background: var(--secondary);
+            background: var(--volt-gray);
             color: white;
             padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 2px solid var(--volt-red);
         }
         
         .admin-header h1 {
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Bebas Neue', sans-serif;
             font-size: 1.5rem;
             margin: 0;
+            letter-spacing: 0.1em;
+        }
+        
+        .admin-header h1 span {
+            color: var(--volt-red);
         }
         
         .admin-container {
@@ -56,33 +178,55 @@
         }
         
         .card {
-            border: none;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            border-radius: 12px;
+            background: var(--volt-gray);
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+            border-radius: 0;
         }
         
         .card-header {
-            background: var(--secondary);
+            background: var(--volt-black);
             color: white;
-            font-family: 'Orbitron', sans-serif;
-            border-radius: 12px 12px 0 0 !important;
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 0.1em;
+            border-radius: 0 !important;
+            border-bottom: 2px solid var(--volt-red);
         }
         
-        .btn-primary {
-            background: var(--primary);
-            border-color: var(--primary);
+        .btn-volt {
+            background: var(--volt-red);
+            border: none;
+            color: white;
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 0.05em;
+            padding: 0.5rem 1.5rem;
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%);
+            transition: all 0.3s ease;
         }
         
-        .btn-primary:hover {
-            background: #0080B8;
-            border-color: #0080B8;
+        .btn-volt:hover {
+            background: var(--volt-red-dark);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline-volt {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: var(--volt-white);
+        }
+        
+        .btn-outline-volt:hover {
+            border-color: var(--volt-red);
+            color: var(--volt-red);
         }
         
         .product-thumb {
             width: 60px;
             height: 60px;
             object-fit: cover;
-            border-radius: 8px;
+            border-radius: 0;
+            border: 1px solid rgba(255,255,255,0.1);
         }
         
         .status-active {
@@ -95,135 +239,266 @@
         
         .firebase-status {
             padding: 0.5rem 1rem;
-            border-radius: 20px;
             font-size: 0.85rem;
+            border: 1px solid;
         }
         
         .firebase-connected {
-            background: #d4edda;
-            color: #155724;
+            background: rgba(40, 167, 69, 0.2);
+            border-color: #28a745;
+            color: #28a745;
         }
         
         .firebase-disconnected {
-            background: #f8d7da;
-            color: #721c24;
-        }
-        
-        .login-container {
-            max-width: 400px;
-            margin: 100px auto;
+            background: rgba(220, 53, 69, 0.2);
+            border-color: #dc3545;
+            color: #dc3545;
         }
         
         .stats-card {
-            background: white;
-            border-radius: 12px;
+            background: var(--volt-gray);
+            border: 1px solid rgba(255,255,255,0.1);
             padding: 1.5rem;
             text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
         .stats-card h3 {
-            font-size: 2rem;
-            color: var(--primary);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.5rem;
+            color: var(--volt-red);
             margin: 0;
         }
         
         .stats-card p {
-            color: #666;
+            color: rgba(255,255,255,0.6);
             margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.85rem;
+        }
+        
+        .table {
+            color: var(--volt-white);
+        }
+        
+        .table thead th {
+            border-bottom: 2px solid var(--volt-red);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+        }
+        
+        .table tbody td {
+            border-color: rgba(255,255,255,0.1);
+            vertical-align: middle;
+        }
+        
+        .alert-warning {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.5);
+            color: #ffc107;
+        }
+        
+        .modal-content {
+            background: var(--volt-gray);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 0;
+        }
+        
+        .modal-header {
+            border-bottom: 1px solid var(--volt-red);
+        }
+        
+        .modal-title {
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 0.1em;
+        }
+        
+        .modal-footer {
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .form-control, .form-select {
+            background: var(--volt-black);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: var(--volt-white);
+        }
+        
+        .form-control:focus, .form-select:focus {
+            background: var(--volt-black);
+            border-color: var(--volt-red);
+            color: var(--volt-white);
+            box-shadow: 0 0 10px rgba(193, 18, 31, 0.3);
+        }
+        
+        .form-label {
+            color: rgba(255,255,255,0.7);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+        }
+        
+        .input-group-text {
+            background: var(--volt-black);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: var(--volt-white);
+        }
+        
+        .btn-close {
+            filter: invert(1);
+        }
+        
+        .logout-btn {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: rgba(255,255,255,0.7);
+            padding: 0.4rem 1rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            border-color: var(--volt-red);
+            color: var(--volt-red);
+        }
+        
+        h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 0.1em;
+        }
+        
+        pre {
+            background: var(--volt-black) !important;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        code {
+            color: var(--volt-red);
         }
     </style>
 </head>
 
 <body>
-    <!-- Header -->
-    <header class="admin-header">
-        <h1>🏎️ DRS Store - Admin</h1>
-        <div>
-            <span class="firebase-status" id="firebaseStatus">⏳ Conectando...</span>
-            <a href="/index.html" class="btn btn-outline-light btn-sm ms-2">Ver tienda</a>
+    <!-- ============================================
+         LOGIN SCREEN
+    ============================================ -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-box">
+            <div class="login-logo">VOLT</div>
+            <div class="login-subtitle">Panel de Administración</div>
+            
+            <div class="login-error" id="loginError">
+                ⚠️ Contraseña incorrecta
+            </div>
+            
+            <form id="loginForm">
+                <input 
+                    type="password" 
+                    class="login-input" 
+                    id="passwordInput" 
+                    placeholder="Contraseña"
+                    autocomplete="off"
+                >
+                <button type="submit" class="login-btn">ACCEDER</button>
+            </form>
         </div>
-    </header>
+    </div>
 
-    <!-- Main Content -->
-    <div class="admin-container">
-        <!-- Alerta de configuración -->
-        <div class="alert alert-warning" id="configAlert" style="display: none;">
-            <strong>⚠️ Firebase no está configurado.</strong> 
-            Los productos se cargan desde datos de ejemplo. 
-            <a href="#" data-bs-toggle="modal" data-bs-target="#configModal">Ver instrucciones de configuración</a>
-        </div>
+    <!-- ============================================
+         ADMIN PANEL
+    ============================================ -->
+    <div class="admin-panel" id="adminPanel">
+        <!-- Header -->
+        <header class="admin-header">
+            <h1>⚡ <span>VOLT</span> ADMIN</h1>
+            <div class="d-flex align-items-center gap-3">
+                <span class="firebase-status" id="firebaseStatus">⏳ Conectando...</span>
+                <a href="/index.html" class="btn btn-outline-volt btn-sm">Ver tienda</a>
+                <button class="logout-btn" id="logoutBtn">Cerrar sesión</button>
+            </div>
+        </header>
 
-        <!-- Stats -->
-        <div class="row mb-4" id="statsRow">
-            <div class="col-md-3">
-                <div class="stats-card">
-                    <h3 id="totalProducts">0</h3>
-                    <p>Productos</p>
+        <!-- Main Content -->
+        <div class="admin-container">
+            <!-- Alerta de configuración -->
+            <div class="alert alert-warning" id="configAlert" style="display: none;">
+                <strong>⚠️ Firebase no está configurado.</strong> 
+                Los productos se cargan desde datos de ejemplo. 
+                <a href="#" data-bs-toggle="modal" data-bs-target="#configModal">Ver instrucciones de configuración</a>
+            </div>
+
+            <!-- Stats -->
+            <div class="row mb-4" id="statsRow">
+                <div class="col-md-3 mb-3">
+                    <div class="stats-card">
+                        <h3 id="totalProducts">0</h3>
+                        <p>Productos</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="stats-card">
+                        <h3 id="totalCategories">0</h3>
+                        <p>Categorías</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="stats-card">
+                        <h3 id="lowStock">0</h3>
+                        <p>Stock bajo</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="stats-card">
+                        <h3 id="outOfStock">0</h3>
+                        <p>Sin stock</p>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="stats-card">
-                    <h3 id="totalCategories">0</h3>
-                    <p>Categorías</p>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stats-card">
-                    <h3 id="lowStock">0</h3>
-                    <p>Stock bajo</p>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stats-card">
-                    <h3 id="outOfStock">0</h3>
-                    <p>Sin stock</p>
-                </div>
-            </div>
-        </div>
 
-        <!-- Actions -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2>Productos</h2>
-            <div>
-                <button class="btn btn-outline-secondary me-2" id="importBtn">
-                    📥 Importar datos de ejemplo
-                </button>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">
-                    ➕ Nuevo Producto
-                </button>
+            <!-- Actions -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2>Productos</h2>
+                <div>
+                    <button class="btn btn-outline-volt me-2" id="importBtn">
+                        📥 Importar ejemplos
+                    </button>
+                    <button class="btn btn-volt" data-bs-toggle="modal" data-bs-target="#productModal">
+                        ➕ Nuevo Producto
+                    </button>
+                </div>
             </div>
-        </div>
 
-        <!-- Products Table -->
-        <div class="card">
-            <div class="card-header">
-                📦 Lista de Productos
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>Imagen</th>
-                                <th>Nombre</th>
-                                <th>Categoría</th>
-                                <th>Precio</th>
-                                <th>Stock</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="productsTable">
-                            <tr>
-                                <td colspan="7" class="text-center py-4">
-                                    <div class="spinner-border text-primary" role="status">
-                                        <span class="visually-hidden">Cargando...</span>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <!-- Products Table -->
+            <div class="card">
+                <div class="card-header">
+                    📦 LISTA DE PRODUCTOS
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Imagen</th>
+                                    <th>Nombre</th>
+                                    <th>Categoría</th>
+                                    <th>Precio</th>
+                                    <th>Stock</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsTable">
+                                <tr>
+                                    <td colspan="7" class="text-center py-4">
+                                        <div class="spinner-border text-danger" role="status">
+                                            <span class="visually-hidden">Cargando...</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -234,7 +509,7 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalTitle">Nuevo Producto</h5>
+                    <h5 class="modal-title" id="modalTitle">NUEVO PRODUCTO</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -290,13 +565,13 @@
                             <label class="form-label">URL de Imagen *</label>
                             <input type="text" class="form-control" id="productImage" required 
                                    placeholder="/multi/nombre-imagen.jpg">
-                            <small class="text-muted">Sube la imagen a la carpeta /multi/ y coloca la ruta aquí</small>
+                            <small class="text-muted">Sube la imagen a la carpeta /multi/ o usa una URL de Firebase Storage</small>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="saveProduct">Guardar</button>
+                    <button type="button" class="btn btn-outline-volt" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-volt" id="saveProduct">GUARDAR</button>
                 </div>
             </div>
         </div>
@@ -307,13 +582,13 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">🔧 Configuración de Firebase</h5>
+                    <h5 class="modal-title">🔧 CONFIGURACIÓN FIREBASE</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <h6>Paso 1: Crear proyecto en Firebase</h6>
                     <ol>
-                        <li>Ve a <a href="https://console.firebase.google.com/" target="_blank">Firebase Console</a></li>
+                        <li>Ve a <a href="https://console.firebase.google.com/" target="_blank" class="text-danger">Firebase Console</a></li>
                         <li>Crea un nuevo proyecto (o usa uno existente)</li>
                         <li>Ve a <strong>Configuración del proyecto > General</strong></li>
                         <li>En "Tus apps", agrega una <strong>app web</strong></li>
@@ -329,7 +604,7 @@
                     
                     <h6>Paso 3: Copiar configuración</h6>
                     <p>Copia los valores de configuración y pegalos en <code>/js/firebase-config.js</code>:</p>
-                    <pre class="bg-light p-3 rounded"><code>const firebaseConfig = {
+                    <pre class="p-3 rounded"><code>const firebaseConfig = {
     apiKey: "TU_API_KEY",
     authDomain: "tu-proyecto.firebaseapp.com",
     projectId: "tu-proyecto",
@@ -339,7 +614,7 @@
 };</code></pre>
                     
                     <h6>Paso 4: Importar productos</h6>
-                    <p>Una vez configurado, usa el botón <strong>"Importar datos de ejemplo"</strong> para cargar los productos iniciales.</p>
+                    <p>Una vez configurado, usa el botón <strong>"Importar ejemplos"</strong> para cargar los productos iniciales.</p>
                 </div>
             </div>
         </div>
@@ -348,16 +623,87 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- DRS Store Scripts -->
+    <!-- VOLT Store Scripts -->
     <script src="/js/firebase-config.js"></script>
     <script src="/js/products-service.js"></script>
     
     <script>
         // =====================================================
+        // SISTEMA DE AUTENTICACIÓN SIMPLE
+        // =====================================================
+        
+        const ADMIN_PASSWORD_HASH = 'volt2026'; // Contraseña simple
+        const SESSION_KEY = 'volt_admin_session';
+        const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 horas
+        
+        // Verificar sesión al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            checkSession();
+        });
+        
+        function checkSession() {
+            const session = localStorage.getItem(SESSION_KEY);
+            
+            if (session) {
+                const sessionData = JSON.parse(session);
+                const now = Date.now();
+                
+                // Verificar si la sesión no ha expirado
+                if (sessionData.timestamp && (now - sessionData.timestamp) < SESSION_DURATION) {
+                    showAdminPanel();
+                    return;
+                }
+            }
+            
+            // No hay sesión válida, mostrar login
+            showLoginScreen();
+        }
+        
+        function showLoginScreen() {
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('adminPanel').classList.remove('authenticated');
+        }
+        
+        function showAdminPanel() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('adminPanel').classList.add('authenticated');
+            initAdminPanel();
+        }
+        
+        // Manejar login
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('passwordInput').value;
+            const errorEl = document.getElementById('loginError');
+            
+            if (password === ADMIN_PASSWORD_HASH) {
+                // Guardar sesión
+                localStorage.setItem(SESSION_KEY, JSON.stringify({
+                    timestamp: Date.now()
+                }));
+                
+                errorEl.classList.remove('show');
+                showAdminPanel();
+            } else {
+                errorEl.classList.add('show');
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
+            }
+        });
+        
+        // Manejar logout
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            localStorage.removeItem(SESSION_KEY);
+            showLoginScreen();
+            document.getElementById('passwordInput').value = '';
+        });
+        
+        // =====================================================
         // PANEL DE ADMINISTRACIÓN
         // =====================================================
         
-        document.addEventListener('DOMContentLoaded', async function() {
+        async function initAdminPanel() {
             // Inicializar Firebase
             const firebaseOk = window.FirebaseConfig.init();
             
@@ -380,7 +726,7 @@
             // Event listeners
             document.getElementById('saveProduct').addEventListener('click', saveProduct);
             document.getElementById('importBtn').addEventListener('click', importSampleProducts);
-        });
+        }
         
         // =====================================================
         // CARGAR PRODUCTOS
@@ -395,7 +741,7 @@
                     tbody.innerHTML = `
                         <tr>
                             <td colspan="7" class="text-center py-4">
-                                No hay productos. <a href="#" data-bs-toggle="modal" data-bs-target="#productModal">Agregar uno</a>
+                                No hay productos. <a href="#" class="text-danger" data-bs-toggle="modal" data-bs-target="#productModal">Agregar uno</a>
                             </td>
                         </tr>
                     `;
@@ -420,7 +766,7 @@
                                 </span>
                             </td>
                             <td>
-                                <button class="btn btn-sm btn-outline-primary" onclick="editProduct('${p.id}')">
+                                <button class="btn btn-sm btn-outline-volt" onclick="editProduct('${p.id}')">
                                     ✏️
                                 </button>
                                 <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct('${p.id}')">
@@ -506,7 +852,7 @@
                 const product = await window.ProductsService.getById(id);
                 
                 if (product) {
-                    document.getElementById('modalTitle').textContent = 'Editar Producto';
+                    document.getElementById('modalTitle').textContent = 'EDITAR PRODUCTO';
                     document.getElementById('productId').value = id;
                     document.getElementById('productName').value = product.name;
                     document.getElementById('productCategory').value = product.category;
@@ -569,7 +915,7 @@
         // =====================================================
         
         function resetForm() {
-            document.getElementById('modalTitle').textContent = 'Nuevo Producto';
+            document.getElementById('modalTitle').textContent = 'NUEVO PRODUCTO';
             document.getElementById('productForm').reset();
             document.getElementById('productId').value = '';
         }
@@ -583,4 +929,3 @@
     </script>
 </body>
 </html>
-

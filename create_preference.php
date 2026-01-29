@@ -4,9 +4,9 @@
  * Este archivo recibe los items del carrito y crea una preferencia de pago
  */
 
-// Configurar errores (no mostrar en producción)
-error_reporting(E_ALL & ~E_DEPRECATED);
-ini_set('display_errors', 0);
+// Configurar errores (MOSTRAR para debug)
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 // Headers para CORS y JSON
 header('Content-Type: application/json');
@@ -31,7 +31,7 @@ require __DIR__ . '/vendor/autoload.php';
 // CONFIGURACIÓN - Reemplaza con tu Access Token
 // =====================================================
 // Obtén tu Access Token en: https://www.mercadopago.com.ar/developers/panel/app
-MercadoPagoConfig::setAccessToken('APP_USR-8508290774659378-031115-a3cd92f304882b408fce3e5a0eff967a-192165018');
+MercadoPagoConfig::setAccessToken('APP_USR-1030037154034088-012317-7f579369b243ede9bc87de2ed0aa224a-192165018');
 
 // =====================================================
 // RECIBIR DATOS DEL FRONTEND
@@ -74,14 +74,8 @@ try {
     $preference = $client->create([
         "items" => $items,
         "statement_descriptor" => "VOLT Store",
-        "external_reference" => "VOLT-" . time(),
-        "back_urls" => [
-            "success" => "http://localhost:3000/aprove.html",
-            "failure" => "http://localhost:3000/err.html",
-            "pending" => "http://localhost:3000/pending.html"
-        ],
-        "auto_return" => "approved",
-        "notification_url" => null // Agregar URL de webhook en producción
+        "external_reference" => "VOLT-" . time()
+        // back_urls y auto_return se agregan en producción con dominio real
     ]);
 
     // Retornar el ID de la preferencia
@@ -90,9 +84,20 @@ try {
         "init_point" => $preference->init_point
     ]);
 
+} catch (\MercadoPago\Exceptions\MPApiException $e) {
+    // Error específico de la API de Mercado Pago
+    $response = $e->getApiResponse();
+    $content = $response ? $response->getContent() : null;
+    echo json_encode([
+        "error" => "Error de API",
+        "status" => $e->getStatusCode(),
+        "message" => $e->getMessage(),
+        "api_response" => $content
+    ]);
 } catch (Exception $e) {
     echo json_encode([
-        "error" => "Error al crear la preferencia: " . $e->getMessage()
+        "error" => "Error: " . $e->getMessage(),
+        "trace" => $e->getTraceAsString()
     ]);
 }
 
