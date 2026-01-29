@@ -2,6 +2,8 @@
   "dependencies": {
     "@mercadopago/sdk-js": "^0.0.3",
     "firebase": "^12.8.0",
-    "mercadopago": "^2.0.0"
+    "firebase-admin": "^12.0.0",
+    "mercadopago": "^2.0.0",
+    "resend": "^3.0.0"
   }
 }

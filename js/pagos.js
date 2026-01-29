@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
         : 'http://localhost:8080/create_preference.php';  // PHP local
 
     // Public Key (usar variable de entorno en producción)
-    const MP_PUBLIC_KEY = 'APP_USR-66f346c3-5516-414f-85d6-59182bd5b8c0';
+    const MP_PUBLIC_KEY = 'APP_USR-ab18dc5f-6ccf-45de-a77b-279fda659eca';
 
     checkoutBtn.addEventListener("click", async function () {
         // Obtener el carrito desde localStorage

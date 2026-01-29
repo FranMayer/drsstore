@@ -8,7 +8,7 @@ use MercadoPago\MercadoPagoConfig;
 use MercadoPago\Client\Preference\PreferenceClient;
 
 // Tu Access Token
-MercadoPagoConfig::setAccessToken('APP_USR-1030037154034088-012317-7f579369b243ede9bc87de2ed0aa224a-192165018');
+MercadoPagoConfig::setAccessToken('APP_USR-4684124298593212-012317-07edee4780ed36e47e254ac1dd0874a5-2323014130');
 
 echo "<h2>Test de Mercado Pago</h2>";
 
