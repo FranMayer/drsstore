@@ -664,9 +664,18 @@
                 <!-- Actions -->
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h2>Pedidos</h2>
-                    <button class="refresh-btn" id="refreshOrders">
-                        🔄 Actualizar
-                    </button>
+                    <div class="d-flex gap-2 align-items-center">
+                        <select class="form-select form-select-sm" id="orderStatusFilter" style="width: auto;">
+                            <option value="all">Todos los estados</option>
+                            <option value="approved">✅ Aprobados</option>
+                            <option value="pending">⏳ Pendientes</option>
+                            <option value="in_process">🔄 En proceso</option>
+                            <option value="rejected">❌ Rechazados</option>
+                        </select>
+                        <button class="refresh-btn" id="refreshOrders">
+                            🔄 Actualizar
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Orders Table -->
@@ -1154,8 +1163,11 @@
         // CARGAR PEDIDOS DESDE FIREBASE
         // =====================================================
         
+        let allOrders = []; // Cache de pedidos para filtrar
+        
         async function loadOrders() {
             const tbody = document.getElementById('ordersTable');
+            const filter = document.getElementById('orderStatusFilter').value;
             
             try {
                 // Verificar que Firebase esté inicializado
@@ -1193,13 +1205,18 @@
                     return;
                 }
                 
-                const orders = [];
+                allOrders = [];
                 snapshot.forEach(doc => {
-                    orders.push({ id: doc.id, ...doc.data() });
+                    allOrders.push({ id: doc.id, ...doc.data() });
                 });
                 
+                // Filtrar por estado si es necesario
+                const filteredOrders = filter === 'all' 
+                    ? allOrders 
+                    : allOrders.filter(o => o.status === filter);
+                
                 // Renderizar tabla
-                tbody.innerHTML = orders.map(order => {
+                tbody.innerHTML = filteredOrders.map(order => {
                     // Formatear fecha
                     let dateStr = 'Sin fecha';
                     if (order.created_at) {
@@ -1239,8 +1256,21 @@
                     `;
                 }).join('');
                 
-                // Actualizar estadísticas
-                updateOrderStats(orders);
+                // Mostrar mensaje si no hay resultados con el filtro
+                if (filteredOrders.length === 0 && allOrders.length > 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="orders-empty">
+                                <div class="orders-empty-icon">🔍</div>
+                                <p>No hay pedidos con ese estado</p>
+                                <small style="color: rgba(255,255,255,0.3);">Probá con otro filtro</small>
+                            </td>
+                        </tr>
+                    `;
+                }
+                
+                // Actualizar estadísticas (siempre con TODOS los pedidos)
+                updateOrderStats(allOrders);
                 
             } catch (error) {
                 console.error('Error al cargar pedidos:', error);
@@ -1293,6 +1323,9 @@
         
         // Botón de actualizar pedidos
         document.getElementById('refreshOrders').addEventListener('click', loadOrders);
+        
+        // Filtro de estados
+        document.getElementById('orderStatusFilter').addEventListener('change', loadOrders);
     </script>
 </body>
 </html>
