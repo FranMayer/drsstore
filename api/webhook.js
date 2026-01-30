@@ -1,34 +1,50 @@
 // VOLT Store - Webhook de Mercado Pago (Vercel Serverless)
 import { MercadoPagoConfig, Payment } from 'mercadopago';
-import { Resend } from 'resend';
-import { initializeApp, getApps, cert } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
 import crypto from 'crypto';
 
-// Inicializar Firebase Admin (solo una vez)
+// Firebase se inicializa de forma lazy para evitar errores al cargar
 let db = null;
+let firebaseInitialized = false;
 let firebaseError = null;
 
-try {
-    if (!getApps().length) {
+async function getFirebaseDb() {
+    if (firebaseInitialized) {
+        return db;
+    }
+    
+    try {
         console.log('🔥 Inicializando Firebase Admin...');
         console.log('📋 Project ID:', process.env.FIREBASE_PROJECT_ID);
         console.log('📋 Client Email:', process.env.FIREBASE_CLIENT_EMAIL ? '✅ Presente' : '❌ Falta');
-        console.log('📋 Private Key:', process.env.FIREBASE_PRIVATE_KEY ? '✅ Presente (' + process.env.FIREBASE_PRIVATE_KEY.substring(0, 30) + '...)' : '❌ Falta');
+        console.log('📋 Private Key:', process.env.FIREBASE_PRIVATE_KEY ? '✅ Presente' : '❌ Falta');
         
-        initializeApp({
-            credential: cert({
-                projectId: process.env.FIREBASE_PROJECT_ID,
-                clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-                privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
-            })
-        });
+        // Importar Firebase Admin dinámicamente
+        const { initializeApp, getApps, cert } = await import('firebase-admin/app');
+        const { getFirestore } = await import('firebase-admin/firestore');
+        
+        if (!getApps().length) {
+            const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+            
+            initializeApp({
+                credential: cert({
+                    projectId: process.env.FIREBASE_PROJECT_ID,
+                    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+                    privateKey: privateKey
+                })
+            });
+        }
+        
+        db = getFirestore();
+        firebaseInitialized = true;
         console.log('✅ Firebase Admin inicializado correctamente');
+        return db;
+        
+    } catch (error) {
+        console.error('❌ Error inicializando Firebase:', error.message);
+        console.error('❌ Stack:', error.stack);
+        firebaseError = error.message;
+        return null;
     }
-    db = getFirestore();
-} catch (error) {
-    console.error('❌ Error inicializando Firebase:', error.message);
-    firebaseError = error.message;
 }
 
 // Inicializar Resend para emails
@@ -40,13 +56,6 @@ export default async function handler(req, res) {
     // Solo POST
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Método no permitido' });
-    }
-
-    // Verificar si Firebase está disponible
-    if (firebaseError) {
-        console.error('❌ Firebase no disponible:', firebaseError);
-        // Igual respondemos 200 para que MP no reintente infinitamente
-        return res.status(200).json({ received: true, error: 'Firebase no inicializado: ' + firebaseError });
     }
 
     try {
@@ -124,27 +133,39 @@ export default async function handler(req, res) {
 // Guardar orden en Firebase
 async function saveOrderToFirebase(order) {
     try {
-        const docRef = await db.collection('orders').add({
+        const firebaseDb = await getFirebaseDb();
+        
+        if (!firebaseDb) {
+            console.error('❌ No se pudo conectar a Firebase');
+            return null;
+        }
+        
+        const docRef = await firebaseDb.collection('orders').add({
             ...order,
             created_at: new Date()
         });
         console.log('💾 Orden guardada en Firebase:', docRef.id);
         return docRef.id;
     } catch (error) {
-        console.error('❌ Error guardando en Firebase:', error);
+        console.error('❌ Error guardando en Firebase:', error.message);
+        return null;
     }
 }
 
-// Función para enviar email de notificación
+// Función para enviar email de notificación (opcional)
 async function sendOrderNotification(order) {
     try {
         // Si no hay API key de Resend, saltar
-        if (!process.env.RESEND_API_KEY) {
-            console.log('⚠️ RESEND_API_KEY no configurada, saltando email');
+        if (!process.env.RESEND_API_KEY || !process.env.OWNER_EMAIL) {
+            console.log('⚠️ Email no configurado, saltando notificación');
             return;
         }
 
-        const itemsList = order.items.length > 0 
+        // Importar Resend dinámicamente
+        const { Resend } = await import('resend');
+        const resend = new Resend(process.env.RESEND_API_KEY);
+
+        const itemsList = order.items && order.items.length > 0 
             ? order.items.map(i => `• ${i.title} x${i.quantity} - $${i.unit_price}`).join('\n')
             : 'Ver detalles en Mercado Pago';
 
@@ -154,52 +175,12 @@ async function sendOrderNotification(order) {
             subject: `🛒 Nueva venta - $${order.amount} - VOLT Store`,
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <div style="background: #1a1a1a; color: white; padding: 20px; text-align: center;">
-                        <h1 style="margin: 0; color: #ff3333;">⚡ VOLT Store</h1>
-                        <p style="margin: 5px 0 0 0; color: #888;">Nueva orden recibida</p>
-                    </div>
-                    
-                    <div style="padding: 20px; background: #f5f5f5;">
-                        <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 15px;">
-                            <h2 style="color: #1a1a1a; margin-top: 0;">✅ Pago Aprobado</h2>
-                            
-                            <table style="width: 100%; border-collapse: collapse;">
-                                <tr>
-                                    <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>ID de Pago:</strong></td>
-                                    <td style="padding: 8px 0; border-bottom: 1px solid #eee;">${order.payment_id}</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Monto:</strong></td>
-                                    <td style="padding: 8px 0; border-bottom: 1px solid #eee; color: #22c55e; font-weight: bold;">$${order.amount} ARS</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Cliente:</strong></td>
-                                    <td style="padding: 8px 0; border-bottom: 1px solid #eee;">${order.payer_name}</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Email:</strong></td>
-                                    <td style="padding: 8px 0; border-bottom: 1px solid #eee;">${order.payer_email}</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Referencia:</strong></td>
-                                    <td style="padding: 8px 0; border-bottom: 1px solid #eee;">${order.external_reference}</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 8px 0;"><strong>Fecha:</strong></td>
-                                    <td style="padding: 8px 0;">${new Date(order.created_at).toLocaleString('es-AR')}</td>
-                                </tr>
-                            </table>
-                        </div>
-                        
-                        <div style="background: white; padding: 20px; border-radius: 8px;">
-                            <h3 style="margin-top: 0; color: #1a1a1a;">📦 Productos</h3>
-                            <pre style="background: #f8f8f8; padding: 15px; border-radius: 4px; overflow-x: auto;">${itemsList}</pre>
-                        </div>
-                    </div>
-                    
-                    <div style="background: #1a1a1a; color: #888; padding: 15px; text-align: center; font-size: 12px;">
-                        <p style="margin: 0;">Este email fue generado automáticamente por VOLT Store</p>
-                    </div>
+                    <h1 style="color: #C1121F;">⚡ VOLT Store - Nueva Venta</h1>
+                    <p><strong>ID Pago:</strong> ${order.payment_id}</p>
+                    <p><strong>Monto:</strong> $${order.amount} ARS</p>
+                    <p><strong>Cliente:</strong> ${order.payer_name} (${order.payer_email})</p>
+                    <p><strong>Productos:</strong></p>
+                    <pre>${itemsList}</pre>
                 </div>
             `
         });
@@ -207,6 +188,6 @@ async function sendOrderNotification(order) {
         console.log('📧 Email enviado a:', process.env.OWNER_EMAIL);
 
     } catch (error) {
-        console.error('❌ Error enviando email:', error);
+        console.error('❌ Error enviando email (no crítico):', error.message);
     }
 }
