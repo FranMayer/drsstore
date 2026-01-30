@@ -6,28 +6,52 @@ import { getFirestore } from 'firebase-admin/firestore';
 import crypto from 'crypto';
 
 // Inicializar Firebase Admin (solo una vez)
-if (!getApps().length) {
-    initializeApp({
-        credential: cert({
-            projectId: process.env.FIREBASE_PROJECT_ID,
-            clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-            privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
-        })
-    });
-}
+let db = null;
+let firebaseError = null;
 
-const db = getFirestore();
+try {
+    if (!getApps().length) {
+        console.log('🔥 Inicializando Firebase Admin...');
+        console.log('📋 Project ID:', process.env.FIREBASE_PROJECT_ID);
+        console.log('📋 Client Email:', process.env.FIREBASE_CLIENT_EMAIL ? '✅ Presente' : '❌ Falta');
+        console.log('📋 Private Key:', process.env.FIREBASE_PRIVATE_KEY ? '✅ Presente (' + process.env.FIREBASE_PRIVATE_KEY.substring(0, 30) + '...)' : '❌ Falta');
+        
+        initializeApp({
+            credential: cert({
+                projectId: process.env.FIREBASE_PROJECT_ID,
+                clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+                privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
+            })
+        });
+        console.log('✅ Firebase Admin inicializado correctamente');
+    }
+    db = getFirestore();
+} catch (error) {
+    console.error('❌ Error inicializando Firebase:', error.message);
+    firebaseError = error.message;
+}
 
 // Inicializar Resend para emails
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export default async function handler(req, res) {
+    console.log('🚀 Webhook recibido - Método:', req.method);
+    
     // Solo POST
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Método no permitido' });
     }
 
+    // Verificar si Firebase está disponible
+    if (firebaseError) {
+        console.error('❌ Firebase no disponible:', firebaseError);
+        // Igual respondemos 200 para que MP no reintente infinitamente
+        return res.status(200).json({ received: true, error: 'Firebase no inicializado: ' + firebaseError });
+    }
+
     try {
+        console.log('📦 Body recibido:', JSON.stringify(req.body));
+        
         // Verificar firma del webhook (seguridad)
         const signature = req.headers['x-signature'];
         const requestId = req.headers['x-request-id'];
