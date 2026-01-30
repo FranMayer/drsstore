@@ -376,6 +376,122 @@
         code {
             color: var(--volt-red);
         }
+        
+        /* ============================================
+           TABS NAVIGATION
+        ============================================ */
+        .admin-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--volt-red);
+        }
+        
+        .admin-tab {
+            padding: 1rem 2rem;
+            background: var(--volt-gray);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-bottom: none;
+            color: rgba(255,255,255,0.6);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            top: 2px;
+        }
+        
+        .admin-tab:hover {
+            color: var(--volt-white);
+            background: rgba(193, 18, 31, 0.2);
+        }
+        
+        .admin-tab.active {
+            background: var(--volt-red);
+            color: var(--volt-white);
+            border-color: var(--volt-red);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* ============================================
+           PEDIDOS TABLE
+        ============================================ */
+        .order-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 0;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+        
+        .status-approved {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid #22c55e;
+        }
+        
+        .status-pending {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            border: 1px solid #fbbf24;
+        }
+        
+        .status-rejected {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+        
+        .status-in_process {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+            border: 1px solid #3b82f6;
+        }
+        
+        .order-items {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.7);
+        }
+        
+        .order-amount {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.3rem;
+            color: #22c55e;
+        }
+        
+        .orders-empty {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: rgba(255,255,255,0.5);
+        }
+        
+        .orders-empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .refresh-btn {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: rgba(255,255,255,0.7);
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .refresh-btn:hover {
+            border-color: var(--volt-red);
+            color: var(--volt-red);
+        }
     </style>
 </head>
 
@@ -428,76 +544,161 @@
                 <a href="#" data-bs-toggle="modal" data-bs-target="#configModal">Ver instrucciones de configuración</a>
             </div>
 
-            <!-- Stats -->
-            <div class="row mb-4" id="statsRow">
-                <div class="col-md-3 mb-3">
-                    <div class="stats-card">
-                        <h3 id="totalProducts">0</h3>
-                        <p>Productos</p>
+            <!-- Tabs Navigation -->
+            <div class="admin-tabs">
+                <button class="admin-tab active" data-tab="productos">📦 Productos</button>
+                <button class="admin-tab" data-tab="pedidos">🛒 Pedidos</button>
+            </div>
+
+            <!-- ============================================
+                 TAB: PRODUCTOS
+            ============================================ -->
+            <div class="tab-content active" id="tab-productos">
+                <!-- Stats -->
+                <div class="row mb-4" id="statsRow">
+                    <div class="col-md-3 mb-3">
+                        <div class="stats-card">
+                            <h3 id="totalProducts">0</h3>
+                            <p>Productos</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stats-card">
+                            <h3 id="totalCategories">0</h3>
+                            <p>Categorías</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stats-card">
+                            <h3 id="lowStock">0</h3>
+                            <p>Stock bajo</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stats-card">
+                            <h3 id="outOfStock">0</h3>
+                            <p>Sin stock</p>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-3 mb-3">
-                    <div class="stats-card">
-                        <h3 id="totalCategories">0</h3>
-                        <p>Categorías</p>
+
+                <!-- Actions -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2>Productos</h2>
+                    <div>
+                        <button class="btn btn-outline-volt me-2" id="importBtn">
+                            📥 Importar ejemplos
+                        </button>
+                        <button class="btn btn-volt" data-bs-toggle="modal" data-bs-target="#productModal">
+                            ➕ Nuevo Producto
+                        </button>
                     </div>
                 </div>
-                <div class="col-md-3 mb-3">
-                    <div class="stats-card">
-                        <h3 id="lowStock">0</h3>
-                        <p>Stock bajo</p>
+
+                <!-- Products Table -->
+                <div class="card">
+                    <div class="card-header">
+                        📦 LISTA DE PRODUCTOS
                     </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="stats-card">
-                        <h3 id="outOfStock">0</h3>
-                        <p>Sin stock</p>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Imagen</th>
+                                        <th>Nombre</th>
+                                        <th>Categoría</th>
+                                        <th>Precio</th>
+                                        <th>Stock</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productsTable">
+                                    <tr>
+                                        <td colspan="7" class="text-center py-4">
+                                            <div class="spinner-border text-danger" role="status">
+                                                <span class="visually-hidden">Cargando...</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Actions -->
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h2>Productos</h2>
-                <div>
-                    <button class="btn btn-outline-volt me-2" id="importBtn">
-                        📥 Importar ejemplos
-                    </button>
-                    <button class="btn btn-volt" data-bs-toggle="modal" data-bs-target="#productModal">
-                        ➕ Nuevo Producto
-                    </button>
+            <!-- ============================================
+                 TAB: PEDIDOS
+            ============================================ -->
+            <div class="tab-content" id="tab-pedidos">
+                <!-- Stats de Pedidos -->
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-3">
+                        <div class="stats-card">
+                            <h3 id="totalOrders">0</h3>
+                            <p>Total Pedidos</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stats-card">
+                            <h3 id="approvedOrders">0</h3>
+                            <p>Aprobados</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stats-card">
+                            <h3 id="pendingOrders">0</h3>
+                            <p>Pendientes</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stats-card">
+                            <h3 id="totalRevenue">$0</h3>
+                            <p>Ingresos Totales</p>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Products Table -->
-            <div class="card">
-                <div class="card-header">
-                    📦 LISTA DE PRODUCTOS
+                <!-- Actions -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2>Pedidos</h2>
+                    <button class="refresh-btn" id="refreshOrders">
+                        🔄 Actualizar
+                    </button>
                 </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Imagen</th>
-                                    <th>Nombre</th>
-                                    <th>Categoría</th>
-                                    <th>Precio</th>
-                                    <th>Stock</th>
-                                    <th>Estado</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody id="productsTable">
-                                <tr>
-                                    <td colspan="7" class="text-center py-4">
-                                        <div class="spinner-border text-danger" role="status">
-                                            <span class="visually-hidden">Cargando...</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+
+                <!-- Orders Table -->
+                <div class="card">
+                    <div class="card-header">
+                        🛒 HISTORIAL DE PEDIDOS
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>ID Pago</th>
+                                        <th>Cliente</th>
+                                        <th>Productos</th>
+                                        <th>Monto</th>
+                                        <th>Estado</th>
+                                        <th>Método</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ordersTable">
+                                    <tr>
+                                        <td colspan="7" class="text-center py-4">
+                                            <div class="spinner-border text-danger" role="status">
+                                                <span class="visually-hidden">Cargando...</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -926,6 +1127,172 @@
                 resetForm();
             }
         });
+        
+        // =====================================================
+        // SISTEMA DE TABS
+        // =====================================================
+        
+        document.querySelectorAll('.admin-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remover active de todos los tabs
+                document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Activar el tab clickeado
+                this.classList.add('active');
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById('tab-' + tabId).classList.add('active');
+                
+                // Cargar pedidos cuando se abre esa tab
+                if (tabId === 'pedidos') {
+                    loadOrders();
+                }
+            });
+        });
+        
+        // =====================================================
+        // CARGAR PEDIDOS DESDE FIREBASE
+        // =====================================================
+        
+        async function loadOrders() {
+            const tbody = document.getElementById('ordersTable');
+            
+            try {
+                // Verificar que Firebase esté inicializado
+                if (!window.FirebaseConfig.isInitialized()) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="orders-empty">
+                                <div class="orders-empty-icon">⚠️</div>
+                                <p>Firebase no está configurado</p>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                const db = window.FirebaseConfig.getDb();
+                
+                // Obtener pedidos ordenados por fecha (más recientes primero)
+                const snapshot = await db.collection('orders')
+                    .orderBy('created_at', 'desc')
+                    .limit(100)
+                    .get();
+                
+                if (snapshot.empty) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="orders-empty">
+                                <div class="orders-empty-icon">📭</div>
+                                <p>No hay pedidos todavía</p>
+                                <small style="color: rgba(255,255,255,0.3);">Los pedidos aparecerán aquí cuando los clientes compren</small>
+                            </td>
+                        </tr>
+                    `;
+                    updateOrderStats([]);
+                    return;
+                }
+                
+                const orders = [];
+                snapshot.forEach(doc => {
+                    orders.push({ id: doc.id, ...doc.data() });
+                });
+                
+                // Renderizar tabla
+                tbody.innerHTML = orders.map(order => {
+                    // Formatear fecha
+                    let dateStr = 'Sin fecha';
+                    if (order.created_at) {
+                        const date = order.created_at.toDate ? order.created_at.toDate() : new Date(order.created_at);
+                        dateStr = date.toLocaleDateString('es-AR', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                    }
+                    
+                    // Formatear items
+                    let itemsStr = 'Ver en MP';
+                    if (order.items && order.items.length > 0) {
+                        itemsStr = order.items.map(i => `${i.title || i.name} x${i.quantity}`).join('<br>');
+                    }
+                    
+                    // Estado del pago
+                    const statusClass = getStatusClass(order.status);
+                    const statusLabel = getStatusLabel(order.status);
+                    
+                    return `
+                        <tr>
+                            <td style="white-space: nowrap;">${dateStr}</td>
+                            <td><small>${order.payment_id || '-'}</small></td>
+                            <td>
+                                <strong>${order.payer_name || 'Cliente'}</strong><br>
+                                <small style="color: rgba(255,255,255,0.5)">${order.payer_email || '-'}</small>
+                            </td>
+                            <td class="order-items">${itemsStr}</td>
+                            <td class="order-amount">$${(order.amount || 0).toLocaleString('es-AR')}</td>
+                            <td><span class="order-status ${statusClass}">${statusLabel}</span></td>
+                            <td><small>${order.payment_method || '-'}</small></td>
+                        </tr>
+                    `;
+                }).join('');
+                
+                // Actualizar estadísticas
+                updateOrderStats(orders);
+                
+            } catch (error) {
+                console.error('Error al cargar pedidos:', error);
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="orders-empty">
+                            <div class="orders-empty-icon">❌</div>
+                            <p>Error al cargar pedidos</p>
+                            <small style="color: rgba(255,255,255,0.3)">${error.message}</small>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+        
+        function getStatusClass(status) {
+            const classes = {
+                'approved': 'status-approved',
+                'pending': 'status-pending',
+                'in_process': 'status-in_process',
+                'rejected': 'status-rejected',
+                'cancelled': 'status-rejected',
+                'refunded': 'status-rejected'
+            };
+            return classes[status] || 'status-pending';
+        }
+        
+        function getStatusLabel(status) {
+            const labels = {
+                'approved': '✅ Aprobado',
+                'pending': '⏳ Pendiente',
+                'in_process': '🔄 En proceso',
+                'rejected': '❌ Rechazado',
+                'cancelled': '🚫 Cancelado',
+                'refunded': '↩️ Reembolsado'
+            };
+            return labels[status] || status || 'Desconocido';
+        }
+        
+        function updateOrderStats(orders) {
+            const approved = orders.filter(o => o.status === 'approved');
+            const pending = orders.filter(o => o.status === 'pending' || o.status === 'in_process');
+            const totalRevenue = approved.reduce((sum, o) => sum + (o.amount || 0), 0);
+            
+            document.getElementById('totalOrders').textContent = orders.length;
+            document.getElementById('approvedOrders').textContent = approved.length;
+            document.getElementById('pendingOrders').textContent = pending.length;
+            document.getElementById('totalRevenue').textContent = '$' + totalRevenue.toLocaleString('es-AR');
+        }
+        
+        // Botón de actualizar pedidos
+        document.getElementById('refreshOrders').addEventListener('click', loadOrders);
     </script>
 </body>
 </html>
