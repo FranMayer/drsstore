@@ -40,6 +40,9 @@ export default async function handler(req, res) {
             unit_price: Number(item.price)
         }));
 
+        // URL base del sitio
+        const siteUrl = process.env.SITE_URL || 'https://voltculture.com.ar';
+        
         // Crear preferencia
         const result = await preference.create({
             body: {
@@ -47,13 +50,18 @@ export default async function handler(req, res) {
                 statement_descriptor: 'VOLT Store',
                 external_reference: 'VOLT-' + Date.now(),
                 back_urls: {
-                    success: process.env.SITE_URL + '/aprove.html',
-                    failure: process.env.SITE_URL + '/err.html',
-                    pending: process.env.SITE_URL + '/pending.html'
+                    success: siteUrl + '/aprove.html',
+                    failure: siteUrl + '/err.html',
+                    pending: siteUrl + '/pending.html'
                 },
-                auto_return: 'approved'
+                auto_return: 'approved',
+                // URL donde MP enviará las notificaciones de pago
+                notification_url: siteUrl + '/api/webhook'
             }
         });
+        
+        console.log('✅ Preferencia creada:', result.id);
+        console.log('📬 Notification URL:', siteUrl + '/api/webhook');
 
         return res.status(200).json({
             preference_id: result.id,
