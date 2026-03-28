@@ -273,13 +273,21 @@ const ProductsService = {
         }
 
         const db = window.FirebaseConfig.getDb();
-        const snapshot = await db.collection('products').orderBy('createdAt', 'desc').get();
+        // Sin orderBy en servidor: los docs sin campo createdAt (creados a mano en consola)
+        // no aparecían en la lista del admin. Ordenamos en cliente.
+        const snapshot = await db.collection('products').get();
         const products = [];
-        
+
         snapshot.forEach(doc => {
             products.push({ id: doc.id, ...doc.data() });
         });
-        
+
+        products.sort((a, b) => {
+            const ta = a.createdAt?.toMillis?.() ?? a.createdAt?.seconds * 1000 ?? 0;
+            const tb = b.createdAt?.toMillis?.() ?? b.createdAt?.seconds * 1000 ?? 0;
+            return tb - ta;
+        });
+
         return products;
     },
 

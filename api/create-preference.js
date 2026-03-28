@@ -63,9 +63,12 @@ export default async function handler(req, res) {
         console.log('✅ Preferencia creada:', result.id);
         console.log('📬 Notification URL:', siteUrl + '/api/webhook');
 
+        // init_point = checkout con credenciales de producción
+        // sandbox_init_point = mismo flujo con credenciales de prueba
         return res.status(200).json({
             preference_id: result.id,
-            init_point: result.init_point
+            init_point: result.init_point,
+            sandbox_init_point: result.sandbox_init_point || null
         });
 
     } catch (error) {

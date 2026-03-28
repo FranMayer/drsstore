@@ -78,11 +78,14 @@ try {
         // back_urls y auto_return se agregan en producción con dominio real
     ]);
 
-    // Retornar el ID de la preferencia
-    echo json_encode([
+    $payload = [
         "preference_id" => $preference->id,
-        "init_point" => $preference->init_point
-    ]);
+        "init_point" => $preference->init_point,
+    ];
+    if (!empty($preference->sandbox_init_point)) {
+        $payload["sandbox_init_point"] = $preference->sandbox_init_point;
+    }
+    echo json_encode($payload);
 
 } catch (\MercadoPago\Exceptions\MPApiException $e) {
     // Error específico de la API de Mercado Pago

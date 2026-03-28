@@ -1,5 +1,15 @@
 /**
- * VOLT Store - Sistema de Pagos con Mercado Pago
+ * VOLT Store — Pago con Mercado Pago (Preference API)
+ *
+ * Flujo: el carrito se envía al backend → se crea una preferencia con el Access Token
+ * (solo en servidor) → la API devuelve init_point → redirección al checkout de MP.
+ *
+ * Variables de entorno (Vercel / hosting):
+ *   MP_ACCESS_TOKEN — Credenciales de producción (o prueba) desde mercadopago.com.ar
+ *   SITE_URL — URL pública del sitio (back_urls y webhook)
+ *
+ * Desarrollo local: configurá create_preference.php con tu token y levantá PHP en :8080,
+ * o usá `vercel dev` para probar /api/create-preference.
  */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -7,77 +17,57 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!checkoutBtn) return;
 
-    // Detectar si estamos en producción o desarrollo
-    const isProduction = !window.location.hostname.includes('localhost');
-    
-    // URLs de la API
-    const API_URL = isProduction 
-        ? '/api/create-preference'  // Vercel serverless
-        : 'http://localhost:8080/create_preference.php';  // PHP local
+    const isProduction = !window.location.hostname.includes("localhost");
 
-    // Public Key de PRODUCCIÓN
-    const MP_PUBLIC_KEY = 'APP_USR-66f346c3-5516-414f-85d6-59182bd5b8c0';
+    const API_URL = isProduction
+        ? "/api/create-preference"
+        : "http://localhost:8080/create_preference.php";
 
     checkoutBtn.addEventListener("click", async function () {
-        // Obtener el carrito desde localStorage
         const cart = JSON.parse(localStorage.getItem("cart")) || [];
-        
+
         if (cart.length === 0) {
             alert("🛒 El carrito está vacío.");
             return;
         }
 
-        // Mostrar estado de carga
         const originalText = checkoutBtn.innerHTML;
-        checkoutBtn.innerHTML = "⏳ Procesando...";
+        checkoutBtn.innerHTML = "⏳ Generando link de pago...";
         checkoutBtn.disabled = true;
 
         try {
-            // Preparar los datos de los productos para Mercado Pago
-            const items = cart.map(item => ({
+            const items = cart.map((item) => ({
                 title: item.title,
                 quantity: item.quantity,
-                price: item.price
+                price: item.price,
             }));
 
-            // Enviar al backend
             const response = await fetch(API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ items: items })
+                body: JSON.stringify({ items }),
             });
 
             const data = await response.json();
 
-            // Verificar si hay error
             if (data.error) {
                 console.log("📋 Detalles del error:", JSON.stringify(data, null, 2));
-                throw new Error(data.error + (data.details ? " - " + data.details : ""));
+                throw new Error(data.error + (data.details ? " — " + data.details : ""));
             }
 
-            // Verificar si el id de la preferencia está llegando correctamente
-            if (!data.preference_id) {
-                throw new Error("No se recibió el ID de preferencia");
+            // Producción: init_point. Credenciales de prueba: suele venir sandbox_init_point
+            const payUrl = data.init_point || data.sandbox_init_point;
+
+            if (!payUrl) {
+                throw new Error(
+                    "El servidor no devolvió el link de pago (init_point). Revisá MP_ACCESS_TOKEN y la respuesta de la API."
+                );
             }
 
-            console.log("✅ Preferencia creada:", data.preference_id);
-
-            // Inicializar Mercado Pago
-            const mp = new MercadoPago(MP_PUBLIC_KEY, { 
-                locale: "es-AR" 
-            });
-
-            // Abrir checkout de Mercado Pago
-            mp.checkout({
-                preference: { id: data.preference_id },
-                autoOpen: true
-            });
-
+            window.location.href = payUrl;
         } catch (error) {
-            console.error("❌ Error en el pago:", error);
-            alert("Error al procesar el pago: " + error.message);
-        } finally {
-            // Restaurar botón
+            console.error("❌ Error al iniciar el pago:", error);
+            alert("Error al generar el pago: " + error.message);
             checkoutBtn.innerHTML = originalText;
             checkoutBtn.disabled = false;
         }
