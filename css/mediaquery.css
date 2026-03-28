@@ -9,11 +9,8 @@
 @media screen and (max-width: 1024px) {
     /* Header */
     .header {
-        padding: 0.75rem 1.5rem;
-    }
-
-    .logo-text {
-        font-size: 1.75rem;
+        padding: 0 1.5rem;
+        min-height: 64px;
     }
 
     .header ul {
@@ -21,21 +18,26 @@
     }
 
     .header ul a {
-        font-size: 0.9rem;
+        font-size: 15px;
     }
 
-    /* Hero */
-    .hero-content {
-        padding: 1.5rem;
+    /* Hero editorial */
+    .hero-split__col--left {
+        padding: 48px 32px;
     }
 
-    .hero-brand {
-        font-size: clamp(4rem, 15vw, 8rem);
+    .hero-headline {
+        font-size: clamp(3rem, 10vw, 80px);
     }
 
     /* Categories */
     .categories-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    .category-strip {
+        padding: 12px 24px;
+        justify-content: center;
     }
 
     /* Countdown */
@@ -87,11 +89,8 @@
 @media screen and (max-width: 768px) {
     /* Header - Menú hamburguesa */
     .header {
-        padding: 0.75rem 1rem;
-    }
-
-    .logo-text {
-        font-size: 1.5rem;
+        padding: 0 1rem;
+        min-height: 64px;
     }
 
     .menu-toggle {
@@ -105,7 +104,9 @@
         width: 70%;
         max-width: 300px;
         height: 100vh;
-        background: var(--volt-black);
+        background: rgba(11, 11, 11, 0.94);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
         flex-direction: column;
         padding: 5rem 2rem 2rem;
         gap: 0;
@@ -128,7 +129,7 @@
     }
 
     .header ul a:hover {
-        color: var(--volt-red);
+        color: var(--color-white);
     }
 
     .header ul a::after {
@@ -151,22 +152,23 @@
         visibility: visible;
     }
 
-    /* Hero */
-    .hero {
-        min-height: 80vh;
+    /* Hero editorial — stack */
+    .hero-split {
+        grid-template-columns: 1fr;
+        min-height: auto;
     }
 
-    .hero-brand {
-        font-size: clamp(3.5rem, 18vw, 6rem);
+    .hero-split__col--left {
+        padding: 40px 24px;
+        min-height: 70vh;
     }
 
-    .hero-slogan {
-        font-size: 0.9rem;
-        letter-spacing: 0.2em;
+    .hero-split__col--right {
+        min-height: 40vh;
     }
 
-    .hero p {
-        font-size: 1rem;
+    .hero-headline {
+        font-size: clamp(2.75rem, 12vw, 4.5rem);
     }
 
     .btn {
@@ -180,29 +182,53 @@
     }
 
     .categories-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
+        grid-template-columns: 1fr;
+        gap: 1px;
     }
 
     .category-card {
-        padding: 1.5rem 1rem;
+        padding: 24px 20px;
     }
 
-    .category-card-icon {
-        font-size: 2.5rem;
+    .category-card__num {
+        font-size: 28px;
     }
 
-    .category-card h3 {
-        font-size: 0.9rem;
+    .category-card__title {
+        font-size: 16px;
     }
 
-    .category-card p {
-        font-size: 0.8rem;
+    .category-strip {
+        flex-direction: column;
+        text-align: center;
+        padding: 14px 20px;
+        gap: 10px;
+    }
+
+    .category-strip span {
+        white-space: normal;
+    }
+
+    /* Nueva era */
+    .nueva-era {
+        padding: 56px 24px;
+    }
+
+    .nueva-era__inner {
+        padding-left: 20px;
+    }
+
+    .nueva-era__title {
+        font-size: clamp(1.75rem, 6vw, 2.25rem);
     }
 
     /* Novedades */
     .novedades {
         padding: var(--space-2xl) var(--space-md);
+    }
+
+    .novedades-content {
+        padding: 1.75rem 1.25rem 1.75rem 1rem;
     }
 
     .novedades h2 {
@@ -405,13 +431,14 @@
     .whatsapp-float {
         bottom: 1.5rem;
         left: 1.5rem;
-        width: 55px;
-        height: 55px;
+        padding: 11px;
+        min-width: 48px;
+        min-height: 48px;
     }
 
     .whatsapp-float svg {
-        width: 28px;
-        height: 28px;
+        width: 26px;
+        height: 26px;
     }
 }
 
@@ -419,32 +446,17 @@
    MOBILE PORTRAIT (480px)
    ===================================================== */
 @media screen and (max-width: 480px) {
-    /* Header */
-    .logo-text {
-        font-size: 1.4rem;
-    }
-
     .header ul {
         width: 80%;
     }
 
-    /* Hero */
-    .hero {
-        min-height: 70vh;
+    .hero-split__col--left {
+        padding: 32px 20px;
+        min-height: 65vh;
     }
 
-    .hero-brand {
-        font-size: clamp(3rem, 20vw, 5rem);
-    }
-
-    .hero-slogan {
-        font-size: 0.75rem;
-        letter-spacing: 0.15em;
-    }
-
-    .hero p {
-        font-size: 0.9rem;
-        margin-bottom: 1.5rem;
+    .hero-desc {
+        font-size: 14px;
     }
 
     .btn {
@@ -455,11 +467,11 @@
     /* Categories */
     .categories-grid {
         grid-template-columns: 1fr;
-        gap: 0.75rem;
+        gap: 1px;
     }
 
     .category-card {
-        padding: 1.5rem;
+        padding: 22px 18px;
     }
 
     .category-card.coming-soon::after {
@@ -557,14 +569,16 @@
     }
 
     /* Botones flotantes */
-    .btn-cart,
-    .whatsapp-float {
+    .btn-cart {
         width: 50px;
         height: 50px;
+        font-size: 1.25rem;
     }
 
-    .btn-cart {
-        font-size: 1.25rem;
+    .whatsapp-float {
+        min-width: 44px;
+        min-height: 44px;
+        padding: 10px;
     }
 
     .whatsapp-float svg {
@@ -584,19 +598,8 @@
    ===================================================== */
 @media screen and (max-width: 320px) {
     .header {
-        padding: 0.5rem;
-    }
-
-    .logo-text {
-        font-size: 1.25rem;
-    }
-
-    .hero-brand {
-        font-size: 2.5rem;
-    }
-
-    .hero-slogan {
-        font-size: 0.65rem;
+        padding: 0 0.5rem;
+        min-height: 64px;
     }
 
     .product-grid {
@@ -616,23 +619,17 @@
    LANDSCAPE ORIENTATION ON MOBILE
    ===================================================== */
 @media screen and (max-height: 500px) and (orientation: landscape) {
-    .hero {
+    .hero-split {
         min-height: 100vh;
-        padding: 2rem;
     }
 
-    .hero-brand {
-        font-size: 3rem;
+    .hero-split__col--left {
+        padding: 24px 32px;
+        min-height: 0;
     }
 
-    .hero-slogan {
-        font-size: 0.8rem;
-        margin-bottom: 1rem;
-    }
-
-    .hero p {
-        font-size: 0.9rem;
-        margin-bottom: 1rem;
+    .hero-split__col--right {
+        min-height: 100vh;
     }
 
     .novedades__main {
@@ -652,20 +649,26 @@
         display: none;
     }
 
-    .hero {
+    .hero-split {
         min-height: auto;
-        padding: 2rem;
         background: white;
     }
 
-    .hero::before,
-    .hero::after {
-        display: none;
+    .hero-split__col--left,
+    .hero-split__col--right {
+        background: white;
+        color: black;
     }
 
-    .hero-brand {
-        color: black;
-        text-shadow: none;
+    .hero-headline,
+    .hero-desc {
+        color: #111;
+    }
+
+    .hero-split__logo {
+        filter: brightness(0);
+        max-height: 56px;
+        width: auto;
     }
 
     body {
@@ -706,9 +709,12 @@
    ===================================================== */
 @media (prefers-contrast: high) {
     :root {
-        --volt-red: #FF0000;
+        --color-red: #ff0000;
+        --color-dark: #000000;
+        --color-white: #ffffff;
+        --volt-red: #ff0000;
         --volt-black: #000000;
-        --volt-white: #FFFFFF;
+        --volt-white: #ffffff;
     }
 
     .btn,

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
     
-    <link rel="icon" href="/multi/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="../images-brand/Isotipo color.png" type="image/png">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -62,12 +62,13 @@
         }
         
         .login-logo {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 3rem;
-            color: var(--volt-red);
-            text-align: center;
-            margin-bottom: 0.5rem;
-            letter-spacing: 0.1em;
+            display: block;
+            margin: 0 auto 0.75rem;
+            height: 3.25rem;
+            width: auto;
+            max-width: 240px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 12px rgba(193, 18, 31, 0.35));
         }
         
         .login-subtitle {
@@ -501,7 +502,7 @@
     ============================================ -->
     <div class="login-screen" id="loginScreen">
         <div class="login-box">
-            <div class="login-logo">VOLT</div>
+            <img class="login-logo" src="../images-brand/Logo blanco.png" width="240" height="58" alt="VOLT — Motorsport Culture">
             <div class="login-subtitle">Panel de Administración</div>
             
             <div class="login-error" id="loginError">
@@ -774,8 +775,8 @@
                         <div class="mb-3">
                             <label class="form-label">URL de Imagen *</label>
                             <input type="text" class="form-control" id="productImage" required 
-                                   placeholder="/multi/nombre-imagen.jpg">
-                            <small class="text-muted">Sube la imagen a la carpeta /multi/ o usa una URL de Firebase Storage</small>
+                                   placeholder="images-brand/ejemplo.png">
+                            <small class="text-muted">Sube la imagen (por ejemplo en <code>images-brand/</code>) o usa una URL de Firebase Storage</small>
                         </div>
                     </form>
                 </div>
@@ -960,7 +961,7 @@
                         <tr>
                             <td>
                                 <img src="${p.image}" alt="${p.name}" class="product-thumb" 
-                                     onerror="this.src='/multi/Logo.png'">
+                                     onerror="this.src='../images-brand/Isotipo color.png'">
                             </td>
                             <td><strong>${p.name}</strong><br><small class="text-muted">${p.id}</small></td>
                             <td>${p.category}</td>
