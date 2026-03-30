@@ -10,8 +10,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const cartList = document.getElementById("cart-items");
     const cartTotal = document.getElementById("cart-total");
     const clearCartBtn = document.getElementById("clear-cart");
+    const checkoutBtn = document.getElementById("checkout-btn");
+    const cartEmptyEl = document.getElementById("cart-empty");
     const addToCartButtons = document.querySelectorAll(".add-to-cart");
     const cartBadge = document.getElementById("cartBadge");
+
+    const CART_IMG_FALLBACK = "/images-brand/Isotipo color.png";
 
     // =====================================================
     // AGREGAR PRODUCTO AL CARRITO
@@ -22,18 +26,24 @@ document.addEventListener("DOMContentLoaded", function () {
         const productId = productCard.getAttribute("data-id");
         const productTitle = productCard.querySelector(".product-title").innerText;
         const productPrice = parseFloat(productCard.getAttribute("data-price"));
+        const productImgEl = productCard.querySelector(".product-image");
+        const productImage = productImgEl ? productImgEl.getAttribute("src") || "" : "";
 
         // Verificar si el producto ya está en el carrito
         const existingItem = cart.find(item => item.id === productId);
         
         if (existingItem) {
             existingItem.quantity++;
+            if (productImage && !existingItem.image) {
+                existingItem.image = productImage;
+            }
         } else {
             cart.push({ 
                 id: productId, 
                 title: productTitle, 
                 price: productPrice, 
-                quantity: 1 
+                quantity: 1,
+                image: productImage
             });
         }
 
@@ -46,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
         button.style.background = "var(--accent, #00D2BE)";
         
         // Animación del badge
-        animateBadge();
+        triggerCartBadgeBounce();
     }
 
     // =====================================================
@@ -88,35 +98,53 @@ document.addEventListener("DOMContentLoaded", function () {
         let total = 0;
         let itemCount = 0;
 
+        const hasItems = cart.length > 0;
+
+        if (cartEmptyEl) {
+            cartEmptyEl.hidden = hasItems;
+        }
+
         cart.forEach((item, index) => {
             total += item.price * item.quantity;
             itemCount += item.quantity;
 
+            const imgSrc = item.image || CART_IMG_FALLBACK;
+
             const li = document.createElement("li");
-            li.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center");
+            li.classList.add("cart-item");
             li.style.animation = 'slideIn 0.3s ease forwards';
             li.innerHTML = `
-                <div class="d-flex flex-column">
-                    <span class="fw-bold">${item.title}</span>
-                    <small class="text-muted">x${item.quantity} - $${(item.price * item.quantity).toLocaleString('es-AR')}</small>
+                <img class="cart-item__thumb" src="${imgSrc}" alt="" width="64" height="64" loading="lazy">
+                <div class="cart-item__body">
+                    <div class="cart-item__title">${item.title}</div>
+                    <div class="cart-item__meta">x${item.quantity} - $${(item.price * item.quantity).toLocaleString('es-AR')}</div>
                 </div>
-                <button class="btn btn-sm btn-outline-danger remove-item" data-index="${index}">
+                <button type="button" class="cart-item__remove remove-item" data-index="${index}" aria-label="Quitar del carrito">
                     ✕
                 </button>
             `;
             cartList.appendChild(li);
+            const thumb = li.querySelector(".cart-item__thumb");
+            if (thumb) {
+                thumb.addEventListener("error", function () {
+                    this.src = CART_IMG_FALLBACK;
+                }, { once: true });
+            }
         });
 
-        // Actualizar total con formato argentino
         cartTotal.innerText = `$${total.toLocaleString('es-AR')}`;
         
-        // Guardar en localStorage
         localStorage.setItem("cart", JSON.stringify(cart));
         
-        // Actualizar badge
         updateBadge(itemCount);
+
+        if (clearCartBtn) {
+            clearCartBtn.disabled = !hasItems;
+        }
+        if (checkoutBtn) {
+            checkoutBtn.disabled = !hasItems;
+        }
         
-        // Actualizar estado de botones
         updateButtons();
     }
 
@@ -134,12 +162,11 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    function animateBadge() {
+    function triggerCartBadgeBounce() {
         if (!cartBadge) return;
-        
-        cartBadge.style.animation = 'none';
-        cartBadge.offsetHeight; // Trigger reflow
-        cartBadge.style.animation = 'badge-pop 0.3s ease';
+        cartBadge.classList.remove("cart-bounce");
+        void cartBadge.offsetWidth;
+        cartBadge.classList.add("cart-bounce");
     }
 
     // =====================================================
@@ -238,12 +265,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 opacity: 0;
                 transform: translateX(20px);
             }
-        }
-        
-        @keyframes badge-pop {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.3); }
-            100% { transform: scale(1); }
         }
     `;
     document.head.appendChild(styleSheet);

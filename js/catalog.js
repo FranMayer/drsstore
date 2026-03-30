@@ -123,12 +123,14 @@ document.addEventListener('DOMContentLoaded', async function() {
     async function loadCategories() {
         try {
             const categories = await window.ProductsService.getCategories();
+            const filtered = categories.filter((cat) => cat !== 'Autos a escala');
             
             if (categoryList) {
                 // Mantener "Ver todos" y agregar las categorías
                 categoryList.innerHTML = `
                     <li class="active" data-category="all">Ver todos</li>
-                    ${categories.map(cat => `<li data-category="${cat}">${cat}</li>`).join('')}
+                    ${filtered.map(cat => `<li data-category="${cat}">${cat}</li>`).join('')}
+                    <li class="category-sidebar-soon" aria-disabled="true">Autos a escala <span class="category-soon-badge">PRÓXIMAMENTE</span></li>
                 `;
 
                 // Agregar event listeners a las categorías
@@ -147,6 +149,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         const categories = document.querySelectorAll('.category-list li');
         
         categories.forEach(category => {
+            if (category.classList.contains('category-sidebar-soon')) {
+                return;
+            }
             category.addEventListener('click', async function() {
                 // Actualizar estado activo
                 categories.forEach(cat => cat.classList.remove('active'));
@@ -243,14 +248,21 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Verificar si ya existe
         const existingItem = cart.find(item => item.id === productId);
         
+        const productImgEl = productCard.querySelector('.product-image');
+        const imageSrc = productImgEl ? (productImgEl.getAttribute('src') || '') : '';
+
         if (existingItem) {
             existingItem.quantity++;
+            if (imageSrc && !existingItem.image) {
+                existingItem.image = imageSrc;
+            }
         } else {
             cart.push({
                 id: productId,
                 title: productTitle,
                 price: productPrice,
-                quantity: 1
+                quantity: 1,
+                image: imageSrc
             });
         }
 
@@ -267,6 +279,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         // Actualizar badge del carrito
         updateCartBadge();
+        triggerCartBadgeBounce();
 
         // Disparar evento para que main.js actualice el carrito
         window.dispatchEvent(new CustomEvent('cartUpdated'));
@@ -286,11 +299,18 @@ document.addEventListener('DOMContentLoaded', async function() {
             if (itemCount > 0) {
                 badge.textContent = itemCount > 99 ? '99+' : itemCount;
                 badge.style.display = 'flex';
-                badge.style.animation = 'badge-pop 0.3s ease';
             } else {
                 badge.style.display = 'none';
             }
         }
+    }
+
+    function triggerCartBadgeBounce() {
+        const badge = document.getElementById('cartBadge');
+        if (!badge) return;
+        badge.classList.remove('cart-bounce');
+        void badge.offsetWidth;
+        badge.classList.add('cart-bounce');
     }
 
     // =====================================================
