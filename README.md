@@ -1,43 +1,114 @@
-# 🏎️ DRS Store - Tienda de indumentaria de Fórmula 1
+# VOLT — Motorsport Culture 🏁
 
-> Tienda online inspirada en la adrenalina y la historia de la Fórmula 1, pensada para los verdaderos fanáticos del automovilismo.
+Tienda online oficial de VOLT, marca argentina de streetwear inspirada  
+en la velocidad, la adrenalina y la cultura del motorsport.  
+Diseños únicos para quienes llevan el motor en la sangre.
 
-## 🚀 Demo
+---
 
-🔗 [Ver DRS Store en vivo](https://drsstore-fran-mayers-projects.vercel.app)
+## 🌐 Demo
 
-## 🛠️ Tecnologías utilizadas
+[volt.culture](#) · [@voltculturecba](https://x.com/voltculturecba)
 
-- HTML5
-- CSS3
-- JavaScript
-- Bootstrap 5 (para el layout responsive)
+---
 
-## 📑 Descripción
+## 🛠️ Stack tecnológico
 
-**DRS Store** es un proyecto personal que nació de mi amor por la Fórmula 1. La idea es ofrecer un catálogo digital de indumentaria inspirada en las escuderías, pilotos y momentos históricos más icónicos de la categoría.
+- **HTML5** semántico, multi-página
+- **CSS3** con variables custom + **Bootstrap** (utilidades puntuales)
+- **JavaScript** vanilla (ES6+)
+- **Mercado Pago** — integración de pagos (Checkout Pro)
+- Sin frameworks frontend · Sin build tools · Deploy estático
 
-### Funcionalidades
+---
 
-- Catálogo de productos.
-- Diseño responsive.
-- Filtros por categorías (en desarrollo).
-- Inspirado en la estética moderna de tiendas online deportivas.
-- Potencial integración con carrito y back-end en el futuro.
+## 📁 Estructura del proyecto
+```
+/
+├── index.html                  # Home — Hero, about snippet, footer
+├── pages/
+│   ├── catalogo.html           # Shop — productos, carrito, filtros
+│   ├── about.html              # Nosotros — historia de la marca
+│   ├── envios.html             # Política de envíos
+│   └── novedades.html          # Novedades / blog
+├── css/
+│   ├── style.css               # Estilos principales + componentes
+│   └── mediaquery.css          # Responsive breakpoints
+├── js/
+│   ├── main.js                 # Carrito, offcanvas, badge bounce
+│   ├── catalog.js              # Renderizado de productos y categorías
+│   └── pagos.js                # Integración Mercado Pago
+├── images-brand/               # Assets de marca
+│   ├── logo-nuevo.png          # Logotipo completo (fondo transparente)
+│   ├── Isotipo color.png       # Isotipo — usado en footer
+│   ├── buzoprincipal.png       # Hero image
+│   ├── colapinto.jpg           # Imagen sección about
+│   └── Verstappen.jpg          # Imagen sección about
+└── README.md
+```
 
-### Objetivo del proyecto
+---
 
-Este proyecto me permitió practicar:
+## ✨ Features
 
-- Creación de un layout adaptable con **Bootstrap 5**.
-- Manejo de un listado de productos dinámico con **JavaScript**.
-- Aplicar **buenas prácticas de maquetado** y responsive design.
-- Sentar las bases para una futura conexión con un backend en PHP y MySQL.
+### Tienda
+- Catálogo de productos con filtro por categorías (Buzos, Remeras, Gorras)
+- Categoría **Autos a escala** con badge *PRÓXIMAMENTE*
+- Stock disponible por producto
+- Botón **Añadir al carrito** con estado ✓ Añadido
 
-## 📥 Instalación
+### Carrito
+- Sidebar offcanvas con miniatura del producto (64×64)
+- Animación *bounce* en el badge al agregar un item
+- Estado vacío con link directo al catálogo
+- Botón **Vaciar carrito** con estilo VOLT (borde rojo, hover fill)
+- Integración directa con **Mercado Pago Checkout Pro**
 
-Si querés clonar el repositorio y explorar el proyecto localmente:
+### UI / Marca
+- Paleta: negro `#000` · blanco `#fff` · rojo `#E8192C`
+- Tipografía: **Teko** (titulares) + **Barlow** (cuerpo)
+- Navbar con underline animado en hover (expand L→R, rojo)
+- Link activo resaltado por página
+- Footer con redes: Instagram · X/Twitter
+- Envíos a todo el país — ticker en el hero
 
+---
+
+## 🚀 Correr localmente
+
+No requiere instalación. Abrí directamente en el navegador:
 ```bash
-git clone https://github.com/FranMayer/drsstore.git
-cd drsstore
+# Opción 1 — Live Server (VS Code / Cursor)
+# Click derecho en index.html → Open with Live Server
+
+# Opción 2 — Python
+python -m http.server 8000
+# Abrí http://localhost:8000
+```
+
+---
+
+## 💳 Mercado Pago
+
+La integración usa **Checkout Pro** vía el SDK de Mercado Pago.  
+El flujo toma `title`, `quantity` y `price` de cada item del carrito  
+y genera la preferencia de pago en `js/pagos.js`.
+
+Para configurar tu propia cuenta:
+1. Obtené tu **Public Key** en [mercadopago.com.ar/developers](https://www.mercadopago.com.ar/developers)
+2. Reemplazá la key en `js/pagos.js`
+3. Configurá las URLs de retorno (success / failure / pending)
+
+---
+
+## 📱 Redes
+
+- Instagram: [@volt.culture](https://instagram.com/volt.culture)
+- X / Twitter: [@voltculturecba](https://x.com/voltculturecba)
+
+---
+
+## 📄 Licencia
+
+© 2026 VOLT – Motorsport Culture. Todos los derechos reservados.  
+Proyecto privado — no disponible para uso o distribución externa.
