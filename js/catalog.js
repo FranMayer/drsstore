@@ -83,7 +83,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         card.className = 'product-card';
         card.setAttribute('data-category', product.category);
         card.setAttribute('data-id', product.id);
-        card.setAttribute('data-stock', product.stock);
         card.setAttribute('data-price', product.price);
         
         // Animación de entrada escalonada
@@ -94,26 +93,325 @@ document.addEventListener('DOMContentLoaded', async function() {
         const formattedPrice = product.price.toLocaleString('es-AR');
 
         // Verificar si está en el carrito
+        const variants = Array.isArray(product.variants) ? product.variants : [];
+        const sizes = Array.isArray(product.sizes) ? product.sizes : [];
+        const gallery = getProductGallery(product);
+        const initialImage = gallery[0] || product.image || '/images-brand/Isotipo color.png';
+
+        const selectedColor = variants.length > 0 ? variants.find(v => Number(v.stock) > 0)?.color || variants[0].color : '';
+        const selectedSize = sizes.length > 0 ? sizes.find(s => Number(s.stock) > 0)?.size || sizes[0].size : '';
+        const initialStock = computeAvailableStock(product, selectedColor, selectedSize);
+
+        card.setAttribute('data-selected-color', selectedColor || '');
+        card.setAttribute('data-selected-size', selectedSize || '');
+        card.setAttribute('data-selected-qty', '1');
+        card.setAttribute('data-stock', initialStock);
+
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        const inCart = cart.some(item => item.id === product.id);
+        const inCart = cart.some(item =>
+            item.id === product.id &&
+            (item.variantColor || '') === (selectedColor || '') &&
+            (item.variantSize || '') === (selectedSize || '')
+        );
 
         card.innerHTML = `
-            <img src="${product.image}" alt="${product.name}" class="product-image" loading="lazy">
-            <h3 class="product-title">${product.name}</h3>
-            <p class="product-description">${product.description}</p>
-            <p class="product-price">$${formattedPrice}</p>
-            <p class="product-stock">Disponibles: <span>${product.stock}</span></p>
-            <div class="product-buttons">
-                <button class="add-to-cart" ${product.stock === 0 ? 'disabled' : ''}>
-                    ${product.stock === 0 ? 'Sin stock' : 'Añadir al carrito'}
+            <img src="${initialImage}" alt="${product.name}" class="product-image" loading="lazy" role="button" tabindex="0" aria-label="Ampliar imagen de ${product.name}">
+            <div class="product-compact">
+                <h3 class="product-title">${product.name}</h3>
+                <p class="product-price">$${formattedPrice}</p>
+                <button type="button" class="product-expand-toggle" aria-expanded="false">
+                    <span class="product-expand-label">Seleccionar</span>
+                    <span class="product-expand-icon">+</span>
                 </button>
-                <button class="remove-from-cart" style="display: ${inCart ? 'flex' : 'none'};" title="Quitar del carrito">
-                    ✕
-                </button>
+            </div>
+            <div class="product-expanded">
+                <div class="product-expanded-inner">
+                    ${renderColorSelector(variants, selectedColor)}
+                    ${renderSizeSelector(sizes, selectedSize)}
+                    ${renderQuantitySelector(initialStock)}
+                    <p class="product-stock ${initialStock === 0 ? 'product-stock--out' : ''}">
+                        ${initialStock === 0 ? 'Sin stock' : 'Disponibles: '}<span>${initialStock}</span>
+                    </p>
+                    <div class="product-buttons">
+                        <button class="add-to-cart" ${initialStock === 0 ? 'disabled' : ''}>
+                            ${initialStock === 0 ? 'Sin stock' : 'Agregar al carrito'}
+                        </button>
+                        <button class="remove-from-cart" style="display: ${inCart ? 'flex' : 'none'};" title="Quitar del carrito">
+                            ✕
+                        </button>
+                    </div>
+                </div>
             </div>
         `;
 
+        initCardInteractions(card, product);
         return card;
+    }
+
+    function renderColorSelector(variants, selectedColor) {
+        if (!variants.length) return '';
+        return `
+            <div class="variant-group variant-group--colors">
+                <span class="variant-label">Color</span>
+                <div class="color-swatches">
+                    ${variants.map(variant => {
+                        const isActive = variant.color === selectedColor;
+                        const stock = Number(variant.stock) || 0;
+                        return `
+                            <button type="button"
+                                class="color-swatch ${isActive ? 'is-active' : ''}"
+                                data-color="${escapeHtml(variant.color || '')}"
+                                data-hex="${escapeHtml(variant.hex || '#44464c')}"
+                                title="${escapeHtml(variant.color || '')}"
+                                aria-label="Color ${escapeHtml(variant.color || '')}"
+                                style="--swatch-color: ${escapeHtml(variant.hex || '#44464c')}"
+                                ${stock === 0 ? 'data-no-stock="true"' : ''}>
+                            </button>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    function renderSizeSelector(sizes, selectedSize) {
+        if (!sizes.length) return '';
+        return `
+            <div class="variant-group variant-group--sizes">
+                <span class="variant-label">Talle</span>
+                <div class="size-buttons">
+                    ${sizes.map(item => {
+                        const stock = Number(item.stock) || 0;
+                        const active = item.size === selectedSize;
+                        return `
+                            <button type="button"
+                                class="size-btn ${active ? 'is-active' : ''} ${stock === 0 ? 'is-disabled' : ''}"
+                                data-size="${escapeHtml(item.size || '')}"
+                                ${stock === 0 ? 'disabled' : ''}>
+                                ${escapeHtml(item.size || '')}
+                            </button>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    function renderQuantitySelector(maxStock) {
+        const max = Math.max(1, Number(maxStock) || 1);
+        return `
+            <div class="variant-group variant-group--qty">
+                <span class="variant-label">Cantidad</span>
+                <div class="qty-control">
+                    <button type="button" class="qty-btn qty-minus" aria-label="Disminuir cantidad">−</button>
+                    <input type="number" class="qty-input" min="1" max="${max}" value="1" inputmode="numeric" />
+                    <button type="button" class="qty-btn qty-plus" aria-label="Aumentar cantidad">+</button>
+                </div>
+            </div>
+        `;
+    }
+
+    function initCardInteractions(card, product) {
+        const imageEl = card.querySelector('.product-image');
+        const expandToggle = card.querySelector('.product-expand-toggle');
+        const swatches = card.querySelectorAll('.color-swatch');
+        const sizeButtons = card.querySelectorAll('.size-btn');
+        const qtyInput = card.querySelector('.qty-input');
+        const qtyPlus = card.querySelector('.qty-plus');
+        const qtyMinus = card.querySelector('.qty-minus');
+
+        const getState = () => ({
+            color: card.getAttribute('data-selected-color') || '',
+            size: card.getAttribute('data-selected-size') || '',
+            qty: Math.max(1, parseInt(card.getAttribute('data-selected-qty') || '1', 10) || 1)
+        });
+
+        const refreshState = () => {
+            const state = getState();
+            const stock = computeAvailableStock(product, state.color, state.size);
+            card.setAttribute('data-stock', String(stock));
+            updateStockUI(card, stock);
+
+            const nextImage = getImageForColor(product, state.color) || getProductGallery(product)[0] || product.image;
+            if (imageEl && nextImage) imageEl.src = nextImage;
+
+            if (qtyInput) {
+                qtyInput.max = String(Math.max(1, stock));
+                const nextQty = Math.min(Math.max(1, state.qty), Math.max(1, stock));
+                qtyInput.value = String(nextQty);
+                card.setAttribute('data-selected-qty', String(nextQty));
+            }
+
+            const addBtn = card.querySelector('.add-to-cart');
+            const removeBtn = card.querySelector('.remove-from-cart');
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const inCart = cart.some(item =>
+                item.id === product.id &&
+                (item.variantColor || '') === (state.color || '') &&
+                (item.variantSize || '') === (state.size || '')
+            );
+            if (addBtn) {
+                const hasStock = stock > 0;
+                if (!hasStock) {
+                    addBtn.disabled = true;
+                    addBtn.innerText = 'Sin stock';
+                    addBtn.style.background = '';
+                    if (removeBtn) removeBtn.style.display = 'none';
+                    return;
+                }
+                if (inCart) {
+                    addBtn.disabled = true;
+                    addBtn.innerText = '✓ Añadido';
+                    addBtn.style.background = 'var(--volt-red, #c1121f)';
+                    if (removeBtn) removeBtn.style.display = 'flex';
+                } else {
+                    addBtn.disabled = false;
+                    addBtn.innerText = 'Agregar al carrito';
+                    addBtn.style.background = '';
+                    if (removeBtn) removeBtn.style.display = 'none';
+                }
+            }
+        };
+
+        const toggleExpanded = () => {
+            const expanded = card.classList.toggle('is-expanded');
+            if (expandToggle) {
+                expandToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+            }
+        };
+
+        if (expandToggle) {
+            expandToggle.addEventListener('click', function(event) {
+                event.stopPropagation();
+                toggleExpanded();
+            });
+        }
+
+        card.addEventListener('click', function(event) {
+            if (
+                event.target.closest('.product-image') ||
+                event.target.closest('.product-expanded') ||
+                event.target.closest('.product-expand-toggle') ||
+                event.target.closest('button') ||
+                event.target.closest('input')
+            ) {
+                return;
+            }
+            toggleExpanded();
+        });
+
+        swatches.forEach(swatch => {
+            swatch.addEventListener('click', function() {
+                swatches.forEach(s => s.classList.remove('is-active'));
+                this.classList.add('is-active');
+                card.setAttribute('data-selected-color', this.getAttribute('data-color') || '');
+                refreshState();
+            });
+        });
+
+        sizeButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (this.disabled) return;
+                sizeButtons.forEach(b => b.classList.remove('is-active'));
+                this.classList.add('is-active');
+                card.setAttribute('data-selected-size', this.getAttribute('data-size') || '');
+                refreshState();
+            });
+        });
+
+        if (qtyMinus && qtyInput) {
+            qtyMinus.addEventListener('click', function() {
+                const next = Math.max(1, (parseInt(qtyInput.value, 10) || 1) - 1);
+                qtyInput.value = String(next);
+                card.setAttribute('data-selected-qty', String(next));
+            });
+        }
+        if (qtyPlus && qtyInput) {
+            qtyPlus.addEventListener('click', function() {
+                const max = parseInt(qtyInput.max, 10) || 1;
+                const next = Math.min(max, (parseInt(qtyInput.value, 10) || 1) + 1);
+                qtyInput.value = String(next);
+                card.setAttribute('data-selected-qty', String(next));
+            });
+        }
+        if (qtyInput) {
+            qtyInput.addEventListener('change', function() {
+                const max = parseInt(this.max, 10) || 1;
+                const normalized = Math.min(max, Math.max(1, parseInt(this.value, 10) || 1));
+                this.value = String(normalized);
+                card.setAttribute('data-selected-qty', String(normalized));
+            });
+        }
+
+        if (imageEl) {
+            imageEl.addEventListener('click', function() {
+                openLightbox(product, this.getAttribute('src') || '');
+            });
+            imageEl.addEventListener('keydown', function(evt) {
+                if (evt.key === 'Enter') openLightbox(product, this.getAttribute('src') || '');
+            });
+        }
+    }
+
+    function updateStockUI(card, stock) {
+        const stockEl = card.querySelector('.product-stock');
+        if (!stockEl) return;
+        if (stock <= 0) {
+            stockEl.classList.add('product-stock--out');
+            stockEl.innerHTML = `Sin stock <span>0</span>`;
+        } else {
+            stockEl.classList.remove('product-stock--out');
+            stockEl.innerHTML = `Disponibles: <span>${stock}</span>`;
+        }
+    }
+
+    function getProductGallery(product) {
+        const images = Array.isArray(product.images) ? product.images : [];
+        const urls = images.map(img => {
+            if (typeof img === 'string') return img;
+            if (img && typeof img === 'object') return img.url || img.src || '';
+            return '';
+        }).filter(Boolean);
+        if (product.image && !urls.includes(product.image)) {
+            urls.unshift(product.image);
+        }
+        return urls;
+    }
+
+    function getImageForColor(product, color) {
+        if (!color) return '';
+        const byColor = product.variantImages || product.imagesByColor || {};
+        if (byColor && typeof byColor === 'object' && byColor[color]) return byColor[color];
+        const images = Array.isArray(product.images) ? product.images : [];
+        const entry = images.find(img => typeof img === 'object' && img.color === color && (img.url || img.src));
+        return entry ? (entry.url || entry.src) : '';
+    }
+
+    function computeAvailableStock(product, selectedColor, selectedSize) {
+        const variants = Array.isArray(product.variants) ? product.variants : [];
+        const sizes = Array.isArray(product.sizes) ? product.sizes : [];
+        const productStock = Number(product.stock) || 0;
+
+        const colorStock = selectedColor
+            ? Number((variants.find(v => v.color === selectedColor) || {}).stock)
+            : NaN;
+        const sizeStock = selectedSize
+            ? Number((sizes.find(s => s.size === selectedSize) || {}).stock)
+            : NaN;
+
+        if (!Number.isNaN(colorStock) && !Number.isNaN(sizeStock)) return Math.max(0, Math.min(colorStock, sizeStock));
+        if (!Number.isNaN(colorStock)) return Math.max(0, colorStock);
+        if (!Number.isNaN(sizeStock)) return Math.max(0, sizeStock);
+        return Math.max(0, productStock);
+    }
+
+    function escapeHtml(value) {
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
     }
 
     // =====================================================
@@ -177,9 +475,15 @@ document.addEventListener('DOMContentLoaded', async function() {
             const productCard = button.closest('.product-card');
             const productId = productCard.getAttribute('data-id');
             const removeBtn = productCard.querySelector('.remove-from-cart');
+            const selectedColor = productCard.getAttribute('data-selected-color') || '';
+            const selectedSize = productCard.getAttribute('data-selected-size') || '';
             
             // Verificar si ya está en el carrito
-            const inCart = cart.some(item => item.id === productId);
+            const inCart = cart.some(item =>
+                item.id === productId &&
+                (item.variantColor || '') === selectedColor &&
+                (item.variantSize || '') === selectedSize
+            );
             if (inCart) {
                 button.innerText = '✓ Añadido';
                 button.disabled = true;
@@ -210,15 +514,21 @@ document.addEventListener('DOMContentLoaded', async function() {
         const productId = productCard.getAttribute('data-id');
         const addBtn = productCard.querySelector('.add-to-cart');
         const stock = parseInt(productCard.getAttribute('data-stock'));
+        const selectedColor = productCard.getAttribute('data-selected-color') || '';
+        const selectedSize = productCard.getAttribute('data-selected-size') || '';
 
         // Obtener carrito y filtrar el producto
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
-        cart = cart.filter(item => item.id !== productId);
+        cart = cart.filter(item =>
+            !(item.id === productId &&
+                (item.variantColor || '') === selectedColor &&
+                (item.variantSize || '') === selectedSize)
+        );
         localStorage.setItem('cart', JSON.stringify(cart));
 
         // Restaurar botón de añadir
         if (stock > 0) {
-            addBtn.innerText = 'Añadir al carrito';
+            addBtn.innerText = 'Agregar al carrito';
             addBtn.disabled = false;
             addBtn.style.background = '';
         }
@@ -241,18 +551,32 @@ document.addEventListener('DOMContentLoaded', async function() {
         const productTitle = productCard.querySelector('.product-title').innerText;
         const productPrice = parseFloat(productCard.getAttribute('data-price'));
         const removeBtn = productCard.querySelector('.remove-from-cart');
+        const variantColor = productCard.getAttribute('data-selected-color') || '';
+        const variantSize = productCard.getAttribute('data-selected-size') || '';
+        const quantity = Math.max(1, parseInt(productCard.getAttribute('data-selected-qty') || '1', 10) || 1);
+        const stock = Math.max(0, parseInt(productCard.getAttribute('data-stock') || '0', 10) || 0);
+
+        if (stock <= 0) {
+            button.innerText = 'Sin stock';
+            button.disabled = true;
+            return;
+        }
 
         // Obtener carrito actual
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
         // Verificar si ya existe
-        const existingItem = cart.find(item => item.id === productId);
+        const existingItem = cart.find(item =>
+            item.id === productId &&
+            (item.variantColor || '') === variantColor &&
+            (item.variantSize || '') === variantSize
+        );
         
         const productImgEl = productCard.querySelector('.product-image');
         const imageSrc = productImgEl ? (productImgEl.getAttribute('src') || '') : '';
 
         if (existingItem) {
-            existingItem.quantity++;
+            existingItem.quantity += quantity;
             if (imageSrc && !existingItem.image) {
                 existingItem.image = imageSrc;
             }
@@ -261,8 +585,10 @@ document.addEventListener('DOMContentLoaded', async function() {
                 id: productId,
                 title: productTitle,
                 price: productPrice,
-                quantity: 1,
-                image: imageSrc
+                quantity,
+                image: imageSrc,
+                variantColor,
+                variantSize
             });
         }
 
@@ -345,8 +671,14 @@ document.addEventListener('DOMContentLoaded', async function() {
             const addBtn = card.querySelector('.add-to-cart');
             const removeBtn = card.querySelector('.remove-from-cart');
             const stock = parseInt(card.getAttribute('data-stock'));
+            const selectedColor = card.getAttribute('data-selected-color') || '';
+            const selectedSize = card.getAttribute('data-selected-size') || '';
             
-            const inCart = cart.some(item => item.id === productId);
+            const inCart = cart.some(item =>
+                item.id === productId &&
+                (item.variantColor || '') === selectedColor &&
+                (item.variantSize || '') === selectedSize
+            );
 
             if (inCart) {
                 addBtn.innerText = '✓ Añadido';
@@ -355,13 +687,82 @@ document.addEventListener('DOMContentLoaded', async function() {
                 if (removeBtn) removeBtn.style.display = 'flex';
             } else {
                 if (stock > 0) {
-                    addBtn.innerText = 'Añadir al carrito';
+                    addBtn.innerText = 'Agregar al carrito';
                     addBtn.disabled = false;
                     addBtn.style.background = '';
                 }
                 if (removeBtn) removeBtn.style.display = 'none';
             }
         });
+    }
+
+    // =====================================================
+    // LIGHTBOX
+    // =====================================================
+    let activeLightbox = null;
+    function openLightbox(product, currentSrc) {
+        const gallery = getProductGallery(product);
+        if (!gallery.length) return;
+
+        const startIndex = Math.max(0, gallery.indexOf(currentSrc));
+        let currentIndex = startIndex >= 0 ? startIndex : 0;
+
+        const overlay = document.createElement('div');
+        overlay.className = 'product-lightbox';
+        overlay.innerHTML = `
+            <div class="product-lightbox__dialog" role="dialog" aria-modal="true" aria-label="Imagen ampliada de ${escapeHtml(product.name || 'producto')}">
+                <button type="button" class="product-lightbox__close" aria-label="Cerrar">×</button>
+                <img class="product-lightbox__img" src="${gallery[currentIndex]}" alt="${escapeHtml(product.name || 'Producto')}" />
+                ${gallery.length > 1 ? '<button type="button" class="product-lightbox__nav prev" aria-label="Imagen anterior">‹</button><button type="button" class="product-lightbox__nav next" aria-label="Imagen siguiente">›</button>' : ''}
+            </div>
+        `;
+        document.body.appendChild(overlay);
+        document.body.classList.add('lightbox-open');
+        activeLightbox = overlay;
+
+        const imgEl = overlay.querySelector('.product-lightbox__img');
+        const closeBtn = overlay.querySelector('.product-lightbox__close');
+        const prevBtn = overlay.querySelector('.product-lightbox__nav.prev');
+        const nextBtn = overlay.querySelector('.product-lightbox__nav.next');
+
+        const syncImage = () => {
+            if (imgEl) imgEl.src = gallery[currentIndex];
+        };
+
+        const handleKey = (event) => {
+            if (event.key === 'Escape') closeLightbox();
+            if (event.key === 'ArrowLeft' && gallery.length > 1) {
+                currentIndex = (currentIndex - 1 + gallery.length) % gallery.length;
+                syncImage();
+            }
+            if (event.key === 'ArrowRight' && gallery.length > 1) {
+                currentIndex = (currentIndex + 1) % gallery.length;
+                syncImage();
+            }
+        };
+
+        const closeLightbox = () => {
+            if (!activeLightbox) return;
+            document.removeEventListener('keydown', handleKey);
+            document.body.classList.remove('lightbox-open');
+            activeLightbox.remove();
+            activeLightbox = null;
+        };
+
+        if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
+        overlay.addEventListener('click', function(event) {
+            if (event.target === overlay) closeLightbox();
+        });
+        if (prevBtn) prevBtn.addEventListener('click', function() {
+            currentIndex = (currentIndex - 1 + gallery.length) % gallery.length;
+            syncImage();
+        });
+        if (nextBtn) nextBtn.addEventListener('click', function() {
+            currentIndex = (currentIndex + 1) % gallery.length;
+            syncImage();
+        });
+
+        document.addEventListener('keydown', handleKey);
     }
 
     // =====================================================

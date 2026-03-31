@@ -132,12 +132,13 @@ const ProductsService = {
             const db = window.FirebaseConfig.getDb();
             const doc = await db.collection('products').doc(id).get();
             if (doc.exists) {
-                return { id: doc.id, ...doc.data() };
+                return this._normalizeProduct({ id: doc.id, ...doc.data() });
             }
             return null;
         }
         
-        return SAMPLE_PRODUCTS.find(p => p.id === id) || null;
+        const sample = SAMPLE_PRODUCTS.find(p => p.id === id) || null;
+        return sample ? this._normalizeProduct(sample) : null;
     },
 
     /**
@@ -188,12 +189,8 @@ const ProductsService = {
         const products = [];
         
         snapshot.forEach(doc => {
-            const data = doc.data();
-            // Limpiar URL de imagen (quitar comillas extras y espacios)
-            if (data.image) {
-                data.image = data.image.trim().replace(/^["']|["']$/g, '').trim();
-            }
-            products.push({ id: doc.id, ...data });
+            const data = this._normalizeProduct({ id: doc.id, ...doc.data() });
+            products.push(data);
         });
         
         return products;
@@ -203,13 +200,71 @@ const ProductsService = {
      * Obtener productos desde datos de ejemplo
      */
     _getFromSample(category) {
-        let products = SAMPLE_PRODUCTS.filter(p => p.active);
+        let products = SAMPLE_PRODUCTS.filter(p => p.active).map(p => this._normalizeProduct(p));
         
         if (category && category !== 'all') {
             products = products.filter(p => p.category === category);
         }
         
         return Promise.resolve(products);
+    },
+
+    _normalizeProduct(product) {
+        const normalized = { ...product };
+        if (!normalized.image && normalized.imageUrl) {
+            normalized.image = normalized.imageUrl;
+        }
+        if (!normalized.imageUrl && normalized.image) {
+            normalized.imageUrl = normalized.image;
+        }
+        if (normalized.image && typeof normalized.image === 'string') {
+            normalized.image = normalized.image.trim().replace(/^["']|["']$/g, '').trim();
+        }
+        if (normalized.imageUrl && typeof normalized.imageUrl === 'string') {
+            normalized.imageUrl = normalized.imageUrl.trim().replace(/^["']|["']$/g, '').trim();
+        }
+
+        if (!Array.isArray(normalized.images)) {
+            normalized.images = normalized.imageUrl ? [normalized.imageUrl] : (normalized.image ? [normalized.image] : []);
+        } else {
+            normalized.images = normalized.images
+                .map(img => {
+                    if (typeof img === 'string') return img.trim();
+                    if (img && typeof img === 'object') {
+                        return {
+                            ...img,
+                            url: (img.url || img.src || '').trim()
+                        };
+                    }
+                    return null;
+                })
+                .filter(Boolean);
+        }
+
+        if (!Array.isArray(normalized.variants)) {
+            normalized.variants = [];
+        } else {
+            normalized.variants = normalized.variants.map(variant => ({
+                color: String(variant.color || '').trim(),
+                hex: String(variant.hex || '#44464c').trim(),
+                stock: Math.max(0, Number(variant.stock) || 0)
+            }));
+        }
+
+        if (!Array.isArray(normalized.sizes)) {
+            normalized.sizes = [];
+        } else {
+            normalized.sizes = normalized.sizes.map(size => ({
+                size: String(size.size || '').trim().toUpperCase(),
+                stock: Math.max(0, Number(size.stock) || 0)
+            }));
+        }
+
+        if (typeof normalized.stock !== 'number') {
+            normalized.stock = Number(normalized.stock) || 0;
+        }
+
+        return normalized;
     },
 
     // =====================================================
