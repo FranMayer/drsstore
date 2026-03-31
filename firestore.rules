@@ -1,0 +1,17 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Pedidos: escritura solo por Admin SDK (serverless),
+    // lectura solo para usuario admin autenticado.
+    match /orders/{orderId} {
+      allow read: if request.auth != null && request.auth.token.admin == true;
+      allow write: if false;
+    }
+
+    // Ajustar según tu necesidad para otros documentos.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+

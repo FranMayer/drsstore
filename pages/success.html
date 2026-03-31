@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VOLT | Compra confirmada</title>
+  <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;600;700&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body{margin:0;background:#0b0b0b;color:#f2f2f2;font-family:Barlow,sans-serif;display:grid;place-items:center;min-height:100vh;padding:24px}
+    .box{max-width:680px;border:1px solid #44464c;padding:28px;background:#111}
+    h1{margin:0 0 10px;font-family:Teko,sans-serif;font-size:48px;letter-spacing:.04em}
+    .accent{color:#c1121f}
+    a{display:inline-block;margin-top:18px;padding:10px 16px;background:#c1121f;color:#fff;text-decoration:none;font-family:Teko,sans-serif;letter-spacing:.08em}
+  </style>
+</head>
+<body>
+  <main class="box">
+    <h1>Compra <span class="accent">confirmada</span></h1>
+    <p id="message">Gracias por tu compra.</p>
+    <a href="/pages/catalogo.html">Volver al catalogo</a>
+  </main>
+  <script>
+    const orderId = new URLSearchParams(window.location.search).get("order") || "VOLT-SIN-ID";
+    document.getElementById("message").textContent = `Gracias por tu compra. Tu orden ${orderId} fue confirmada.`;
+    localStorage.removeItem("cart");
+  </script>
+</body>
+</html>
+
