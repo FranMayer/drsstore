@@ -3,6 +3,9 @@ import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 
 function initAdmin() {
+    if (!process.env.FIREBASE_PRIVATE_KEY) {
+        throw new Error('FIREBASE_PRIVATE_KEY no configurada en entorno');
+    }
     if (!getApps().length) {
         initializeApp({
             credential: cert({
@@ -33,11 +36,18 @@ export default async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Método no permitido' });
 
     try {
+        if (!process.env.MP_ACCESS_TOKEN) {
+            return res.status(500).json({
+                error: 'MP_ACCESS_TOKEN no configurado',
+                details: 'Definí MP_ACCESS_TOKEN en Vercel Project Settings > Environment Variables'
+            });
+        }
+
         const { items, customer } = req.body || {};
         if (!items || !Array.isArray(items) || items.length === 0) {
             return res.status(400).json({ error: 'El carrito está vacío' });
         }
-        if (!customer?.name || !customer?.phone || !customer?.email || !customer?.address) {
+        if (!customer?.name || !customer?.phone || !customer?.email || !customer?.address || !customer?.postalCode) {
             return res.status(400).json({ error: 'Faltan datos del cliente para el envío' });
         }
 
@@ -63,7 +73,8 @@ export default async function handler(req, res) {
                     name: String(customer.name).trim(),
                     phone: String(customer.phone).trim(),
                     email: String(customer.email).trim(),
-                    address: String(customer.address).trim()
+                    address: String(customer.address).trim(),
+                    postalCode: String(customer.postalCode).trim()
                 },
                 items: normalizedItems,
                 total,
@@ -107,7 +118,8 @@ export default async function handler(req, res) {
                         customer_name: String(customer.name).trim(),
                         customer_phone: String(customer.phone).trim(),
                         customer_email: String(customer.email).trim(),
-                        shipping_address: String(customer.address).trim()
+                        shipping_address: String(customer.address).trim(),
+                        shipping_postal_code: String(customer.postalCode).trim()
                     }
                 }
             });
@@ -128,6 +140,12 @@ export default async function handler(req, res) {
             });
         }
     } catch (error) {
+        if (error.message?.includes('Invalid PEM formatted message')) {
+            return res.status(500).json({
+                error: 'Error de credenciales de Firebase (PEM inválido)',
+                details: 'Revisá FIREBASE_PRIVATE_KEY en Vercel: debe incluir BEGIN/END PRIVATE KEY y saltos de línea válidos.'
+            });
+        }
         return res.status(500).json({ error: 'Error interno', details: error.message });
     }
 }

@@ -55,6 +55,10 @@ document.addEventListener("DOMContentLoaded", () => {
                                 <label class="form-label">Direccion completa</label>
                                 <textarea class="form-control" id="customerAddress" rows="2" required></textarea>
                             </div>
+                            <div class="mb-1">
+                                <label class="form-label">CODIGO POSTAL</label>
+                                <input type="text" class="form-control" id="customerPostalCode" required>
+                            </div>
                         </form>
                     </div>
                     <div class="modal-footer" style="border-top:1px solid #44464c;">
@@ -88,6 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("customerPhone").value = saved.phone || "";
         document.getElementById("customerEmail").value = saved.email || "";
         document.getElementById("customerAddress").value = saved.address || "";
+        document.getElementById("customerPostalCode").value = saved.postalCode || "";
 
         return new Promise((resolve) => {
             const modal = new bootstrap.Modal(modalEl);
@@ -109,10 +114,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     phone: document.getElementById("customerPhone").value.trim(),
                     email: document.getElementById("customerEmail").value.trim(),
                     address: document.getElementById("customerAddress").value.trim(),
+                    postalCode: document.getElementById("customerPostalCode").value.trim(),
                 };
 
-                if (!customer.name || !customer.phone || !customer.email || !customer.address) {
-                    alert("Completá nombre, teléfono, correo y dirección.");
+                if (!customer.name || !customer.phone || !customer.email || !customer.address || !customer.postalCode) {
+                    alert("Completá nombre, teléfono, correo, dirección y código postal.");
                     return;
                 }
 
