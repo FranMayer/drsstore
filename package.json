@@ -4,6 +4,6 @@
     "firebase": "^12.8.0",
     "firebase-admin": "^12.7.0",
     "mercadopago": "^2.0.0",
-    "resend": "^3.0.0"
+    "resend": "^3.5.0"
   }
 }

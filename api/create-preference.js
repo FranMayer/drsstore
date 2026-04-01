@@ -6,12 +6,22 @@ function initAdmin() {
     if (!process.env.FIREBASE_PRIVATE_KEY) {
         throw new Error('FIREBASE_PRIVATE_KEY no configurada en entorno');
     }
+    const projectId = (process.env.FIREBASE_PROJECT_ID || '').replace(/^"|"$/g, '').trim();
+    const clientEmail = (process.env.FIREBASE_CLIENT_EMAIL || '').replace(/^"|"$/g, '').trim();
+    const privateKey = (process.env.FIREBASE_PRIVATE_KEY || '')
+        .replace(/\\n/g, '\n')
+        .replace(/^"|"$/g, '')
+        .trim();
+    if (!projectId || !clientEmail || !privateKey) {
+        throw new Error('Credenciales Firebase incompletas: FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL o FIREBASE_PRIVATE_KEY');
+    }
+
     if (!getApps().length) {
         initializeApp({
             credential: cert({
-                projectId: process.env.FIREBASE_PROJECT_ID,
-                clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-                privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
+                projectId,
+                clientEmail,
+                privateKey
             })
         });
     }
@@ -144,6 +154,12 @@ export default async function handler(req, res) {
             return res.status(500).json({
                 error: 'Error de credenciales de Firebase (PEM inválido)',
                 details: 'Revisá FIREBASE_PRIVATE_KEY en Vercel: debe incluir BEGIN/END PRIVATE KEY y saltos de línea válidos.'
+            });
+        }
+        if (error.message?.includes('UNAUTHENTICATED')) {
+            return res.status(500).json({
+                error: 'Firebase no autenticó la service account',
+                details: 'Verificá en Vercel que FIREBASE_PROJECT_ID y FIREBASE_CLIENT_EMAIL coincidan con la misma service account que FIREBASE_PRIVATE_KEY.'
             });
         }
         return res.status(500).json({ error: 'Error interno', details: error.message });
