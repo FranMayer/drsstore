@@ -133,11 +133,11 @@ document.addEventListener('DOMContentLoaded', async function() {
                         ${initialStock === 0 ? 'Sin stock' : 'Disponibles: '}<span>${initialStock}</span>
                     </p>
                     <div class="product-buttons">
-                        <button class="add-to-cart" ${initialStock === 0 ? 'disabled' : ''}>
-                            ${initialStock === 0 ? 'Sin stock' : 'Agregar al carrito'}
+                        <button type="button" class="add-to-cart ${inCart ? 'add-to-cart--in-cart' : ''}" ${initialStock === 0 ? 'disabled' : ''}>
+                            ${initialStock === 0 ? 'Sin stock' : inCart ? 'Eliminar del carrito' : 'Añadir al carrito'}
                         </button>
-                        <button class="remove-from-cart" style="display: ${inCart ? 'flex' : 'none'};" title="Quitar del carrito">
-                            ✕
+                        <button type="button" class="product-finalize-btn" style="display: ${inCart ? 'flex' : 'none'};" aria-label="Finalizar compra e ir al pago">
+                            Finalizar compra
                         </button>
                     </div>
                 </div>
@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             }
 
             const addBtn = card.querySelector('.add-to-cart');
-            const removeBtn = card.querySelector('.remove-from-cart');
+            const finalizeBtn = card.querySelector('.product-finalize-btn');
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
             const inCart = cart.some(item =>
                 item.id === product.id &&
@@ -256,19 +256,22 @@ document.addEventListener('DOMContentLoaded', async function() {
                     addBtn.disabled = true;
                     addBtn.innerText = 'Sin stock';
                     addBtn.style.background = '';
-                    if (removeBtn) removeBtn.style.display = 'none';
+                    addBtn.classList.remove('add-to-cart--in-cart');
+                    if (finalizeBtn) finalizeBtn.style.display = 'none';
                     return;
                 }
                 if (inCart) {
-                    addBtn.disabled = true;
-                    addBtn.innerText = '✓ Añadido';
-                    addBtn.style.background = 'var(--volt-red, #c1121f)';
-                    if (removeBtn) removeBtn.style.display = 'flex';
+                    addBtn.disabled = false;
+                    addBtn.innerText = 'Eliminar del carrito';
+                    addBtn.style.background = '';
+                    addBtn.classList.add('add-to-cart--in-cart');
+                    if (finalizeBtn) finalizeBtn.style.display = 'flex';
                 } else {
                     addBtn.disabled = false;
-                    addBtn.innerText = 'Agregar al carrito';
+                    addBtn.innerText = 'Añadir al carrito';
                     addBtn.style.background = '';
-                    if (removeBtn) removeBtn.style.display = 'none';
+                    addBtn.classList.remove('add-to-cart--in-cart');
+                    if (finalizeBtn) finalizeBtn.style.display = 'none';
                 }
             }
         };
@@ -463,61 +466,137 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     // =====================================================
+    // ANIMACIÓN: miniatura hacia el carrito flotante
+    // =====================================================
+
+    function flyProductToCart(triggerEl, imageSrc) {
+        const cartBtn = document.querySelector('.btn-cart');
+        if (!cartBtn || !triggerEl) return;
+
+        const from = triggerEl.getBoundingClientRect();
+        const to = cartBtn.getBoundingClientRect();
+        const size = Math.min(44, Math.max(32, from.width * 0.35));
+        const el = document.createElement('div');
+        el.className = 'cart-fly-particle';
+        el.style.width = `${size}px`;
+        el.style.height = `${size}px`;
+        el.style.left = `${from.left + from.width / 2 - size / 2}px`;
+        el.style.top = `${from.top + from.height / 2 - size / 2}px`;
+        if (imageSrc) {
+            el.style.backgroundImage = `url(${JSON.stringify(imageSrc)})`;
+            el.style.backgroundSize = 'cover';
+            el.style.backgroundColor = 'transparent';
+        }
+        document.body.appendChild(el);
+
+        const dx = to.left + to.width / 2 - (from.left + from.width / 2);
+        const dy = to.top + to.height / 2 - (from.top + from.height / 2);
+        const duration = 480;
+
+        requestAnimationFrame(() => {
+            el.style.transition = `transform ${duration}ms cubic-bezier(0.22, 1, 0.36, 1), opacity ${duration}ms ease-out`;
+            el.style.transform = `translate(${dx}px, ${dy}px) scale(0.2)`;
+            el.style.opacity = '0.35';
+        });
+
+        window.setTimeout(() => el.remove(), duration + 80);
+    }
+
+    // =====================================================
+    // FINALIZAR: carrito + mismo flujo que checkout MP
+    // =====================================================
+
+    function goToCheckoutFlow() {
+        const offcanvasEl = document.getElementById('offcanvasRight');
+        const checkoutBtn = document.getElementById('checkout-btn');
+        if (!checkoutBtn) return;
+
+        if (!offcanvasEl || typeof bootstrap === 'undefined') {
+            checkoutBtn.click();
+            return;
+        }
+
+        if (offcanvasEl.classList.contains('show')) {
+            checkoutBtn.click();
+            return;
+        }
+
+        const oc = bootstrap.Offcanvas.getOrCreateInstance(offcanvasEl);
+        offcanvasEl.addEventListener(
+            'shown.bs.offcanvas',
+            () => {
+                checkoutBtn.click();
+            },
+            { once: true }
+        );
+        oc.show();
+    }
+
+    // =====================================================
     // INICIALIZAR BOTONES DE CARRITO
     // =====================================================
     
     function initCartButtons() {
         const addToCartButtons = document.querySelectorAll('.add-to-cart');
-        const removeFromCartButtons = document.querySelectorAll('.remove-from-cart');
+        const finalizeButtons = document.querySelectorAll('.product-finalize-btn');
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
 
         addToCartButtons.forEach(button => {
             const productCard = button.closest('.product-card');
             const productId = productCard.getAttribute('data-id');
-            const removeBtn = productCard.querySelector('.remove-from-cart');
+            const finalizeBtn = productCard.querySelector('.product-finalize-btn');
             const selectedColor = productCard.getAttribute('data-selected-color') || '';
             const selectedSize = productCard.getAttribute('data-selected-size') || '';
             
-            // Verificar si ya está en el carrito
             const inCart = cart.some(item =>
                 item.id === productId &&
                 (item.variantColor || '') === selectedColor &&
                 (item.variantSize || '') === selectedSize
             );
             if (inCart) {
-                button.innerText = '✓ Añadido';
-                button.disabled = true;
-                button.style.background = 'var(--volt-red, #c1121f)';
-                if (removeBtn) removeBtn.style.display = 'flex';
+                button.innerText = 'Eliminar del carrito';
+                button.disabled = false;
+                button.style.background = '';
+                button.classList.add('add-to-cart--in-cart');
+                if (finalizeBtn) finalizeBtn.style.display = 'flex';
             }
 
-            // Agregar evento click
-            button.addEventListener('click', function() {
-                addToCart(this);
+            button.addEventListener('click', function onToggleCart() {
+                const card = this.closest('.product-card');
+                const pid = card.getAttribute('data-id');
+                const color = card.getAttribute('data-selected-color') || '';
+                const size = card.getAttribute('data-selected-size') || '';
+                const currentCart = JSON.parse(localStorage.getItem('cart')) || [];
+                const isInCart = currentCart.some(item =>
+                    item.id === pid &&
+                    (item.variantColor || '') === color &&
+                    (item.variantSize || '') === size
+                );
+                if (isInCart) {
+                    removeFromCartForCard(card);
+                } else {
+                    addToCart(this);
+                }
             });
         });
 
-        // Botones de quitar del carrito
-        removeFromCartButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                removeFromCart(this);
+        finalizeButtons.forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                goToCheckoutFlow();
             });
         });
     }
 
     // =====================================================
-    // QUITAR DEL CARRITO (desde la card)
+    // QUITAR DEL CARRITO (desde la card — toggle)
     // =====================================================
     
-    function removeFromCart(button) {
-        const productCard = button.closest('.product-card');
+    function removeFromCartForCard(productCard) {
         const productId = productCard.getAttribute('data-id');
-        const addBtn = productCard.querySelector('.add-to-cart');
-        const stock = parseInt(productCard.getAttribute('data-stock'));
         const selectedColor = productCard.getAttribute('data-selected-color') || '';
         const selectedSize = productCard.getAttribute('data-selected-size') || '';
 
-        // Obtener carrito y filtrar el producto
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
         cart = cart.filter(item =>
             !(item.id === productId &&
@@ -526,17 +605,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         );
         localStorage.setItem('cart', JSON.stringify(cart));
 
-        // Restaurar botón de añadir
-        if (stock > 0) {
-            addBtn.innerText = 'Agregar al carrito';
-            addBtn.disabled = false;
-            addBtn.style.background = '';
-        }
-
-        // Ocultar botón de quitar
-        button.style.display = 'none';
-
-        // Actualizar badge y notificar a main.js
         updateCartBadge();
         window.dispatchEvent(new CustomEvent('cartUpdated'));
     }
@@ -550,7 +618,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         const productId = productCard.getAttribute('data-id');
         const productTitle = productCard.querySelector('.product-title').innerText;
         const productPrice = parseFloat(productCard.getAttribute('data-price'));
-        const removeBtn = productCard.querySelector('.remove-from-cart');
+        const finalizeBtn = productCard.querySelector('.product-finalize-btn');
         const variantColor = productCard.getAttribute('data-selected-color') || '';
         const variantSize = productCard.getAttribute('data-selected-size') || '';
         const quantity = Math.max(1, parseInt(productCard.getAttribute('data-selected-qty') || '1', 10) || 1);
@@ -595,13 +663,13 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Guardar carrito
         localStorage.setItem('cart', JSON.stringify(cart));
 
-        // Actualizar UI del botón
-        button.innerText = '✓ Añadido';
-        button.disabled = true;
-        button.style.background = 'var(--volt-red, #c1121f)';
+        button.innerText = 'Eliminar del carrito';
+        button.disabled = false;
+        button.style.background = '';
+        button.classList.add('add-to-cart--in-cart');
+        if (finalizeBtn) finalizeBtn.style.display = 'flex';
 
-        // Mostrar botón de quitar
-        if (removeBtn) removeBtn.style.display = 'flex';
+        flyProductToCart(button, imageSrc);
 
         // Actualizar badge del carrito
         updateCartBadge();
@@ -669,8 +737,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         productCards.forEach(card => {
             const productId = card.getAttribute('data-id');
             const addBtn = card.querySelector('.add-to-cart');
-            const removeBtn = card.querySelector('.remove-from-cart');
-            const stock = parseInt(card.getAttribute('data-stock'));
+            const finalizeBtn = card.querySelector('.product-finalize-btn');
+            const stock = parseInt(card.getAttribute('data-stock'), 10) || 0;
             const selectedColor = card.getAttribute('data-selected-color') || '';
             const selectedSize = card.getAttribute('data-selected-size') || '';
             
@@ -680,18 +748,22 @@ document.addEventListener('DOMContentLoaded', async function() {
                 (item.variantSize || '') === selectedSize
             );
 
+            if (!addBtn) return;
+
             if (inCart) {
-                addBtn.innerText = '✓ Añadido';
-                addBtn.disabled = true;
-                addBtn.style.background = 'var(--volt-red, #c1121f)';
-                if (removeBtn) removeBtn.style.display = 'flex';
+                addBtn.innerText = 'Eliminar del carrito';
+                addBtn.disabled = false;
+                addBtn.style.background = '';
+                addBtn.classList.add('add-to-cart--in-cart');
+                if (finalizeBtn) finalizeBtn.style.display = 'flex';
             } else {
                 if (stock > 0) {
-                    addBtn.innerText = 'Agregar al carrito';
+                    addBtn.innerText = 'Añadir al carrito';
                     addBtn.disabled = false;
                     addBtn.style.background = '';
                 }
-                if (removeBtn) removeBtn.style.display = 'none';
+                addBtn.classList.remove('add-to-cart--in-cart');
+                if (finalizeBtn) finalizeBtn.style.display = 'none';
             }
         });
     }

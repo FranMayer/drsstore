@@ -18,6 +18,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!checkoutBtn) return;
 
+    /** Evita doble ejecución si #checkout-btn se dispara más de una vez (clics repetidos o .click() programático). */
+    let checkoutFlowActive = false;
+
     const isProduction = !window.location.hostname.includes("localhost");
 
     const API_URL = isProduction
@@ -135,6 +138,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     checkoutBtn.addEventListener("click", async function () {
+        if (checkoutFlowActive) return;
+
         const cart = JSON.parse(localStorage.getItem("cart")) || [];
 
         if (cart.length === 0) {
@@ -142,6 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        checkoutFlowActive = true;
         const originalText = checkoutBtn.innerHTML;
         checkoutBtn.innerHTML = "⏳ Generando link de pago...";
         checkoutBtn.disabled = true;
@@ -149,6 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const customer = await askCustomerData();
             if (!customer) {
+                checkoutFlowActive = false;
                 checkoutBtn.innerHTML = originalText;
                 checkoutBtn.disabled = false;
                 return;
@@ -189,6 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (error) {
             console.error("❌ Error al iniciar el pago:", error);
             alert("Error al generar el pago: " + error.message);
+            checkoutFlowActive = false;
             checkoutBtn.innerHTML = originalText;
             checkoutBtn.disabled = false;
         }

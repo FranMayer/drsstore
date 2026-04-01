@@ -100,7 +100,10 @@ export default async function handler(req, res) {
         }
 
         const mpItems = normalizedItems.map(item => ({
+            id: item.title.toLowerCase().replace(/\s+/g, '-'),
             title: item.title,
+            description: item.title,
+            category_id: 'fashion',
             quantity: item.quantity,
             currency_id: 'ARS',
             unit_price: item.price

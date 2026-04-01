@@ -1544,6 +1544,55 @@ input[type="submit"],
     cursor: default;
 }
 
+/* Toggle "en carrito": eliminar */
+.add-to-cart.add-to-cart--in-cart {
+    background: transparent;
+    color: #f2f2f2;
+    border-color: #c1121f;
+}
+
+.add-to-cart.add-to-cart--in-cart:hover:not(:disabled) {
+    background: rgba(193, 18, 31, 0.15);
+    filter: none;
+}
+
+.product-finalize-btn {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 36px;
+    padding: 0 0.5rem;
+    background: transparent;
+    color: #f2f2f2;
+    border: 1px solid #44464c;
+    border-radius: 0;
+    font-family: 'Teko', var(--font-display);
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: border-color 0.25s ease, color 0.25s ease, background 0.25s ease;
+}
+
+.product-finalize-btn:hover {
+    border-color: #c1121f;
+    color: #f2f2f2;
+    background: rgba(193, 18, 31, 0.08);
+}
+
+.cart-fly-particle {
+    position: fixed;
+    z-index: 10050;
+    pointer-events: none;
+    border-radius: 50%;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+    background-color: #c1121f;
+    background-position: center;
+    will-change: transform, opacity;
+}
+
 /* Botón quitar del carrito */
 .remove-from-cart {
     display: flex;
