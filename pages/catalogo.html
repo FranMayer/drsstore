@@ -22,6 +22,7 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
     <title>VOLT - Shop | Motorsport Culture</title>
 </head>
@@ -49,6 +50,7 @@
         </ul>
 
         <div class="header-actions">
+            <div id="authNav" class="auth-nav"></div>
             <div class="menu-toggle" id="menuToggle">
                 <span></span>
                 <span></span>
@@ -164,10 +166,12 @@
     
     <!-- VOLT Scripts -->
     <script src="/js/firebase-config.js"></script>
+    <script src="/js/cart-sync.js"></script>
     <script src="/js/products-service.js"></script>
     <script src="/js/catalog.js"></script>
     <script src="/js/main.js"></script>
     <script type="module" src="/js/pagos.js"></script>
+    <script src="/js/store-auth.js"></script>
     <script src="/js/animations.js"></script>
     <script src="/js/admin-access.js"></script>
 </body>

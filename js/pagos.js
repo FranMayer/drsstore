@@ -91,9 +91,10 @@ document.addEventListener("DOMContentLoaded", () => {
         createCustomerModal();
         const modalEl = document.getElementById("customerDataModal");
         const saved = getSavedCustomerData();
-        document.getElementById("customerName").value = saved.name || "";
+        const authUser = window.VoltStoreAuth?.getCurrentUser();
+        document.getElementById("customerName").value = saved.name || (authUser?.displayName || "");
         document.getElementById("customerPhone").value = saved.phone || "";
-        document.getElementById("customerEmail").value = saved.email || "";
+        document.getElementById("customerEmail").value = saved.email || (authUser?.email || "");
         document.getElementById("customerAddress").value = saved.address || "";
         document.getElementById("customerPostalCode").value = saved.postalCode || "";
 
@@ -147,6 +148,12 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        // Requerir sesión antes de continuar
+        if (window.VoltStoreAuth) {
+            const user = await window.VoltStoreAuth.requireAuth();
+            if (!user) return; // usuario cerró el modal sin loguearse
+        }
+
         checkoutFlowActive = true;
         const originalText = checkoutBtn.innerHTML;
         checkoutBtn.innerHTML = "⏳ Generando link de pago...";
@@ -192,6 +199,14 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             localStorage.setItem("volt_current_order", data.orderId);
+
+            // Limpiar carrito en Firestore (compra iniciada) y en local
+            const uid = firebase.auth().currentUser?.uid;
+            if (window.VoltCartSync) {
+                await window.VoltCartSync.clearFirestore(uid);
+                window.VoltCartSync.clearLocal();
+            }
+
             window.location.href = payUrl;
         } catch (error) {
             console.error("❌ Error al iniciar el pago:", error);

@@ -142,12 +142,36 @@
         }
         
         /* ============================================
-           ADMIN PANEL (hidden until login)
+           AUTH LOADER — cubre todo mientras Firebase verifica
+        ============================================ */
+        #adminLoader {
+            position: fixed;
+            inset: 0;
+            background: var(--volt-black);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+        }
+
+        .admin-loader__spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(193, 18, 31, 0.2);
+            border-top-color: var(--volt-red);
+            border-radius: 50%;
+            animation: adminSpin 0.7s linear infinite;
+        }
+
+        @keyframes adminSpin { to { transform: rotate(360deg); } }
+
+        /* ============================================
+           ADMIN PANEL (hidden until claim verified)
         ============================================ */
         .admin-panel {
             display: none;
         }
-        
+
         .admin-panel.authenticated {
             display: block;
         }
@@ -649,6 +673,11 @@
 </head>
 
 <body>
+    <!-- Auth loader — visible por defecto, cubre login screen y panel -->
+    <div id="adminLoader">
+        <div class="admin-loader__spinner"></div>
+    </div>
+
     <!-- ============================================
          LOGIN SCREEN
     ============================================ -->
@@ -658,16 +687,25 @@
             <div class="login-subtitle">Panel de Administración</div>
             
             <div class="login-error" id="loginError">
-                ⚠️ Contraseña incorrecta
+                ⚠️ Credenciales incorrectas
             </div>
-            
+
             <form id="loginForm">
-                <input 
-                    type="password" 
-                    class="login-input" 
-                    id="passwordInput" 
+                <input
+                    type="email"
+                    class="login-input"
+                    id="emailInput"
+                    placeholder="Email"
+                    autocomplete="email"
+                    required
+                >
+                <input
+                    type="password"
+                    class="login-input"
+                    id="passwordInput"
                     placeholder="Contraseña"
-                    autocomplete="off"
+                    autocomplete="current-password"
+                    required
                 >
                 <button type="submit" class="login-btn">ACCEDER</button>
             </form>
@@ -1050,76 +1088,50 @@
     
     <script>
         // =====================================================
-        // SISTEMA DE AUTENTICACIÓN SIMPLE
+        // AUTH GATE — Firebase Auth + Custom Claims
+        // El admin se loguea desde la tienda (store-auth.js).
+        // Este script solo verifica el claim y redirige si no es admin.
         // =====================================================
-        
-        const ADMIN_PASSWORD_HASH = 'volt2026'; // Contraseña simple
-        const SESSION_KEY = 'volt_admin_session';
-        const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 horas
-        
-        // Verificar sesión al cargar
-        document.addEventListener('DOMContentLoaded', function() {
-            checkSession();
-        });
-        
-        function checkSession() {
-            const session = localStorage.getItem(SESSION_KEY);
-            
-            if (session) {
-                const sessionData = JSON.parse(session);
-                const now = Date.now();
-                
-                // Verificar si la sesión no ha expirado
-                if (sessionData.timestamp && (now - sessionData.timestamp) < SESSION_DURATION) {
-                    showAdminPanel();
+
+        window.FirebaseConfig.init();
+        const auth = firebase.auth();
+
+        auth.onAuthStateChanged(async (user) => {
+            // Sin sesión → redirect inmediato
+            if (!user) {
+                window.location.href = '/pages/catalogo.html';
+                return;
+            }
+
+            try {
+                const tokenResult = await user.getIdTokenResult();
+
+                // Sesión válida pero sin claim admin → redirect
+                if (tokenResult.claims.admin !== true) {
+                    await auth.signOut();
+                    window.location.href = '/pages/catalogo.html';
                     return;
                 }
-            }
-            
-            // No hay sesión válida, mostrar login
-            showLoginScreen();
-        }
-        
-        function showLoginScreen() {
-            document.getElementById('loginScreen').style.display = 'flex';
-            document.getElementById('adminPanel').classList.remove('authenticated');
-        }
-        
-        function showAdminPanel() {
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('adminPanel').classList.add('authenticated');
-            initAdminPanel();
-        }
-        
-        // Manejar login
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const password = document.getElementById('passwordInput').value;
-            const errorEl = document.getElementById('loginError');
-            
-            if (password === ADMIN_PASSWORD_HASH) {
-                // Guardar sesión
-                localStorage.setItem(SESSION_KEY, JSON.stringify({
-                    timestamp: Date.now()
-                }));
-                
-                errorEl.classList.remove('show');
-                showAdminPanel();
-            } else {
-                errorEl.classList.add('show');
-                document.getElementById('passwordInput').value = '';
-                document.getElementById('passwordInput').focus();
+
+                // Claim admin confirmado → mostrar panel
+                document.getElementById('adminLoader').style.display = 'none';
+                const panel = document.getElementById('adminPanel');
+                if (!panel.classList.contains('authenticated')) {
+                    panel.classList.add('authenticated');
+                    initAdminPanel();
+                }
+            } catch (err) {
+                console.error('[AdminPanel] Error verificando claims:', err);
+                window.location.href = '/pages/catalogo.html';
             }
         });
-        
-        // Manejar logout
-        document.getElementById('logoutBtn').addEventListener('click', function() {
-            localStorage.removeItem(SESSION_KEY);
-            showLoginScreen();
-            document.getElementById('passwordInput').value = '';
+
+        // Logout → cierra sesión y vuelve a la tienda
+        document.getElementById('logoutBtn').addEventListener('click', async function () {
+            await auth.signOut();
+            window.location.href = '/pages/catalogo.html';
         });
-        
+
         // =====================================================
         // PANEL DE ADMINISTRACIÓN
         // =====================================================

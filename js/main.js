@@ -144,8 +144,11 @@ document.addEventListener("DOMContentLoaded", function () {
         if (checkoutBtn) {
             checkoutBtn.disabled = !hasItems;
         }
-        
+
         updateButtons();
+
+        // Persistir en Firestore si hay sesión activa
+        window.VoltCartSync?.onCartChange([...cart]);
     }
 
     // =====================================================
