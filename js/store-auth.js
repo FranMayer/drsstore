@@ -226,8 +226,21 @@
 
             this._clearErrors();
             const originalHTML = btn.innerHTML;
+            const restoreGoogleBtn = () => {
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
+            };
+
             btn.disabled = true;
             btn.innerHTML = '<span>Conectando...</span>';
+
+            const hangMs = 120000;
+            const hangTimer = setTimeout(() => {
+                if (btn.disabled) {
+                    restoreGoogleBtn();
+                    this._showError(panelId, 'La conexión tardó demasiado. Intentá de nuevo.');
+                }
+            }, hangMs);
 
             try {
                 const provider = new firebase.auth.GoogleAuthProvider();
@@ -257,16 +270,15 @@
                         }).catch(() => {});
                     } catch (fsErr) {
                         await firebase.auth().signOut();
-                        btn.disabled = false;
-                        btn.innerHTML = originalHTML;
+                        restoreGoogleBtn();
                         this._showError(panelId, 'No pudimos guardar tu cuenta. Intentá de nuevo.');
                         return;
                     }
                 }
+                restoreGoogleBtn();
                 // onAuthStateChanged cierra el modal, sync carrito y navbar
             } catch (err) {
-                btn.disabled = false;
-                btn.innerHTML = originalHTML;
+                restoreGoogleBtn();
                 if (
                     err.code === 'auth/popup-closed-by-user' ||
                     err.code === 'auth/cancelled-popup-request'
@@ -280,6 +292,8 @@
                     'auth/operation-not-allowed': 'Google Sign-In no está habilitado en el proyecto.',
                 };
                 this._showError(panelId, msgs[err.code] || err.message || 'Error al conectar con Google. Intentá de nuevo.');
+            } finally {
+                clearTimeout(hangTimer);
             }
         },
 

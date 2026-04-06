@@ -2414,6 +2414,29 @@ body.lightbox-open {
    AUTH MODAL — Login / Registro
    ===================================================== */
 
+/* Bootstrap 5 fuerza fondo claro en .modal-content; este bloque gana por especificidad */
+#voltAuthModal.modal .modal-dialog .modal-content.auth-modal-content,
+#voltAuthModal .modal-content.auth-modal-content {
+    background: #111111 !important;
+    color: #f2f2f2 !important;
+    border: 1px solid #44464c !important;
+    border-radius: 0;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+}
+
+#voltAuthModal .auth-modal-header {
+    background: #111111 !important;
+}
+
+#voltAuthModal .btn-close {
+    filter: invert(1) grayscale(1);
+    opacity: 0.85;
+}
+
+#voltAuthModal .btn-close:hover {
+    opacity: 1;
+}
+
 .auth-modal-content {
     background: #111;
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -2428,6 +2451,7 @@ body.lightbox-open {
     padding: 1.25rem 1.5rem 0;
     border-bottom: 2px solid #C1121F;
     padding-bottom: 0;
+    background: #111111;
 }
 
 .auth-tabs {
@@ -2438,7 +2462,7 @@ body.lightbox-open {
 .auth-tab-btn {
     background: transparent;
     border: none;
-    color: rgba(255, 255, 255, 0.45);
+    color: rgba(255, 255, 255, 0.55);
     font-family: 'Barlow', sans-serif;
     font-size: 0.9rem;
     font-weight: 600;
@@ -2452,20 +2476,21 @@ body.lightbox-open {
 }
 
 .auth-tab-btn.active {
-    color: #fff;
+    color: #f2f2f2 !important;
     border-bottom-color: #C1121F;
 }
 
 .auth-tab-btn:hover:not(.active) {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(255, 255, 255, 0.85);
 }
 
 .auth-modal-body {
     padding: 1.5rem;
+    background: #111111;
 }
 
 .auth-modal-subtitle {
-    color: rgba(255, 255, 255, 0.45);
+    color: rgba(255, 255, 255, 0.55);
     font-size: 0.85rem;
     margin-bottom: 1.25rem;
 }
@@ -2554,6 +2579,17 @@ body.lightbox-open {
 
 .auth-input::placeholder {
     color: rgba(255, 255, 255, 0.2);
+}
+
+/* Autofill del navegador: evita fondo celeste y texto ilegible */
+#voltAuthModal .auth-input:-webkit-autofill,
+#voltAuthModal .auth-input:-webkit-autofill:hover,
+#voltAuthModal .auth-input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px #0a0a0a inset !important;
+    box-shadow: 0 0 0 1000px #0a0a0a inset !important;
+    -webkit-text-fill-color: #f2f2f2 !important;
+    caret-color: #f2f2f2;
+    border-color: rgba(255, 255, 255, 0.2) !important;
 }
 
 .auth-submit-btn {
