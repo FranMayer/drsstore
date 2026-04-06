@@ -20,6 +20,12 @@
 
             this._buildModal();
 
+            // Al cerrar el modal (cualquier causa): volver botones y Google al estado inicial
+            this._modalEl.addEventListener('hidden.bs.modal', () => {
+                this._resetAuthModalFormState();
+                this._clearErrors();
+            });
+
             firebase.auth().onAuthStateChanged((user) => {
                 this._updateNavbar(user);
 
@@ -27,12 +33,16 @@
                     // Cargar carrito desde Firestore y mergear con el local
                     window.VoltCartSync?.loadAndMerge(user.uid);
 
-                    // Si el modal está esperando → resolver y cerrar
                     if (this._resolveAuth) {
                         const resolve = this._resolveAuth;
                         this._resolveAuth = null;
-                        bootstrap.Modal.getInstance(this._modalEl)?.hide();
                         resolve(user);
+                    }
+
+                    // Cerrar modal también si abrió desde "Ingresar" (sin requireAuth → _resolveAuth era null)
+                    const inst = bootstrap.Modal.getInstance(this._modalEl);
+                    if (inst && this._modalEl.classList.contains('show')) {
+                        inst.hide();
                     }
                 } else {
                     // Limpiar carrito local al cerrar sesión
@@ -133,6 +143,31 @@
                 el.textContent = '';
                 el.style.display = 'none';
             });
+        },
+
+        /** Restaura textos y botones del modal (evita "Ingresando..." / Google colgados). */
+        _resetAuthModalFormState() {
+            const loginBtn = document.getElementById('loginSubmitBtn');
+            const regBtn = document.getElementById('registerSubmitBtn');
+            if (loginBtn) {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Ingresar';
+            }
+            if (regBtn) {
+                regBtn.disabled = false;
+                regBtn.textContent = 'Crear cuenta';
+            }
+            const gl = document.getElementById('googleLoginBtn');
+            const gr = document.getElementById('googleRegisterBtn');
+            const inner = this._googleBtnInnerHTML();
+            if (gl) {
+                gl.disabled = false;
+                gl.innerHTML = inner;
+            }
+            if (gr) {
+                gr.disabled = false;
+                gr.innerHTML = inner;
+            }
         },
 
         _showError(panelId, msg) {

@@ -159,12 +159,25 @@
     }
 
     .hero-split__col--left {
-        padding: 40px 24px;
-        min-height: 70vh;
+        padding: 36px 22px;
+        min-height: auto;
     }
 
     .hero-split__col--right {
-        min-height: 40vh;
+        min-height: 42vh;
+    }
+
+    .hero-split.hero-split--compact .hero-split__col--right {
+        min-height: 38vh;
+    }
+
+    .benefit-item__sep {
+        display: none !important;
+    }
+
+    .benefits-strip__inner {
+        flex-direction: column;
+        gap: 20px;
     }
 
     .hero-headline {

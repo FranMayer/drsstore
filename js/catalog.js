@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 <h3 class="product-title">${product.name}</h3>
                 <p class="product-price">$${formattedPrice}</p>
                 <button type="button" class="product-expand-toggle" aria-expanded="false">
-                    <span class="product-expand-label">Seleccionar</span>
+                    <span class="product-expand-label">Elegir opciones</span>
                     <span class="product-expand-icon">+</span>
                 </button>
             </div>
@@ -446,6 +446,24 @@ document.addEventListener('DOMContentLoaded', async function() {
     // FILTRO DE CATEGORÍAS
     // =====================================================
     
+    function applyCategoryFromQuery() {
+        const params = new URLSearchParams(window.location.search);
+        const catParam = params.get('cat');
+        if (!catParam || !categoryList) return;
+        const needle = catParam.toLowerCase().replace(/\+/g, ' ').trim();
+        const lis = categoryList.querySelectorAll('li[data-category]');
+        for (let i = 0; i < lis.length; i++) {
+            const li = lis[i];
+            const v = (li.getAttribute('data-category') || '').toLowerCase();
+            const norm = v.replace(/\s+/g, '-');
+            const n2 = needle.replace(/\s+/g, '-');
+            if (v === needle || norm === n2) {
+                li.click();
+                return;
+            }
+        }
+    }
+
     function initCategoryFilters() {
         const categories = document.querySelectorAll('.category-list li');
         
@@ -844,6 +862,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Cargar categorías y productos al iniciar
     await loadCategories();
     await loadProducts();
+    applyCategoryFromQuery();
     updateCartBadge();
 
     // Escuchar actualizaciones del carrito (desde main.js cuando se elimina)

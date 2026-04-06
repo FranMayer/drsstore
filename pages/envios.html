@@ -25,7 +25,7 @@
     
     <nav class="header" id="mainHeader">
         <a href="/index.html" class="logo-link" aria-label="VOLT — Inicio">
-            <img class="site-logo site-logo--navbar" src="../images-brand/logo-nuevo.png" width="200" height="44" alt="VOLT — Motorsport Culture" style="height: 55px !important; width: auto !important; display: block !important;">
+            <img class="site-logo site-logo--navbar" src="../images-brand/logo-nuevo.png" width="200" height="44" alt="VOLT — Motorsport Culture">
         </a>
 
         <ul id="navMenu">
@@ -75,24 +75,46 @@
         <a href="catalogo.html" class="btn">Ver Catálogo</a>
     </section>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-container">
+    <footer class="footer footer--telemetry">
+        <div class="footer__scanline" aria-hidden="true"></div>
+        <div class="footer__top-rule" aria-hidden="true">
+            <span class="footer__rule-dot"></span>
+            <span class="footer__rule-line"></span>
+            <span class="footer__rule-dot"></span>
+        </div>
+        <div class="footer-container footer-container--dense">
             <div class="footer-section footer-brand">
-                <img class="footer-logo-img" src="../images-brand/Logo blanco.png" height="28" width="160" alt="VOLT — Motorsport Culture">
+                <img class="footer-logo-img" src="../images-brand/Logo blanco.png" width="200" height="36" alt="VOLT — Motorsport Culture">
                 <p class="footer-tagline">Motorsport Culture</p>
                 <p class="footer-brand-desc">Streetwear inspirado en la velocidad y la cultura racing.</p>
             </div>
-    
+
+            <nav class="footer-section footer-nav" aria-label="Navegación pie de página">
+                <h3 class="footer-heading">Tienda</h3>
+                <ul class="footer-links">
+                    <li><a href="/pages/catalogo.html">Shop</a></li>
+                    <li><a href="/pages/about.html">Nosotros</a></li>
+                    <li><a href="/pages/envios.html">Envíos</a></li>
+                    <li><a href="/pages/novedades.html">Novedades</a></li>
+                </ul>
+            </nav>
+
             <div class="footer-section">
-                <h3>Contacto</h3>
-                <p>Email: <a href="mailto:volt.streetcba@gmail.com">volt.streetcba@gmail.com</a></p>
-                <p>Tel: <a href="tel:+5493518588127">+54 9 351 858-8127</a></p>
+                <h3 class="footer-heading">Contacto</h3>
+                <p><a href="mailto:volt.streetcba@gmail.com">volt.streetcba@gmail.com</a></p>
+                <p><a href="tel:+5493518588127">+54 9 351 858-8127</a></p>
             </div>
-    
-            <div class="footer-section">
-                <h3>Síguenos</h3>
-                <p class="footer-social-handle"><a href="https://www.instagram.com/volt.culture/" target="_blank" rel="noopener">@volt.culture</a></p>
+
+            <div class="footer-section footer-section--news">
+                <h3 class="footer-heading">Newsletter</h3>
+                <p class="footer-newsletter-hint">Novedades y drops — dejanos tu mail.</p>
+                <form class="footer-newsletter">
+                    <label for="footer-email-envios" class="visually-hidden">Email</label>
+                    <input type="email" id="footer-email-envios" class="footer-newsletter__input" placeholder="tu@email.com" autocomplete="email" inputmode="email">
+                    <button type="submit" class="footer-newsletter__btn">Enviar</button>
+                </form>
+                <p class="footer-note">Se abrirá tu cliente de correo con el asunto listo.</p>
+                <h3 class="footer-heading footer-heading--social">Redes</h3>
                 <div class="social-icons">
                     <a href="https://www.instagram.com/volt.culture/" target="_blank" rel="noopener" aria-label="Instagram @volt.culture">
                         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
