@@ -524,6 +524,7 @@ input[type="submit"],
     align-items: center;
     justify-content: center;
     background: #111111;
+    isolation: isolate;
 }
 
 .hero-split__media-img {
@@ -2836,7 +2837,7 @@ body.lightbox-open {
 }
 
 .hero-split__media-img {
-    z-index: 0;
+    z-index: 1;
 }
 
 /* Section system */
@@ -3047,11 +3048,12 @@ body.lightbox-open {
     background-size: 56px 56px;
     pointer-events: none;
     opacity: 0.5;
+    z-index: 1;
 }
 
 .drop-banner__inner {
     position: relative;
-    z-index: 1;
+    z-index: 2;
     max-width: 640px;
 }
 
@@ -3107,6 +3109,7 @@ body.lightbox-open {
     opacity: 0.35;
     pointer-events: none;
     display: none;
+    z-index: 1;
 }
 
 @media (min-width: 900px) {
@@ -4091,6 +4094,213 @@ body.lightbox-open {
 .howbuy__main h2,
 .howbuy__main p,
 .howbuy__main .btn {
+    position: relative;
+    z-index: 1;
+}
+
+/* ----- Brand elements (images-brand/brand-elements) — fondo, SVG sin caja ----- */
+.volt-brand-bg {
+    display: block;
+    width: var(--volt-bg-w, min(52vw, 420px));
+    height: auto;
+    max-width: none;
+    object-fit: contain;
+    pointer-events: none;
+    user-select: none;
+    border: none;
+    background: none;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+    opacity: var(--volt-bg-opacity, 0.14);
+    flex-shrink: 0;
+}
+
+.volt-brand-bg--on-red {
+    filter: brightness(0) invert(1);
+    opacity: 0.22;
+}
+
+/* Trazo oscuro en fondo oscuro → silueta clara muy suave */
+.volt-brand-bg--line {
+    filter: brightness(0) invert(1);
+    opacity: 0.075;
+}
+
+.volt-brand-bg--drop {
+    opacity: 0.12;
+    filter: brightness(0) invert(1);
+}
+
+.volt-brand-bg--hero {
+    position: absolute;
+    right: -14%;
+    bottom: -12%;
+    width: min(62vw, 520px);
+    z-index: 0;
+    transform: rotate(-16deg);
+    opacity: 0.13;
+}
+
+.volt-brand-bg--strip {
+    position: absolute;
+    left: -18%;
+    top: 50%;
+    transform: translateY(-50%) rotate(-11deg);
+    width: min(48vw, 340px);
+    z-index: 0;
+}
+
+.category-strip {
+    position: relative;
+    overflow: hidden;
+}
+
+.category-strip > span {
+    position: relative;
+    z-index: 1;
+}
+
+.categories-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.categories-section__wrap {
+    position: relative;
+    z-index: 1;
+}
+
+.volt-brand-bg--categories {
+    position: absolute;
+    right: -12%;
+    top: 22%;
+    width: min(56vw, 440px);
+    z-index: 0;
+    transform: rotate(14deg);
+    opacity: 0.11;
+}
+
+.home-featured.section-panel {
+    position: relative;
+    overflow: hidden;
+}
+
+.home-featured.section-panel > .section-panel__head,
+.home-featured.section-panel > .home-featured__status,
+.home-featured.section-panel > .home-featured__grid {
+    position: relative;
+    z-index: 1;
+}
+
+.volt-brand-bg--featured {
+    position: absolute;
+    left: -14%;
+    bottom: 0;
+    width: min(58vw, 460px);
+    z-index: 0;
+    transform: rotate(-12deg);
+    opacity: 0.1;
+}
+
+.drop-banner__brand {
+    position: absolute;
+    right: -6%;
+    bottom: -18%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.drop-banner__brand .volt-brand-bg--drop {
+    width: min(62vw, 480px);
+    transform: rotate(10deg);
+}
+
+.nueva-era.section-panel {
+    position: relative;
+    overflow: hidden;
+}
+
+.nueva-era.section-panel > .nueva-era__inner {
+    position: relative;
+    z-index: 1;
+}
+
+.volt-brand-bg--nueva-era {
+    position: absolute;
+    right: -10%;
+    top: 50%;
+    transform: translateY(-50%) rotate(-18deg);
+    width: min(50vw, 400px);
+    z-index: 0;
+    opacity: 0.11;
+}
+
+.benefits-strip {
+    position: relative;
+    overflow: hidden;
+}
+
+.benefits-strip__inner {
+    position: relative;
+    z-index: 1;
+}
+
+.volt-brand-bg--benefits {
+    position: absolute;
+    right: -10%;
+    top: 50%;
+    transform: translateY(-50%) rotate(9deg);
+    width: min(52vw, 400px);
+    z-index: 0;
+    opacity: 0.1;
+}
+
+.shop-page-header__brand {
+    position: absolute;
+    right: -8%;
+    top: 20%;
+    width: min(44vw, 320px);
+    z-index: 0;
+    transform: rotate(11deg);
+    opacity: 0.12;
+    pointer-events: none;
+}
+
+.about-hero__brand {
+    position: absolute;
+    left: -6%;
+    top: 15%;
+    width: min(42vw, 300px);
+    z-index: 0;
+    transform: rotate(-14deg);
+    opacity: 0.1;
+    pointer-events: none;
+}
+
+.news-page__brand-bg {
+    position: absolute;
+    right: -4%;
+    top: 8%;
+    width: min(48vw, 360px);
+    z-index: 0;
+    transform: rotate(-12deg);
+    opacity: 0.11;
+    pointer-events: none;
+}
+
+.volt-brand-bg--envios {
+    position: absolute;
+    right: -6%;
+    top: 4%;
+    width: min(40vw, 280px);
+    z-index: 0;
+    transform: rotate(12deg);
+    opacity: 0.11;
+    pointer-events: none;
+}
+
+.envios__main .container .card {
     position: relative;
     z-index: 1;
 }
