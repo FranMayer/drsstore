@@ -731,6 +731,7 @@
             <div class="admin-tabs">
                 <button class="admin-tab active" data-tab="productos">📦 Productos</button>
                 <button class="admin-tab" data-tab="pedidos">🛒 Pedidos</button>
+                <button class="admin-tab" data-tab="configuracion">⚙️ Configuración</button>
             </div>
 
             <!-- ============================================
@@ -906,6 +907,63 @@
                 </div>
             </div>
         </div>
+
+            <!-- ============================================
+                 TAB: CONFIGURACIÓN
+            ============================================ -->
+            <div class="tab-content" id="tab-configuracion" style="display:none;">
+                <h2 class="mb-4">Configuración</h2>
+
+                <!-- Zona de peligro -->
+                <div style="border:1px solid rgba(193,18,31,0.4); padding:1.5rem; background:rgba(193,18,31,0.05);">
+                    <h4 style="color:#c1121f; font-family:'Bebas Neue',sans-serif; letter-spacing:0.1em; margin-bottom:0.5rem;">⚠️ ZONA DE PELIGRO</h4>
+                    <p style="color:rgba(255,255,255,0.6); font-size:0.9rem; margin-bottom:1.5rem;">
+                        Estas acciones son <strong>irreversibles</strong>. Usá esto para limpiar datos de prueba antes de lanzar la tienda.
+                    </p>
+
+                    <div class="d-flex flex-column gap-3" style="max-width:500px;">
+
+                        <div style="border:1px solid rgba(255,255,255,0.1); padding:1rem;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>Eliminar todos los pedidos</strong>
+                                    <p style="margin:0; font-size:0.82rem; color:rgba(255,255,255,0.5);">Borra toda la colección <code>orders</code> de Firestore</p>
+                                </div>
+                                <button class="btn btn-sm" id="cleanOrdersBtn" style="background:#780000; color:#fff; border:none; min-width:90px;">
+                                    Eliminar
+                                </button>
+                            </div>
+                        </div>
+
+                        <div style="border:1px solid rgba(255,255,255,0.1); padding:1rem;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>Eliminar todos los productos</strong>
+                                    <p style="margin:0; font-size:0.82rem; color:rgba(255,255,255,0.5);">Borra toda la colección <code>products</code> de Firestore</p>
+                                </div>
+                                <button class="btn btn-sm" id="cleanProductsBtn" style="background:#780000; color:#fff; border:none; min-width:90px;">
+                                    Eliminar
+                                </button>
+                            </div>
+                        </div>
+
+                        <div style="border:1px solid rgba(193,18,31,0.6); padding:1rem;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong style="color:#c1121f;">Limpiar TODO</strong>
+                                    <p style="margin:0; font-size:0.82rem; color:rgba(255,255,255,0.5);">Elimina pedidos y productos — base de datos vacía</p>
+                                </div>
+                                <button class="btn btn-sm" id="cleanAllBtn" style="background:#c1121f; color:#fff; border:none; min-width:90px;">
+                                    Limpiar todo
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
 
     <!-- Modal: Detalle Orden -->
@@ -949,6 +1007,7 @@
                                     <option value="Remeras">Remeras</option>
                                     <option value="Buzos">Buzos</option>
                                     <option value="Gorras">Gorras</option>
+                                    <option value="Polar">Polar</option>
                                     <option value="Tazas">Tazas</option>
                                     <option value="Llaveros">Llaveros</option>
                                     <option value="Chops">Chops</option>
@@ -1974,6 +2033,53 @@
         document.getElementById('orderStatusFilter').addEventListener('change', loadOrders);
         document.getElementById('orderDateFilter').addEventListener('change', loadOrders);
         document.getElementById('orderSearch').addEventListener('input', loadOrders);
+
+        // =====================================================
+        // LIMPIEZA DE BASE DE DATOS
+        // =====================================================
+        async function runCleanup(target, label) {
+            const confirmed = confirm(`⚠️ ¿Estás seguro que querés eliminar ${label}?\n\nEsta acción es IRREVERSIBLE.`);
+            if (!confirmed) return;
+
+            const btn = document.getElementById(`clean${target === 'orders' ? 'Orders' : target === 'products' ? 'Products' : 'All'}Btn`);
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Eliminando...';
+
+            try {
+                const token = await auth.currentUser.getIdToken();
+                const resp = await fetch('/api/admin-cleanup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ target })
+                });
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    throw new Error(err.error || `Error ${resp.status}`);
+                }
+                const data = await resp.json();
+                const lines = Object.entries(data.deleted)
+                    .map(([col, n]) => `• ${col}: ${n} documentos eliminados`)
+                    .join('\n');
+                alert(`✅ Limpieza completada:\n${lines}`);
+
+                // Recargar datos visibles
+                if (target === 'orders' || target === 'all') await loadOrders();
+                if (target === 'products' || target === 'all') await loadProducts();
+            } catch (err) {
+                alert(`❌ Error en la limpieza: ${err.message}`);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
+        }
+
+        document.getElementById('cleanOrdersBtn').addEventListener('click', () => runCleanup('orders', 'todos los pedidos'));
+        document.getElementById('cleanProductsBtn').addEventListener('click', () => runCleanup('products', 'todos los productos'));
+        document.getElementById('cleanAllBtn').addEventListener('click', () => runCleanup('all', 'TODOS los pedidos y productos'));
     </script>
 </body>
 </html>

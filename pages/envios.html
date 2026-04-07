@@ -25,7 +25,7 @@
     
     <nav class="header" id="mainHeader">
         <a href="/index.html" class="logo-link" aria-label="VOLT — Inicio">
-            <img class="site-logo site-logo--navbar" src="../images-brand/Isotipo color fondo negro.jpg" width="55" height="55" alt="VOLT — Motorsport Culture">
+            <img class="site-logo site-logo--navbar" src="../images-brand/Isotipo color.png" width="78" height="78" alt="VOLT — Motorsport Culture">
         </a>
 
         <ul id="navMenu">
@@ -47,23 +47,25 @@
     <!-- Sección de envíos -->
     <section class="envios__main">
         <div class="container">
-            <img src="../images-brand/brand-elements/3.svg" alt="" class="volt-brand-bg volt-brand-bg--envios" width="280" height="280" aria-hidden="true">
             <div class="card reveal">
-                <div class="icon">📦</div>
-                <h3>Envíos en Córdoba</h3>
-                <p>Si estás en <strong>Córdoba Capital</strong>, te entrego el pedido personalmente, coordinando el punto de entrega que más te convenga.</p>
+                <div class="icon">📍</div>
+                <h3>Córdoba Capital — Sin costo</h3>
+                <p>Si estás en <strong>Córdoba Capital</strong>, el envío es <strong>sin costo</strong>. Coordinamos el punto y horario de entrega directamente por WhatsApp.</p>
+                <a href="https://wa.me/5493518588127?text=Hola!%20Quiero%20coordinar%20la%20entrega%20de%20mi%20pedido%20VOLT" target="_blank" rel="noopener" class="btn" style="margin-top:1rem; display:inline-block;">
+                    Coordinar por WhatsApp
+                </a>
             </div>
-            
+
             <div class="card reveal">
-                <div class="icon">🚛</div>
-                <h3>Envíos al Interior</h3>
-                <p>Si te encuentras en otra provincia de Argentina, el envío se realiza por correo de manera segura y con seguimiento.</p>
+                <div class="icon">🚚</div>
+                <h3>Interior del País — Andreani</h3>
+                <p>Para el resto de Argentina, los envíos se realizan a través de <strong>Andreani</strong>. El costo de envío se calcula según tu localidad al momento de la compra.</p>
             </div>
-            
+
             <div class="card reveal">
                 <div class="icon">⏳</div>
                 <h3>Tiempo de Despacho</h3>
-                <p>El envío se realizará <strong>una vez que el producto esté terminado</strong>. Te avisaremos cuando esté en camino.</p>
+                <p>El pedido se despacha <strong>una vez confirmado el pago</strong>. Te avisamos por mail y WhatsApp cuando esté en camino.</p>
             </div>
         </div>
     </section>
@@ -71,8 +73,39 @@
     <!-- Cómo comprar -->
     <section class="howbuy__main reveal">
         <h2>¿Cómo comprar?</h2>
-        <p>Para realizar una compra, simplemente selecciona los productos que te interesen y agregalos al carrito. Luego, te llevará a una página donde realizar la transferencia o link de pago. Una vez que haya impactado te avisaremos cuando enviemos tu producto!</p>
-        <br>
+
+        <div style="display:flex; flex-direction:column; gap:1.5rem; max-width:560px; margin:2rem auto 0;">
+            <div style="display:flex; align-items:flex-start; gap:1rem;">
+                <span style="font-size:2rem; line-height:1;">🛍️</span>
+                <div>
+                    <strong>1. Elegí tus productos</strong>
+                    <p style="margin:0.25rem 0 0;">Explorá el catálogo, seleccioná talle y color, y agregá al carrito.</p>
+                </div>
+            </div>
+            <div style="display:flex; align-items:flex-start; gap:1rem;">
+                <span style="font-size:2rem; line-height:1;">📋</span>
+                <div>
+                    <strong>2. Completá tus datos</strong>
+                    <p style="margin:0.25rem 0 0;">Ingresá tu nombre, dirección y datos de contacto para el envío.</p>
+                </div>
+            </div>
+            <div style="display:flex; align-items:flex-start; gap:1rem;">
+                <span style="font-size:2rem; line-height:1;">💳</span>
+                <div>
+                    <strong>3. Pagá con MercadoPago</strong>
+                    <p style="margin:0.25rem 0 0;">Usá tarjeta, transferencia o cualquier medio disponible en MercadoPago. 100% seguro.</p>
+                </div>
+            </div>
+            <div style="display:flex; align-items:flex-start; gap:1rem;">
+                <span style="font-size:2rem; line-height:1;">📦</span>
+                <div>
+                    <strong>4. Recibí tu pedido</strong>
+                    <p style="margin:0.25rem 0 0;">Te avisamos cuando tu pedido esté en camino. En Córdoba coordinamos la entrega por WhatsApp; al interior va por Andreani.</p>
+                </div>
+            </div>
+        </div>
+
+        <br><br>
         <a href="catalogo.html" class="btn">Ver Catálogo</a>
     </section>
 
@@ -109,12 +142,12 @@
             <div class="footer-section footer-section--news">
                 <h3 class="footer-heading">Newsletter</h3>
                 <p class="footer-newsletter-hint">Novedades y drops — dejanos tu mail.</p>
-                <form class="footer-newsletter">
+                <form class="footer-newsletter js-newsletter-form">
                     <label for="footer-email-envios" class="visually-hidden">Email</label>
-                    <input type="email" id="footer-email-envios" class="footer-newsletter__input" placeholder="tu@email.com" autocomplete="email" inputmode="email">
+                    <input type="email" id="footer-email-envios" class="footer-newsletter__input" placeholder="tu@email.com" autocomplete="email" inputmode="email" required>
                     <button type="submit" class="footer-newsletter__btn">Enviar</button>
                 </form>
-                <p class="footer-note">Se abrirá tu cliente de correo con el asunto listo.</p>
+                <p class="footer-note js-newsletter-msg"></p>
                 <h3 class="footer-heading footer-heading--social">Redes</h3>
                 <div class="social-icons">
                     <a href="https://www.instagram.com/volt.culture/" target="_blank" rel="noopener" aria-label="Instagram @volt.culture">
@@ -147,5 +180,6 @@
     <!-- Scripts -->
     <script src="/js/animations.js"></script>
     <script src="/js/admin-access.js"></script>
+    <script src="/js/newsletter.js"></script>
 </body>
 </html>
