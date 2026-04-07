@@ -1,0 +1,122 @@
+import { initializeApp, cert, getApps } from 'firebase-admin/app';
+import { getAuth } from 'firebase-admin/auth';
+import { getFirestore } from 'firebase-admin/firestore';
+import { Resend } from 'resend';
+
+const ADMIN_EMAIL = 'volt.streetcba@gmail.com';
+
+function initAdmin() {
+    const projectId   = (process.env.FIREBASE_PROJECT_ID   || '').replace(/^"|"$/g, '').trim();
+    const clientEmail = (process.env.FIREBASE_CLIENT_EMAIL || '').replace(/^"|"$/g, '').trim();
+    const privateKey  = (process.env.FIREBASE_PRIVATE_KEY  || '')
+        .replace(/\\n/g, '\n').replace(/^"|"$/g, '').trim();
+
+    if (!getApps().length) {
+        initializeApp({ credential: cert({ projectId, clientEmail, privateKey }) });
+    }
+    return { auth: getAuth(), db: getFirestore() };
+}
+
+const STATUS_SUBJECTS = {
+    paid:            'Tu pedido VOLT fue confirmado ✅',
+    shipped:         'Tu pedido VOLT está en camino 🚚',
+    delivered:       'Tu pedido VOLT fue entregado 📦',
+    cancelled:       'Tu pedido VOLT fue cancelado',
+    pending_payment: 'Tu pedido VOLT está pendiente de pago',
+};
+
+const STATUS_MESSAGES = {
+    paid:            (name) => `Hola ${name}, tu pago fue confirmado y tu pedido está siendo preparado.`,
+    shipped:         (name) => `Hola ${name}, tu pedido está en camino. Pronto lo vas a recibir.`,
+    delivered:       (name) => `Hola ${name}, tu pedido fue entregado. ¡Gracias por comprar en VOLT!`,
+    cancelled:       (name) => `Hola ${name}, tu pedido fue cancelado. Si tenés dudas, respondé este mail.`,
+    pending_payment: (name) => `Hola ${name}, tu pedido está pendiente de pago. Una vez confirmado, te avisamos.`,
+};
+
+export default async function handler(req, res) {
+    if (req.method !== 'POST') return res.status(405).json({ error: 'Método no permitido' });
+
+    // Verificar token de Firebase
+    const rawToken = (req.headers['authorization'] || '').replace('Bearer ', '').trim();
+    if (!rawToken) return res.status(401).json({ error: 'Token no proporcionado' });
+
+    let decoded;
+    try {
+        const { auth } = initAdmin();
+        decoded = await auth.verifyIdToken(rawToken);
+    } catch {
+        return res.status(401).json({ error: 'Token inválido o expirado' });
+    }
+
+    if (decoded.email !== ADMIN_EMAIL && decoded.admin !== true) {
+        return res.status(403).json({ error: 'Acceso denegado' });
+    }
+
+    const { orderId, status } = req.body || {};
+    if (!orderId || !status) return res.status(400).json({ error: 'Faltan orderId o status' });
+
+    if (!STATUS_SUBJECTS[status]) {
+        return res.status(400).json({ error: `Estado desconocido: ${status}` });
+    }
+
+    try {
+        const { db } = initAdmin();
+        const orderRef = db.collection('orders').doc(orderId);
+        const snap = await orderRef.get();
+        if (!snap.exists) return res.status(404).json({ error: 'Orden no encontrada' });
+
+        // Actualizar estado en Firestore vía Admin SDK (bypasea reglas de seguridad)
+        await orderRef.update({
+            status,
+            updatedAt: new Date()
+        });
+
+        const order = snap.data();
+        const customer = order.customer || {};
+        const customerEmail = customer.email;
+        const customerName = customer.name || 'Cliente VOLT';
+
+        // Email es opcional — si no hay RESEND_API_KEY o no hay email del cliente, igual reportamos éxito
+        if (!process.env.RESEND_API_KEY || !customerEmail) {
+            console.warn('[notify-status] Email omitido:', !process.env.RESEND_API_KEY ? 'sin RESEND_API_KEY' : 'sin email de cliente');
+            return res.status(200).json({ ok: true, emailSent: false });
+        }
+
+        const items = Array.isArray(order.items) ? order.items : [];
+        const total = Number(order.total || 0);
+
+        const itemsHtml = items.length
+            ? items.map(i => {
+                const qty = Number(i.quantity || 1);
+                const price = Number(i.price || 0);
+                return `<li style="margin:0 0 6px 0;">${i.title || 'Producto'} x${qty} — $${price.toLocaleString('es-AR')}</li>`;
+            }).join('')
+            : '<li>Sin detalle de productos</li>';
+
+        const subject = STATUS_SUBJECTS[status];
+        const mainMsg = STATUS_MESSAGES[status](customerName);
+
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        await resend.emails.send({
+            from: 'VOLT Store <noreply@voltculture.com.ar>',
+            to: customerEmail,
+            subject,
+            html: `
+                <div style="background:#0b0b0b;color:#f2f2f2;padding:32px 24px;font-family:Arial,Helvetica,sans-serif;line-height:1.6;max-width:560px;margin:0 auto;">
+                    <h1 style="margin:0 0 16px 0;color:#c1121f;font-size:22px;letter-spacing:0.05em;">⚡ VOLT</h1>
+                    <p style="margin:0 0 16px 0;font-size:16px;">${mainMsg}</p>
+                    <p style="margin:0 0 8px 0;"><strong>Número de orden:</strong> ${order.orderId || orderId}</p>
+                    <p style="margin:0 0 16px 0;"><strong>Total:</strong> $${total.toLocaleString('es-AR')}</p>
+                    <h2 style="margin:0 0 8px 0;color:#c1121f;font-size:16px;">Productos</h2>
+                    <ul style="margin:0 0 24px 18px;padding:0;">${itemsHtml}</ul>
+                    <p style="margin:0;color:#888;font-size:12px;">VOLT — Motorsport Culture · voltculture.com.ar</p>
+                </div>
+            `
+        });
+
+        return res.status(200).json({ ok: true, emailSent: true });
+    } catch (err) {
+        console.error('[notify-status] Error:', err.message);
+        return res.status(500).json({ error: err.message });
+    }
+}

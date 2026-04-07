@@ -246,7 +246,17 @@
             border-color: var(--volt-red);
             color: var(--volt-red);
         }
-        
+
+        .btn-detail {
+            background: var(--volt-gray);
+            border: 1px solid rgba(255,255,255,0.4);
+            color: var(--volt-white);
+        }
+        .btn-detail:hover {
+            border-color: var(--volt-red);
+            color: var(--volt-red);
+        }
+
         .product-thumb {
             width: 60px;
             height: 60px;
@@ -681,34 +691,16 @@
     <!-- ============================================
          LOGIN SCREEN
     ============================================ -->
-    <div class="login-screen" id="loginScreen">
-        <div class="login-box">
+    <div class="login-screen" id="loginScreen" style="display:none;">
+        <div class="login-box" style="text-align:center;">
             <img class="login-logo" src="../images-brand/Logo blanco.png" width="240" height="58" alt="VOLT — Motorsport Culture">
             <div class="login-subtitle">Panel de Administración</div>
-            
-            <div class="login-error" id="loginError">
-                ⚠️ Credenciales incorrectas
-            </div>
-
-            <form id="loginForm">
-                <input
-                    type="email"
-                    class="login-input"
-                    id="emailInput"
-                    placeholder="Email"
-                    autocomplete="email"
-                    required
-                >
-                <input
-                    type="password"
-                    class="login-input"
-                    id="passwordInput"
-                    placeholder="Contraseña"
-                    autocomplete="current-password"
-                    required
-                >
-                <button type="submit" class="login-btn">ACCEDER</button>
-            </form>
+            <p style="color:rgba(255,255,255,0.6); font-size:0.9rem; margin-bottom:1.5rem;">
+                Iniciá sesión con tu cuenta de Google en la tienda para acceder al panel.
+            </p>
+            <a href="/pages/catalogo.html" class="login-btn" style="display:inline-block; text-decoration:none; padding:1rem 2rem;">
+                IR A LA TIENDA
+            </a>
         </div>
     </div>
 
@@ -1096,33 +1088,30 @@
         window.FirebaseConfig.init();
         const auth = firebase.auth();
 
+        const ADMIN_EMAIL = 'volt.streetcba@gmail.com';
+
         auth.onAuthStateChanged(async (user) => {
-            // Sin sesión → redirect inmediato
+            // Sin sesión → mostrar pantalla de login
             if (!user) {
-                window.location.href = '/pages/catalogo.html';
+                document.getElementById('adminLoader').style.display = 'none';
+                document.getElementById('loginScreen').style.display = 'flex';
                 return;
             }
 
-            try {
-                const tokenResult = await user.getIdTokenResult();
-
-                // Sesión válida pero sin claim admin → redirect
-                if (tokenResult.claims.admin !== true) {
-                    await auth.signOut();
-                    window.location.href = '/pages/catalogo.html';
-                    return;
-                }
-
-                // Claim admin confirmado → mostrar panel
+            // Cuenta incorrecta → cerrar sesión y mostrar login
+            if (user.email !== ADMIN_EMAIL) {
+                await auth.signOut();
                 document.getElementById('adminLoader').style.display = 'none';
-                const panel = document.getElementById('adminPanel');
-                if (!panel.classList.contains('authenticated')) {
-                    panel.classList.add('authenticated');
-                    initAdminPanel();
-                }
-            } catch (err) {
-                console.error('[AdminPanel] Error verificando claims:', err);
-                window.location.href = '/pages/catalogo.html';
+                document.getElementById('loginScreen').style.display = 'flex';
+                return;
+            }
+
+            // Email admin confirmado → mostrar panel
+            document.getElementById('adminLoader').style.display = 'none';
+            const panel = document.getElementById('adminPanel');
+            if (!panel.classList.contains('authenticated')) {
+                panel.classList.add('authenticated');
+                initAdminPanel();
             }
         });
 
@@ -1858,7 +1847,7 @@
                             <td class="order-items">${itemsStr}</td>
                             <td class="order-amount">$${(order.total || 0).toLocaleString('es-AR')}</td>
                             <td><span class="order-status ${getStatusClass(order.status)}">${getStatusLabel(order.status)}</span></td>
-                            <td><button class="btn btn-sm btn-outline-volt" onclick="openOrderDetail('${order.id}')">Ver detalle</button></td>
+                            <td><button class="btn btn-sm btn-detail" onclick="openOrderDetail('${order.id}')">Ver detalle</button></td>
                         </tr>
                     `;
                 }).join('');
@@ -1931,23 +1920,43 @@
                 <p><strong>Estado:</strong> <span class="order-status ${getStatusClass(o.status)}">${getStatusLabel(o.status)}</span></p>
                 <div class="d-flex gap-2 align-items-center">
                     <select class="form-select form-select-sm" id="manualOrderStatus" style="width:auto;">
-                        <option value="paid">paid</option>
-                        <option value="shipped">shipped</option>
-                        <option value="delivered">delivered</option>
-                        <option value="cancelled">cancelled</option>
+                        <option value="paid">Pagado</option>
+                        <option value="shipped">Enviado</option>
+                        <option value="delivered">Entregado</option>
+                        <option value="cancelled">Cancelado</option>
+                        <option value="pending_payment">Pago pendiente</option>
                     </select>
                     <button class="btn btn-volt btn-sm" id="saveOrderStatusBtn">Actualizar estado</button>
                 </div>
             `;
-            document.getElementById('manualOrderStatus').value = ['paid', 'shipped', 'delivered', 'cancelled'].includes(o.status) ? o.status : 'paid';
+            document.getElementById('manualOrderStatus').value = ['paid', 'shipped', 'delivered', 'cancelled', 'pending_payment'].includes(o.status) ? o.status : 'paid';
             document.getElementById('saveOrderStatusBtn').onclick = async () => {
-                const status = document.getElementById('manualOrderStatus').value;
-                await db.collection('orders').doc(o.id).update({
-                    status,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                await loadOrders();
-                bootstrap.Modal.getInstance(document.getElementById('orderDetailModal')).hide();
+                const newStatus = document.getElementById('manualOrderStatus').value;
+                const saveBtn = document.getElementById('saveOrderStatusBtn');
+                saveBtn.disabled = true;
+                saveBtn.textContent = 'Guardando...';
+                try {
+                    const token = await auth.currentUser.getIdToken();
+                    const resp = await fetch('/api/notify-status', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ orderId: o.id, status: newStatus })
+                    });
+                    if (!resp.ok) {
+                        const err = await resp.json().catch(() => ({}));
+                        throw new Error(err.error || `Error ${resp.status}`);
+                    }
+                    await loadOrders();
+                    bootstrap.Modal.getInstance(document.getElementById('orderDetailModal')).hide();
+                } catch (err) {
+                    alert(`❌ No se pudo actualizar el estado: ${err.message}`);
+                } finally {
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = 'Actualizar estado';
+                }
             };
             new bootstrap.Modal(document.getElementById('orderDetailModal')).show();
         };

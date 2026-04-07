@@ -2,6 +2,7 @@ import { MercadoPagoConfig, Payment } from 'mercadopago';
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { Resend } from 'resend';
+import { createHmac } from 'crypto';
 
 function initAdmin() {
     const projectId = (process.env.FIREBASE_PROJECT_ID || '').replace(/^"|"$/g, '').trim();
@@ -23,6 +24,41 @@ function initAdmin() {
     return getFirestore();
 }
 
+/**
+ * Valida la firma del webhook de MercadoPago.
+ * Docs: https://www.mercadopago.com.ar/developers/es/docs/your-integrations/notifications/webhooks#validar-origen
+ *
+ * @param {string} xSignature  — header x-signature enviado por MP
+ * @param {string} xRequestId  — header x-request-id enviado por MP
+ * @param {string|number} dataId — el data.id del body (payment ID)
+ * @returns {boolean}
+ */
+function verifyMpSignature(xSignature, xRequestId, dataId) {
+    const secret = process.env.MP_WEBHOOK_SECRET;
+    if (!secret) {
+        // Si no hay secret configurado, loguear advertencia pero no bloquear
+        // (permite activar gradualmente sin romper el webhook ya desplegado)
+        console.warn('[Webhook] MP_WEBHOOK_SECRET no configurado — saltando verificación de firma');
+        return true;
+    }
+
+    // Parsear ts y v1 del header "ts=123,v1=abc..."
+    const parts = {};
+    for (const part of xSignature.split(',')) {
+        const [key, val] = part.split('=');
+        if (key && val) parts[key.trim()] = val.trim();
+    }
+
+    const { ts, v1 } = parts;
+    if (!ts || !v1) return false;
+
+    // Template firmado: id:<dataId>;request-id:<xRequestId>;ts:<ts>;
+    const template = `id:${dataId};request-id:${xRequestId};ts:${ts};`;
+    const computed = createHmac('sha256', secret).update(template).digest('hex');
+
+    return computed === v1;
+}
+
 function mapStatus(mpStatus) {
     if (mpStatus === 'approved') return 'paid';
     if (mpStatus === 'rejected' || mpStatus === 'cancelled') return 'failed';
@@ -30,11 +66,34 @@ function mapStatus(mpStatus) {
     return 'pending_payment';
 }
 
+// Prioridad de estados: el webhook de MP nunca retrocede un estado más avanzado.
+// shipped/delivered/cancelled los maneja el admin manualmente.
+const STATUS_PRIORITY = {
+    pending_payment: 0,
+    failed: 1,
+    mp_error: 1,
+    paid: 2,
+    shipped: 3,
+    delivered: 4,
+    cancelled: 5,
+};
+
 export default async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Método no permitido' });
 
     try {
         const { type, data } = req.body || {};
+
+        // Verificar firma de MercadoPago antes de procesar cualquier evento
+        if (type === 'payment' && data?.id) {
+            const xSignature = req.headers['x-signature'] || '';
+            const xRequestId = req.headers['x-request-id'] || '';
+
+            if (!verifyMpSignature(xSignature, xRequestId, data.id)) {
+                console.error('[Webhook] Firma inválida — solicitud rechazada');
+                return res.status(200).json({ received: true }); // 200 para que MP no reintente
+            }
+        }
         if (type === 'payment' && data?.id) {
             const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
             const payment = new Payment(client);
@@ -45,6 +104,18 @@ export default async function handler(req, res) {
                 const db = initAdmin();
                 const orderRef = db.collection('orders').doc(orderId);
                 const nextStatus = mapStatus(paymentInfo.status);
+
+                // Leer estado actual para no retroceder cambios manuales del admin
+                const currentSnap = await orderRef.get();
+                const currentStatus = currentSnap.exists ? currentSnap.data().status : null;
+                const currentPriority = STATUS_PRIORITY[currentStatus] ?? -1;
+                const nextPriority = STATUS_PRIORITY[nextStatus] ?? -1;
+
+                if (nextPriority <= currentPriority) {
+                    console.log(`[Webhook] Orden ${orderId}: estado actual '${currentStatus}' es más avanzado que '${nextStatus}' — no se sobrescribe`);
+                    return res.status(200).json({ received: true });
+                }
+
                 const payload = {
                     status: nextStatus,
                     paymentId: String(paymentInfo.id),
