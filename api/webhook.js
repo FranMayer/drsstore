@@ -159,6 +159,97 @@ function formatShippingBlockAdminHtml(orderData) {
     `;
 }
 
+function plainWhatsApp(s) {
+    return String(s ?? '')
+        .trim()
+        .replace(/\r\n/g, '\n');
+}
+
+function formatOrderItemsWhatsAppLines(items) {
+    const arr = Array.isArray(items) ? items : [];
+    if (arr.length === 0) return '- (sin detalle)';
+    return arr
+        .map((item) => {
+            const title = plainWhatsApp(item.title || item.name || 'Producto') || 'Producto';
+            const talle = plainWhatsApp(item.variantSize) || '—';
+            const color = plainWhatsApp(item.variantColor) || '—';
+            const qty = Number(item.quantity || 1);
+            return `- ${title} | Talle: ${talle} | Color: ${color} | x${qty}`;
+        })
+        .join('\n');
+}
+
+/** Bloque ENVÍO en texto plano para CallMeBot (sin HTML). */
+function formatShippingWhatsAppBlock(orderData) {
+    const s = orderData.shipping;
+    if (s && s.method && SHIPPING_METHOD_LABELS[s.method]) {
+        const label = SHIPPING_METHOD_LABELS[s.method];
+        const lines = [`ENVÍO: ${label}`];
+        if (s.method === 'andreani' || s.method === 'correo') {
+            const a = s.address || {};
+            lines.push(
+                `Dirección: ${plainWhatsApp(a.street) || '—'}, ${plainWhatsApp(a.city) || '—'}, ${plainWhatsApp(a.province) || '—'} CP:${plainWhatsApp(a.postalCode) || '—'}`
+            );
+        } else if (s.method === 'cadete') {
+            lines.push('Coordinar por WhatsApp');
+        } else if (s.method === 'coordinar') {
+            lines.push(`Nota: ${plainWhatsApp(s.notes) || '—'}`);
+        }
+        return lines.join('\n');
+    }
+    const c = orderData.customer || {};
+    return [
+        'ENVÍO: (pedido anterior)',
+        `Dirección: ${plainWhatsApp(c.address) || '—'}`,
+        `CP: ${plainWhatsApp(c.postalCode) || '—'}`
+    ].join('\n');
+}
+
+function buildAdminWhatsAppMessage(orderData) {
+    const orderId = plainWhatsApp(orderData.orderId) || '(sin id)';
+    const customer = orderData.customer || {};
+    const items = orderData.items || [];
+    const total = Number(orderData.total || 0);
+
+    return [
+        '🏁 NUEVA VENTA VOLT',
+        `Orden: #${orderId}`,
+        `Cliente: ${plainWhatsApp(customer.name) || '—'}`,
+        `Mail: ${plainWhatsApp(customer.email) || '—'}`,
+        `Tel: ${plainWhatsApp(customer.phone) || '—'}`,
+        '',
+        'PRODUCTOS:',
+        formatOrderItemsWhatsAppLines(items),
+        '',
+        formatShippingWhatsAppBlock(orderData),
+        '',
+        `TOTAL: $${total.toLocaleString('es-AR')}`
+    ].join('\n');
+}
+
+/**
+ * Notificación al admin vía CallMeBot (WhatsApp). Requiere ADMIN_WHATSAPP_NUMBER y ADMIN_WHATSAPP_APIKEY.
+ */
+async function sendAdminWhatsApp(orderData) {
+    const phoneRaw = process.env.ADMIN_WHATSAPP_NUMBER;
+    const apikeyRaw = process.env.ADMIN_WHATSAPP_APIKEY;
+    if (!plainWhatsApp(phoneRaw) || !plainWhatsApp(apikeyRaw)) {
+        console.warn(
+            '[Webhook] ADMIN_WHATSAPP_NUMBER o ADMIN_WHATSAPP_APIKEY no definidos — skip notificación WhatsApp al admin'
+        );
+        return;
+    }
+    const phone = plainWhatsApp(phoneRaw).replace(/\s/g, '').replace(/^\+/, '');
+    const apikey = plainWhatsApp(apikeyRaw);
+    const text = buildAdminWhatsAppMessage(orderData);
+    const url = `https://api.callmebot.com/whatsapp.php?phone=${encodeURIComponent(phone)}&text=${encodeURIComponent(text)}&apikey=${encodeURIComponent(apikey)}`;
+    const waRes = await fetch(url, { method: 'GET' });
+    if (!waRes.ok) {
+        const body = await waRes.text().catch(() => '');
+        throw new Error(`CallMeBot HTTP ${waRes.status}: ${body}`);
+    }
+}
+
 /**
  * Transacción: idempotente con inventoryAdjusted; descuenta stock solo la primera vez.
  */
@@ -379,6 +470,14 @@ export default async function handler(req, res) {
                         });
                     } catch (adminMailError) {
                         console.error('Error enviando email de venta al admin:', adminMailError.message);
+                    }
+
+                    try {
+                        const waSnap = await orderRef.get();
+                        const waOrderData = waSnap.exists ? waSnap.data() : {};
+                        await sendAdminWhatsApp(waOrderData);
+                    } catch (waError) {
+                        console.error('Error enviando WhatsApp al admin:', waError.message);
                     }
                 } else {
                     const currentSnap = await orderRef.get();

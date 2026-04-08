@@ -41,12 +41,21 @@ function generateOrderId() {
 const SHIPPING_METHODS = new Set(['cadete', 'andreani', 'correo', 'coordinar']);
 
 function normalizeShipping(raw) {
-    if (!raw || typeof raw !== 'object') {
-        return { error: 'Faltan datos de envío' };
+    if (raw == null || typeof raw !== 'object' || Array.isArray(raw)) {
+        return {
+            error: 'Faltan datos de envío: el cuerpo del POST no incluye el objeto shipping. Revisá el paso 2 (método de envío) y probá de nuevo.'
+        };
     }
-    const method = String(raw.method || '').trim();
+    const method = String(raw.method || '')
+        .trim()
+        .toLowerCase();
     if (!SHIPPING_METHODS.has(method)) {
-        return { error: 'Método de envío inválido' };
+        return {
+            error:
+                method === ''
+                    ? 'Elegí un método de envío en el paso 2 del checkout.'
+                    : `Método de envío inválido: "${raw.method}". Usá cadete, andreani, correo o coordinar.`
+        };
     }
     const addr = raw.address && typeof raw.address === 'object' ? raw.address : {};
     const shipping = {

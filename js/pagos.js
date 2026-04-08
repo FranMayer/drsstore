@@ -193,6 +193,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function getSelectedShippingMethod(modalEl) {
+        const fromData = modalEl.dataset?.voltSelectedShipping;
+        if (fromData && ["cadete", "andreani", "correo", "coordinar"].includes(fromData)) {
+            return fromData;
+        }
         const sel = modalEl.querySelector(".volt-ship-card.is-selected");
         return sel ? sel.getAttribute("data-shipping") : null;
     }
@@ -217,6 +221,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
                 btn.classList.add("is-selected");
                 btn.setAttribute("aria-pressed", "true");
+                const m = btn.getAttribute("data-shipping");
+                if (m) modalEl.dataset.voltSelectedShipping = m;
                 updateShippingFieldVisibility(modalEl);
             });
         });
@@ -248,6 +254,32 @@ document.addEventListener("DOMContentLoaded", () => {
             return { method, address: { ...emptyAddr }, notes: "" };
         }
         return { method: "", address: { ...emptyAddr }, notes: "" };
+    }
+
+    function normalizeShippingShape(s) {
+        const emptyAddr = { street: "", city: "", province: "", postalCode: "" };
+        if (!s || typeof s !== "object") {
+            return { method: "", address: { ...emptyAddr }, notes: "" };
+        }
+        const a = s.address && typeof s.address === "object" ? s.address : {};
+        return {
+            method: String(s.method || "").trim(),
+            address: {
+                street: String(a.street || "").trim(),
+                city: String(a.city || "").trim(),
+                province: String(a.province || "").trim(),
+                postalCode: String(a.postalCode || "").trim(),
+            },
+            notes: String(s.notes || "").trim(),
+        };
+    }
+
+    /** En paso 3 priorizamos el envío validado al salir del paso 2; si no hay snapshot, el DOM. */
+    function resolveShippingForPay(modalEl, step2ShippingSnapshot) {
+        if (step2ShippingSnapshot && step2ShippingSnapshot.method) {
+            return normalizeShippingShape(step2ShippingSnapshot);
+        }
+        return normalizeShippingShape(collectShipping(modalEl));
     }
 
     function validateStep2(modalEl) {
@@ -321,6 +353,7 @@ document.addEventListener("DOMContentLoaded", () => {
         modalEl.querySelector("#customerEmail").value = saved.email || authUser?.email || "";
         modalEl.querySelector("#customerPhone").value = saved.phone || "";
 
+        delete modalEl.dataset.voltSelectedShipping;
         modalEl.querySelectorAll(".volt-ship-card").forEach((b) => {
             b.classList.remove("is-selected");
             b.setAttribute("aria-pressed", "false");
@@ -367,6 +400,8 @@ document.addEventListener("DOMContentLoaded", () => {
         return new Promise((resolve) => {
             const modal = new bootstrap.Modal(modalEl);
             let settled = false;
+            /** Envío validado al pasar del paso 2 al 3 (evita perder método si el DOM cambia antes de pagar). */
+            let step2ShippingSnapshot = null;
 
             const finish = (payload) => {
                 if (settled) return;
@@ -389,6 +424,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const onBack = () => {
                 if (currentStep > 1) {
+                    if (currentStep === 3) step2ShippingSnapshot = null;
                     currentStep -= 1;
                     setStepperUI();
                 }
@@ -413,6 +449,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (currentStep === 2) {
                     const shipping = validateStep2(modalEl);
                     if (!shipping) return;
+                    step2ShippingSnapshot = shipping;
                     const customer = {
                         name: modalEl.querySelector("#customerName").value.trim(),
                         phone: modalEl.querySelector("#customerPhone").value.trim(),
@@ -430,9 +467,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     phone: modalEl.querySelector("#customerPhone").value.trim(),
                     email: modalEl.querySelector("#customerEmail").value.trim(),
                 };
-                const shipping = collectShipping(modalEl);
+                const shipping = resolveShippingForPay(modalEl, step2ShippingSnapshot);
                 if (!shipping.method) {
                     alert("Elegí un método de envío.");
+                    step2ShippingSnapshot = null;
                     currentStep = 2;
                     setStepperUI();
                     return;
@@ -441,6 +479,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const a = shipping.address;
                     if (!a.street || !a.city || !a.province || !a.postalCode) {
                         alert("Completá la dirección de envío.");
+                        step2ShippingSnapshot = null;
                         currentStep = 2;
                         setStepperUI();
                         return;
@@ -448,6 +487,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
                 if (shipping.method === "coordinar" && !shipping.notes.trim()) {
                     alert("Contanos cómo preferís recibir tu pedido.");
+                    step2ShippingSnapshot = null;
                     currentStep = 2;
                     setStepperUI();
                     return;
@@ -459,7 +499,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     return;
                 }
                 setSavedCustomerData(customer);
-                finish({ customer, shipping });
+                const shippingPayload = normalizeShippingShape(shipping);
+                finish({ customer, shipping: shippingPayload });
             };
 
             btnNext.addEventListener("click", onNext);
@@ -522,10 +563,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 variantSize: item.variantSize || "",
             }));
 
+            const postBody = {
+                items,
+                customer,
+                shipping: normalizeShippingShape(shipping),
+            };
+            console.log("[VOLT checkout] POST /api/create-preference body:", JSON.stringify(postBody, null, 2));
+
             const response = await fetch(API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ items, customer, shipping }),
+                body: JSON.stringify(postBody),
             });
 
             const data = await response.json();
