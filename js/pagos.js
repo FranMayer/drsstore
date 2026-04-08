@@ -1,15 +1,12 @@
 /**
  * VOLT Store — Pago con Mercado Pago (Preference API)
  *
- * Flujo: el carrito se envía al backend → se crea una preferencia con el Access Token
- * (solo en servidor) → la API devuelve init_point → redirección al checkout de MP.
+ * Flujo: stepper en modal (datos → envío → resumen) → backend crea preferencia → init_point.
  *
  * Variables de entorno (Vercel / hosting):
- *   MP_ACCESS_TOKEN — Credenciales de producción (o prueba) desde mercadopago.com.ar
- *   SITE_URL — URL pública del sitio (back_urls y webhook)
+ *   MP_ACCESS_TOKEN, SITE_URL
  *
- * Desarrollo local: configurá create_preference.php con tu token y levantá PHP en :8080,
- * o usá `vercel dev` para probar /api/create-preference.
+ * Desarrollo local: create_preference.php o `vercel dev` para /api/create-preference.
  */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -18,7 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!checkoutBtn) return;
 
-    /** Evita doble ejecución si #checkout-btn se dispara más de una vez (clics repetidos o .click() programático). */
     let checkoutFlowActive = false;
 
     const isProduction = !window.location.hostname.includes("localhost");
@@ -27,51 +23,154 @@ document.addEventListener("DOMContentLoaded", () => {
         ? "/api/create-preference"
         : "http://localhost:8080/create_preference.php";
 
+    const SHIPPING_LABELS = {
+        cadete: "Cadete en moto (Córdoba Capital)",
+        andreani: "Andreani",
+        correo: "Correo Argentino",
+        coordinar: "Coordinar entrega",
+    };
+
+    function injectCheckoutStyles() {
+        if (document.getElementById("voltCheckoutModalStyles")) return;
+        const s = document.createElement("style");
+        s.id = "voltCheckoutModalStyles";
+        s.textContent = `
+            #customerDataModal .volt-stepper { display:flex; gap:0; margin-bottom:1rem; padding-bottom:0.75rem; border-bottom:1px solid #44464c; }
+            #customerDataModal .volt-stepper__item { flex:1; text-align:center; font-family:Barlow,sans-serif; font-size:0.7rem; letter-spacing:0.06em; text-transform:uppercase; color:#888; position:relative; }
+            #customerDataModal .volt-stepper__item strong { display:block; font-family:Teko,sans-serif; font-size:1.15rem; letter-spacing:0.06em; margin-bottom:2px; }
+            #customerDataModal .volt-stepper__item.is-active { color:#f2f2f2; }
+            #customerDataModal .volt-stepper__item.is-active strong { color:#c1121f; }
+            #customerDataModal .volt-stepper__item.is-done strong { color:#f2f2f2; }
+            #customerDataModal .volt-stepper__bar { height:3px; background:#333; border-radius:2px; margin-bottom:0.85rem; overflow:hidden; }
+            #customerDataModal .volt-stepper__fill { height:100%; background:#c1121f; width:0%; transition:width 0.25s ease; }
+            #customerDataModal .volt-step-panel { display:none; }
+            #customerDataModal .volt-step-panel.is-visible { display:block; }
+            #customerDataModal .volt-ship-grid { display:grid; grid-template-columns:1fr; gap:0.6rem; }
+            @media (min-width:576px) {
+                #customerDataModal .volt-ship-grid { grid-template-columns:1fr 1fr; }
+            }
+            #customerDataModal .volt-ship-card {
+                border:1px solid #44464c; border-radius:4px; padding:0.65rem 0.75rem; cursor:pointer;
+                background:#161616; text-align:left; transition:border-color 0.15s, background 0.15s;
+                font-family:Barlow,sans-serif; font-size:0.875rem; color:#e8e8e8;
+            }
+            #customerDataModal .volt-ship-card:hover { border-color:#666; }
+            #customerDataModal .volt-ship-card.is-selected { border-color:#c1121f; background:rgba(193,18,31,0.12); }
+            #customerDataModal .volt-ship-card__title { font-family:Teko,sans-serif; font-size:1.25rem; letter-spacing:0.05em; margin:0 0 0.35rem 0; color:#fff; }
+            #customerDataModal .volt-ship-card__meta { font-size:0.78rem; color:#aaa; line-height:1.35; margin:0; }
+            #customerDataModal .volt-summary-list { list-style:none; padding:0; margin:0 0 1rem 0; font-size:0.9rem; }
+            #customerDataModal .volt-summary-list li { padding:0.45rem 0; border-bottom:1px solid #333; display:flex; justify-content:space-between; gap:0.5rem; flex-wrap:wrap; }
+            #customerDataModal .volt-summary-ship { font-size:0.85rem; color:#ccc; line-height:1.5; white-space:pre-wrap; }
+        `;
+        document.head.appendChild(s);
+    }
+
     function createCustomerModal() {
         if (document.getElementById("customerDataModal")) return;
+        injectCheckoutStyles();
         const modal = document.createElement("div");
         modal.className = "modal fade";
         modal.id = "customerDataModal";
         modal.tabIndex = -1;
+        modal.setAttribute("aria-labelledby", "customerDataModalTitle");
         modal.innerHTML = `
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
                 <div class="modal-content" style="background:#111;color:#f2f2f2;border:1px solid #44464c;">
-                    <div class="modal-header" style="border-bottom:1px solid #44464c;">
-                        <h5 class="modal-title" style="font-family:Teko, sans-serif; letter-spacing:0.08em;">DATOS DE ENVIO</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    <div class="modal-header" style="border-bottom:1px solid #44464c;flex-wrap:wrap;gap:0.5rem;">
+                        <h5 class="modal-title" id="customerDataModalTitle" style="font-family:Teko,sans-serif;letter-spacing:0.08em;font-size:1.5rem;">CHECKOUT</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                     </div>
-                    <div class="modal-body">
-                        <form id="customerDataForm">
-                            <div class="mb-2">
-                                <label class="form-label">Nombre y apellido</label>
-                                <input type="text" class="form-control" id="customerName" required>
+                    <div class="modal-body pt-2">
+                        <div class="volt-stepper__bar" aria-hidden="true"><div class="volt-stepper__fill" id="checkoutStepperFill"></div></div>
+                        <div class="volt-stepper" role="navigation" aria-label="Pasos del checkout">
+                            <div class="volt-stepper__item is-active" data-step-indicator="1"><strong>1</strong>Datos</div>
+                            <div class="volt-stepper__item" data-step-indicator="2"><strong>2</strong>Envío</div>
+                            <div class="volt-stepper__item" data-step-indicator="3"><strong>3</strong>Resumen</div>
+                        </div>
+
+                        <div id="checkoutStep1" class="volt-step-panel is-visible">
+                            <form id="customerDataForm" novalidate>
+                                <div class="mb-2">
+                                    <label class="form-label" for="customerName">Nombre completo</label>
+                                    <input type="text" class="form-control" id="customerName" required autocomplete="name" style="background:#1a1a1a;border-color:#44464c;color:#f2f2f2;">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label" for="customerEmail">Email</label>
+                                    <input type="email" class="form-control" id="customerEmail" required autocomplete="email" style="background:#1a1a1a;border-color:#44464c;color:#f2f2f2;">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label" for="customerPhone">Teléfono</label>
+                                    <input type="tel" class="form-control" id="customerPhone" required autocomplete="tel" style="background:#1a1a1a;border-color:#44464c;color:#f2f2f2;">
+                                </div>
+                            </form>
+                        </div>
+
+                        <div id="checkoutStep2" class="volt-step-panel">
+                            <p class="small text-secondary mb-2" style="font-family:Barlow,sans-serif;">Elegí un método de envío</p>
+                            <div class="volt-ship-grid mb-3" role="radiogroup" aria-label="Método de envío">
+                                <button type="button" class="volt-ship-card" data-shipping="cadete" aria-pressed="false">
+                                    <div class="volt-ship-card__title">🏍️ Cadete en moto</div>
+                                    <p class="volt-ship-card__meta">Solo Córdoba Capital. Coordinamos la entrega por WhatsApp. Sin costo adicional en este paso.</p>
+                                </button>
+                                <button type="button" class="volt-ship-card" data-shipping="andreani" aria-pressed="false">
+                                    <div class="volt-ship-card__title">📦 Andreani</div>
+                                    <p class="volt-ship-card__meta">Para todo el país. El costo de envío se coordina por WhatsApp después de la compra.</p>
+                                </button>
+                                <button type="button" class="volt-ship-card" data-shipping="correo" aria-pressed="false">
+                                    <div class="volt-ship-card__title">📮 Correo Argentino</div>
+                                    <p class="volt-ship-card__meta">Para localidades sin cobertura Andreani. El costo de envío se coordina por WhatsApp después de la compra.</p>
+                                </button>
+                                <button type="button" class="volt-ship-card" data-shipping="coordinar" aria-pressed="false">
+                                    <div class="volt-ship-card__title">🤝 Coordinar entrega</div>
+                                    <p class="volt-ship-card__meta">Para casos especiales. Contanos cómo preferís recibir tu pedido.</p>
+                                </button>
                             </div>
-                            <div class="mb-2">
-                                <label class="form-label">Telefono</label>
-                                <input type="tel" class="form-control" id="customerPhone" required>
+                            <div id="shippingAddressFields" class="d-none">
+                                <div class="mb-2">
+                                    <label class="form-label" for="shipStreet">Calle y número</label>
+                                    <input type="text" class="form-control" id="shipStreet" style="background:#1a1a1a;border-color:#44464c;color:#f2f2f2;">
+                                </div>
+                                <div class="row g-2">
+                                    <div class="col-md-6 mb-2">
+                                        <label class="form-label" for="shipCity">Ciudad</label>
+                                        <input type="text" class="form-control" id="shipCity" style="background:#1a1a1a;border-color:#44464c;color:#f2f2f2;">
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <label class="form-label" for="shipProvince">Provincia</label>
+                                        <input type="text" class="form-control" id="shipProvince" style="background:#1a1a1a;border-color:#44464c;color:#f2f2f2;">
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label" for="shipPostalCode">Código postal</label>
+                                    <input type="text" class="form-control" id="shipPostalCode" style="background:#1a1a1a;border-color:#44464c;color:#f2f2f2;">
+                                </div>
                             </div>
-                            <div class="mb-2">
-                                <label class="form-label">Correo</label>
-                                <input type="email" class="form-control" id="customerEmail" required>
+                            <div id="shippingCoordinarField" class="d-none mb-1">
+                                <label class="form-label" for="shipNotes">Contanos cómo preferís recibir tu pedido</label>
+                                <textarea class="form-control" id="shipNotes" rows="3" style="background:#1a1a1a;border-color:#44464c;color:#f2f2f2;"></textarea>
                             </div>
-                            <div class="mb-1">
-                                <label class="form-label">Direccion completa</label>
-                                <textarea class="form-control" id="customerAddress" rows="2" required></textarea>
-                            </div>
-                            <div class="mb-1">
-                                <label class="form-label">CODIGO POSTAL</label>
-                                <input type="text" class="form-control" id="customerPostalCode" required>
-                            </div>
-                        </form>
+                        </div>
+
+                        <div id="checkoutStep3" class="volt-step-panel">
+                            <h6 class="text-uppercase small mb-2" style="font-family:Teko,sans-serif;letter-spacing:0.1em;color:#c1121f;">Tu pedido</h6>
+                            <ul class="volt-summary-list" id="checkoutSummaryItems"></ul>
+                            <h6 class="text-uppercase small mb-2" style="font-family:Teko,sans-serif;letter-spacing:0.1em;color:#c1121f;">Envío</h6>
+                            <div class="volt-summary-ship" id="checkoutSummaryShipping"></div>
+                        </div>
                     </div>
-                    <div class="modal-footer" style="border-top:1px solid #44464c;">
+                    <div class="modal-footer flex-wrap gap-2" style="border-top:1px solid #44464c;">
                         <button type="button" class="btn btn-outline-light btn-sm" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-danger btn-sm" id="customerDataConfirm">Continuar al pago</button>
+                        <div class="ms-auto d-flex flex-wrap gap-2">
+                            <button type="button" class="btn btn-outline-secondary btn-sm d-none" id="checkoutStepBack">Atrás</button>
+                            <button type="button" class="btn btn-danger btn-sm" id="checkoutStepNext">Continuar</button>
+                            <button type="button" class="btn btn-danger btn-sm d-none" id="customerDataConfirm">IR A PAGAR CON MERCADO PAGO</button>
+                        </div>
                     </div>
                 </div>
             </div>
         `;
         document.body.appendChild(modal);
+        bindShippingCards(modal);
     }
 
     function getSavedCustomerData() {
@@ -83,56 +182,289 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function setSavedCustomerData(data) {
-        localStorage.setItem(CUSTOMER_STORAGE_KEY, JSON.stringify(data));
+        localStorage.setItem(
+            CUSTOMER_STORAGE_KEY,
+            JSON.stringify({
+                name: data.name || "",
+                phone: data.phone || "",
+                email: data.email || "",
+            })
+        );
     }
 
-    // Solicita datos de cliente y devuelve objeto listo para enviar al backend.
-    function askCustomerData() {
+    function getSelectedShippingMethod(modalEl) {
+        const sel = modalEl.querySelector(".volt-ship-card.is-selected");
+        return sel ? sel.getAttribute("data-shipping") : null;
+    }
+
+    function updateShippingFieldVisibility(modalEl) {
+        const method = getSelectedShippingMethod(modalEl);
+        const addrBlock = modalEl.querySelector("#shippingAddressFields");
+        const coordBlock = modalEl.querySelector("#shippingCoordinarField");
+        if (!addrBlock || !coordBlock) return;
+        const showAddr = method === "andreani" || method === "correo";
+        const showCoord = method === "coordinar";
+        addrBlock.classList.toggle("d-none", !showAddr);
+        coordBlock.classList.toggle("d-none", !showCoord);
+    }
+
+    function bindShippingCards(modalEl) {
+        modalEl.querySelectorAll(".volt-ship-card[data-shipping]").forEach((btn) => {
+            btn.addEventListener("click", () => {
+                modalEl.querySelectorAll(".volt-ship-card").forEach((b) => {
+                    b.classList.remove("is-selected");
+                    b.setAttribute("aria-pressed", "false");
+                });
+                btn.classList.add("is-selected");
+                btn.setAttribute("aria-pressed", "true");
+                updateShippingFieldVisibility(modalEl);
+            });
+        });
+    }
+
+    function collectShipping(modalEl) {
+        const method = getSelectedShippingMethod(modalEl) || "";
+        const emptyAddr = { street: "", city: "", province: "", postalCode: "" };
+        if (method === "andreani" || method === "correo") {
+            return {
+                method,
+                address: {
+                    street: (modalEl.querySelector("#shipStreet")?.value || "").trim(),
+                    city: (modalEl.querySelector("#shipCity")?.value || "").trim(),
+                    province: (modalEl.querySelector("#shipProvince")?.value || "").trim(),
+                    postalCode: (modalEl.querySelector("#shipPostalCode")?.value || "").trim(),
+                },
+                notes: "",
+            };
+        }
+        if (method === "coordinar") {
+            return {
+                method,
+                address: { ...emptyAddr },
+                notes: (modalEl.querySelector("#shipNotes")?.value || "").trim(),
+            };
+        }
+        if (method === "cadete") {
+            return { method, address: { ...emptyAddr }, notes: "" };
+        }
+        return { method: "", address: { ...emptyAddr }, notes: "" };
+    }
+
+    function validateStep2(modalEl) {
+        const shipping = collectShipping(modalEl);
+        if (!shipping.method) {
+            alert("Elegí un método de envío.");
+            return null;
+        }
+        if (shipping.method === "andreani" || shipping.method === "correo") {
+            const { street, city, province, postalCode } = shipping.address;
+            if (!street || !city || !province || !postalCode) {
+                alert("Completá calle y número, ciudad, provincia y código postal.");
+                return null;
+            }
+        }
+        if (shipping.method === "coordinar" && !shipping.notes) {
+            alert("Contanos cómo preferís recibir tu pedido.");
+            return null;
+        }
+        return shipping;
+    }
+
+    function formatMoney(n) {
+        return `$${Number(n || 0).toLocaleString("es-AR")}`;
+    }
+
+    function renderSummary(modalEl, cart, customer, shipping) {
+        const itemsEl = modalEl.querySelector("#checkoutSummaryItems");
+        const shipEl = modalEl.querySelector("#checkoutSummaryShipping");
+        if (!itemsEl || !shipEl) return;
+
+        itemsEl.innerHTML = cart
+            .map((item) => {
+                const title = item.title || "Producto";
+                const qty = item.quantity || 1;
+                const line = formatMoney(item.price * qty);
+                const bits = [];
+                if (item.variantSize) bits.push(`Talle: ${item.variantSize}`);
+                if (item.variantColor) bits.push(`Color: ${item.variantColor}`);
+                const sub = bits.length ? ` · ${bits.join(" · ")}` : "";
+                return `<li><span>${title}${sub} ×${qty}</span><span>${line}</span></li>`;
+            })
+            .join("");
+
+        const methodLabel = SHIPPING_LABELS[shipping.method] || shipping.method;
+        let shipText = `${methodLabel}\n`;
+        if (shipping.method === "andreani" || shipping.method === "correo") {
+            const a = shipping.address;
+            shipText += `${a.street}\n${a.city}, ${a.province} — CP ${a.postalCode}\n`;
+            shipText += "El costo de envío se coordina por WhatsApp después de la compra.";
+        } else if (shipping.method === "cadete") {
+            shipText += "Córdoba Capital. Coordinamos la entrega por WhatsApp.";
+        } else if (shipping.method === "coordinar") {
+            shipText += shipping.notes;
+        }
+        shipText += `\n\nContacto: ${customer.name} · ${customer.email} · ${customer.phone}`;
+        shipEl.textContent = shipText;
+    }
+
+    /**
+     * @param {Array} cart — ítems del carrito local
+     * @returns {Promise<{customer: object, shipping: object} | null>}
+     */
+    function askCheckoutData(cart) {
         createCustomerModal();
         const modalEl = document.getElementById("customerDataModal");
+
         const saved = getSavedCustomerData();
         const authUser = window.VoltStoreAuth?.getCurrentUser();
-        document.getElementById("customerName").value = saved.name || (authUser?.displayName || "");
-        document.getElementById("customerPhone").value = saved.phone || "";
-        document.getElementById("customerEmail").value = saved.email || (authUser?.email || "");
-        document.getElementById("customerAddress").value = saved.address || "";
-        document.getElementById("customerPostalCode").value = saved.postalCode || "";
+        modalEl.querySelector("#customerName").value = saved.name || authUser?.displayName || "";
+        modalEl.querySelector("#customerEmail").value = saved.email || authUser?.email || "";
+        modalEl.querySelector("#customerPhone").value = saved.phone || "";
+
+        modalEl.querySelectorAll(".volt-ship-card").forEach((b) => {
+            b.classList.remove("is-selected");
+            b.setAttribute("aria-pressed", "false");
+        });
+        ["#shipStreet", "#shipCity", "#shipProvince", "#shipPostalCode", "#shipNotes"].forEach((sel) => {
+            const el = modalEl.querySelector(sel);
+            if (el) el.value = "";
+        });
+        updateShippingFieldVisibility(modalEl);
+
+        let currentStep = 1;
+        const fillEl = modalEl.querySelector("#checkoutStepperFill");
+        const indicators = modalEl.querySelectorAll("[data-step-indicator]");
+        const stepPanels = [
+            modalEl.querySelector("#checkoutStep1"),
+            modalEl.querySelector("#checkoutStep2"),
+            modalEl.querySelector("#checkoutStep3"),
+        ];
+        const btnBack = modalEl.querySelector("#checkoutStepBack");
+        const btnNext = modalEl.querySelector("#checkoutStepNext");
+        const btnPay = modalEl.querySelector("#customerDataConfirm");
+
+        function setStepperUI() {
+            const pct = currentStep === 1 ? "0%" : currentStep === 2 ? "50%" : "100%";
+            if (fillEl) fillEl.style.width = pct;
+            indicators.forEach((ind) => {
+                const n = Number(ind.getAttribute("data-step-indicator"));
+                ind.classList.remove("is-active", "is-done");
+                if (n < currentStep) ind.classList.add("is-done");
+                if (n === currentStep) ind.classList.add("is-active");
+            });
+            stepPanels.forEach((panel, i) => {
+                if (!panel) return;
+                panel.classList.toggle("is-visible", i + 1 === currentStep);
+            });
+            btnBack.classList.toggle("d-none", currentStep === 1);
+            btnNext.classList.toggle("d-none", currentStep === 3);
+            btnPay.classList.toggle("d-none", currentStep !== 3);
+        }
+
+        currentStep = 1;
+        setStepperUI();
 
         return new Promise((resolve) => {
             const modal = new bootstrap.Modal(modalEl);
-            const confirmBtn = document.getElementById("customerDataConfirm");
+            let settled = false;
+
+            const finish = (payload) => {
+                if (settled) return;
+                settled = true;
+                cleanup();
+                modal.hide();
+                resolve(payload);
+            };
 
             const cleanup = () => {
-                confirmBtn.removeEventListener("click", onConfirm);
+                btnNext.removeEventListener("click", onNext);
+                btnBack.removeEventListener("click", onBack);
+                btnPay.removeEventListener("click", onPay);
                 modalEl.removeEventListener("hidden.bs.modal", onHidden);
             };
 
             const onHidden = () => {
-                cleanup();
-                resolve(null);
+                if (!settled) finish(null);
             };
 
-            const onConfirm = () => {
-                const customer = {
-                    name: document.getElementById("customerName").value.trim(),
-                    phone: document.getElementById("customerPhone").value.trim(),
-                    email: document.getElementById("customerEmail").value.trim(),
-                    address: document.getElementById("customerAddress").value.trim(),
-                    postalCode: document.getElementById("customerPostalCode").value.trim(),
-                };
+            const onBack = () => {
+                if (currentStep > 1) {
+                    currentStep -= 1;
+                    setStepperUI();
+                }
+            };
 
-                if (!customer.name || !customer.phone || !customer.email || !customer.address || !customer.postalCode) {
-                    alert("Completá nombre, teléfono, correo, dirección y código postal.");
+            const onNext = () => {
+                if (currentStep === 1) {
+                    const customer = {
+                        name: modalEl.querySelector("#customerName").value.trim(),
+                        phone: modalEl.querySelector("#customerPhone").value.trim(),
+                        email: modalEl.querySelector("#customerEmail").value.trim(),
+                    };
+                    if (!customer.name || !customer.email || !customer.phone) {
+                        alert("Completá nombre completo, email y teléfono.");
+                        return;
+                    }
+                    setSavedCustomerData(customer);
+                    currentStep = 2;
+                    setStepperUI();
                     return;
                 }
-
-                setSavedCustomerData(customer);
-                cleanup();
-                modal.hide();
-                resolve(customer);
+                if (currentStep === 2) {
+                    const shipping = validateStep2(modalEl);
+                    if (!shipping) return;
+                    const customer = {
+                        name: modalEl.querySelector("#customerName").value.trim(),
+                        phone: modalEl.querySelector("#customerPhone").value.trim(),
+                        email: modalEl.querySelector("#customerEmail").value.trim(),
+                    };
+                    renderSummary(modalEl, cart, customer, shipping);
+                    currentStep = 3;
+                    setStepperUI();
+                }
             };
 
-            confirmBtn.addEventListener("click", onConfirm);
+            const onPay = () => {
+                const customer = {
+                    name: modalEl.querySelector("#customerName").value.trim(),
+                    phone: modalEl.querySelector("#customerPhone").value.trim(),
+                    email: modalEl.querySelector("#customerEmail").value.trim(),
+                };
+                const shipping = collectShipping(modalEl);
+                if (!shipping.method) {
+                    alert("Elegí un método de envío.");
+                    currentStep = 2;
+                    setStepperUI();
+                    return;
+                }
+                if (shipping.method === "andreani" || shipping.method === "correo") {
+                    const a = shipping.address;
+                    if (!a.street || !a.city || !a.province || !a.postalCode) {
+                        alert("Completá la dirección de envío.");
+                        currentStep = 2;
+                        setStepperUI();
+                        return;
+                    }
+                }
+                if (shipping.method === "coordinar" && !shipping.notes.trim()) {
+                    alert("Contanos cómo preferís recibir tu pedido.");
+                    currentStep = 2;
+                    setStepperUI();
+                    return;
+                }
+                if (!customer.name || !customer.email || !customer.phone) {
+                    alert("Completá tus datos personales.");
+                    currentStep = 1;
+                    setStepperUI();
+                    return;
+                }
+                setSavedCustomerData(customer);
+                finish({ customer, shipping });
+            };
+
+            btnNext.addEventListener("click", onNext);
+            btnBack.addEventListener("click", onBack);
+            btnPay.addEventListener("click", onPay);
             modalEl.addEventListener("hidden.bs.modal", onHidden, { once: true });
             modal.show();
         });
@@ -154,10 +486,9 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // Requerir sesión antes de continuar
         if (window.VoltStoreAuth) {
             const user = await window.VoltStoreAuth.requireAuth();
-            if (!user) return; // usuario cerró el modal sin loguearse
+            if (!user) return;
         }
 
         checkoutFlowActive = true;
@@ -166,13 +497,14 @@ document.addEventListener("DOMContentLoaded", () => {
         checkoutBtn.disabled = true;
 
         try {
-            const customer = await askCustomerData();
-            if (!customer) {
+            const result = await askCheckoutData(cart);
+            if (!result) {
                 checkoutFlowActive = false;
                 checkoutBtn.innerHTML = originalText;
                 checkoutBtn.disabled = false;
                 return;
             }
+            const { customer, shipping } = result;
 
             const missingId = cart.find((item) => !item.id);
             if (missingId) {
@@ -186,14 +518,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 title: item.title,
                 quantity: item.quantity,
                 price: item.price,
-                variantColor: item.variantColor || '',
-                variantSize: item.variantSize || ''
+                variantColor: item.variantColor || "",
+                variantSize: item.variantSize || "",
             }));
 
             const response = await fetch(API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ items, customer }),
+                body: JSON.stringify({ items, customer, shipping }),
             });
 
             const data = await response.json();
@@ -216,7 +548,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             localStorage.setItem("volt_current_order", data.orderId);
 
-            // Limpiar carrito en Firestore (compra iniciada) y en local
             const uid = firebase.auth().currentUser?.uid;
             if (window.VoltCartSync) {
                 await window.VoltCartSync.clearFirestore(uid);

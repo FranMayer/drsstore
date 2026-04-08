@@ -91,6 +91,74 @@ function formatItemLineHtml(item) {
     return `<li style="margin:0 0 6px 0;">${line} ×${qty} — $${price.toLocaleString('es-AR')}</li>`;
 }
 
+const SHIPPING_METHOD_LABELS = {
+    cadete: 'Cadete en moto (Córdoba Capital)',
+    andreani: 'Andreani',
+    correo: 'Correo Argentino',
+    coordinar: 'Coordinar entrega'
+};
+
+/** Bloque HTML de envío para el cliente (orden nueva con `shipping` u orden legada). */
+function formatShippingBlockClientHtml(orderData) {
+    const s = orderData.shipping;
+    if (s && s.method && SHIPPING_METHOD_LABELS[s.method]) {
+        const label = escapeHtmlAttr(SHIPPING_METHOD_LABELS[s.method]);
+        const parts = [`<p style="margin:0 0 8px 0;"><strong>Método de envío:</strong> ${label}</p>`];
+        if (s.method === 'andreani' || s.method === 'correo') {
+            const a = s.address || {};
+            parts.push(
+                `<p style="margin:0 0 4px 0;"><strong>Dirección:</strong> ${escapeHtmlAttr(a.street || '')}</p>`,
+                `<p style="margin:0 0 4px 0;"><strong>Ciudad:</strong> ${escapeHtmlAttr(a.city || '')} · <strong>Provincia:</strong> ${escapeHtmlAttr(a.province || '')}</p>`,
+                `<p style="margin:0 0 8px 0;"><strong>Código postal:</strong> ${escapeHtmlAttr(a.postalCode || '')}</p>`,
+                `<p style="margin:0 0 12px 0;color:#bdbdbd;font-size:13px;">El costo de envío se coordina por WhatsApp después de la compra.</p>`
+            );
+        } else if (s.method === 'cadete') {
+            parts.push(
+                `<p style="margin:0 0 12px 0;color:#bdbdbd;font-size:13px;">Coordinamos la entrega por WhatsApp (Córdoba Capital).</p>`
+            );
+        } else if (s.method === 'coordinar' && s.notes) {
+            parts.push(`<p style="margin:0 0 12px 0;"><strong>Tu indicación:</strong> ${escapeHtmlAttr(s.notes)}</p>`);
+        }
+        return parts.join('');
+    }
+    const c = orderData.customer || {};
+    return `
+        <p style="margin:0 0 8px 0;"><strong>Dirección de envío:</strong> ${escapeHtmlAttr(c.address || 'Sin dirección')}</p>
+        <p style="margin:0 0 12px 0;"><strong>Código postal:</strong> ${escapeHtmlAttr(c.postalCode || 'Sin código postal')}</p>
+    `;
+}
+
+/** Bloque HTML de envío para el admin (incluye notas completas). */
+function formatShippingBlockAdminHtml(orderData) {
+    const s = orderData.shipping;
+    if (s && s.method && SHIPPING_METHOD_LABELS[s.method]) {
+        const label = escapeHtmlAttr(SHIPPING_METHOD_LABELS[s.method]);
+        const parts = [`<p style="margin:0 0 8px 0;"><strong>Método de envío:</strong> ${label}</p>`];
+        if (s.method === 'andreani' || s.method === 'correo') {
+            const a = s.address || {};
+            parts.push(
+                `<p style="margin:0 0 4px 0;"><strong>Calle y número:</strong> ${escapeHtmlAttr(a.street || '')}</p>`,
+                `<p style="margin:0 0 4px 0;"><strong>Ciudad:</strong> ${escapeHtmlAttr(a.city || '')}</p>`,
+                `<p style="margin:0 0 4px 0;"><strong>Provincia:</strong> ${escapeHtmlAttr(a.province || '')}</p>`,
+                `<p style="margin:0 0 8px 0;"><strong>Código postal:</strong> ${escapeHtmlAttr(a.postalCode || '')}</p>`
+            );
+        } else if (s.method === 'cadete') {
+            parts.push(`<p style="margin:0 0 8px 0;color:#bdbdbd;">Córdoba Capital — coordinar por WhatsApp.</p>`);
+        }
+        if (s.notes) {
+            parts.push(`<p style="margin:0 0 12px 0;"><strong>Nota / indicación:</strong> ${escapeHtmlAttr(s.notes)}</p>`);
+        } else {
+            parts.push('<p style="margin:0 0 12px 0;"></p>');
+        }
+        return parts.join('');
+    }
+    const c = orderData.customer || {};
+    return `
+        <p style="margin:0 0 8px 0;"><strong>Dirección:</strong> ${escapeHtmlAttr(c.address || '-')}</p>
+        <p style="margin:0 0 12px 0;"><strong>Código postal:</strong> ${escapeHtmlAttr(c.postalCode || '-')}</p>
+    `;
+}
+
 /**
  * Transacción: idempotente con inventoryAdjusted; descuenta stock solo la primera vez.
  */
@@ -238,8 +306,6 @@ export default async function handler(req, res) {
                         const customer = orderData.customer || {};
                         const items = Array.isArray(orderData.items) ? orderData.items : [];
                         const total = Number(orderData.total || 0);
-                        const address = customer.address || 'Sin dirección';
-                        const postalCode = customer.postalCode || 'Sin código postal';
                         const customerName = customer.name || 'Cliente VOLT';
                         const customerEmail = customer.email || null;
 
@@ -250,6 +316,7 @@ export default async function handler(req, res) {
                         const itemsHtml = items.length
                             ? items.map((item) => formatItemLineHtml(item)).join('')
                             : '<li>Sin detalle de productos</li>';
+                        const shippingHtml = formatShippingBlockClientHtml(orderData);
 
                         const resend = new Resend(process.env.RESEND_API_KEY);
                         await resend.emails.send({
@@ -261,9 +328,9 @@ export default async function handler(req, res) {
                                     <h1 style="margin:0 0 12px 0;color:#c1121f;font-size:22px;">Pago confirmado</h1>
                                     <p style="margin:0 0 12px 0;">Hola ${escapeHtmlAttr(customerName)}, tu pedido fue confirmado.</p>
                                     <p style="margin:0 0 8px 0;"><strong>Numero de orden:</strong> ${escapeHtmlAttr(orderId)}</p>
-                                    <p style="margin:0 0 8px 0;"><strong>Total:</strong> $${total.toLocaleString('es-AR')}</p>
-                                    <p style="margin:0 0 8px 0;"><strong>Direccion de envio:</strong> ${escapeHtmlAttr(address)}</p>
-                                    <p style="margin:0 0 16px 0;"><strong>Codigo postal:</strong> ${escapeHtmlAttr(postalCode)}</p>
+                                    <p style="margin:0 0 16px 0;"><strong>Total:</strong> $${total.toLocaleString('es-AR')}</p>
+                                    <h2 style="margin:0 0 8px 0;color:#c1121f;font-size:18px;">Envío</h2>
+                                    ${shippingHtml}
                                     <h2 style="margin:0 0 8px 0;color:#c1121f;font-size:18px;">Productos</h2>
                                     <ul style="margin:0 0 16px 18px;padding:0;">${itemsHtml}</ul>
                                     <p style="margin:0;color:#bdbdbd;font-size:12px;">Gracias por comprar en VOLT Store.</p>
@@ -287,6 +354,7 @@ export default async function handler(req, res) {
                         const itemsHtml = items.length
                             ? items.map((item) => formatItemLineHtml(item)).join('')
                             : '<li>Sin detalle de productos</li>';
+                        const shippingAdminHtml = formatShippingBlockAdminHtml(orderData);
 
                         const resend = new Resend(process.env.RESEND_API_KEY);
                         await resend.emails.send({
@@ -301,6 +369,8 @@ export default async function handler(req, res) {
                                     <p style="margin:0 0 8px 0;"><strong>Email:</strong> ${escapeHtmlAttr(customer.email || '-')}</p>
                                     <p style="margin:0 0 8px 0;"><strong>Teléfono:</strong> ${escapeHtmlAttr(customer.phone || '-')}</p>
                                     <p style="margin:0 0 16px 0;"><strong>Total:</strong> $${total.toLocaleString('es-AR')}</p>
+                                    <h2 style="margin:0 0 8px 0;color:#c1121f;font-size:18px;">Envío</h2>
+                                    ${shippingAdminHtml}
                                     <h2 style="margin:0 0 8px 0;color:#c1121f;font-size:18px;">Productos</h2>
                                     <ul style="margin:0 0 16px 18px;padding:0;">${itemsHtml}</ul>
                                     <p style="margin:0;color:#888;font-size:12px;">VOLT — voltculture.com.ar</p>

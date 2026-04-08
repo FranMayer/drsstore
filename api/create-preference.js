@@ -38,6 +38,62 @@ function generateOrderId() {
     return `VOLT-${token}`;
 }
 
+const SHIPPING_METHODS = new Set(['cadete', 'andreani', 'correo', 'coordinar']);
+
+function normalizeShipping(raw) {
+    if (!raw || typeof raw !== 'object') {
+        return { error: 'Faltan datos de envío' };
+    }
+    const method = String(raw.method || '').trim();
+    if (!SHIPPING_METHODS.has(method)) {
+        return { error: 'Método de envío inválido' };
+    }
+    const addr = raw.address && typeof raw.address === 'object' ? raw.address : {};
+    const shipping = {
+        method,
+        address: {
+            street: String(addr.street || '').trim(),
+            city: String(addr.city || '').trim(),
+            province: String(addr.province || '').trim(),
+            postalCode: String(addr.postalCode || '').trim()
+        },
+        notes: String(raw.notes || '').trim()
+    };
+    if (method === 'andreani' || method === 'correo') {
+        const { street, city, province, postalCode } = shipping.address;
+        if (!street || !city || !province || !postalCode) {
+            return { error: 'Completá calle, ciudad, provincia y código postal para este envío' };
+        }
+    }
+    if (method === 'coordinar' && !shipping.notes) {
+        return { error: 'Indicá cómo preferís recibir tu pedido' };
+    }
+    if (method === 'cadete') {
+        shipping.address = { street: '', city: '', province: '', postalCode: '' };
+        shipping.notes = '';
+    }
+    if (method === 'andreani' || method === 'correo') {
+        shipping.notes = '';
+    }
+    if (method === 'coordinar') {
+        shipping.address = { street: '', city: '', province: '', postalCode: '' };
+    }
+    return { shipping };
+}
+
+/** Una línea para metadata de Mercado Pago (límite práctico de caracteres). */
+function shippingSummaryLine(shipping) {
+    const { method, address, notes } = shipping;
+    if (method === 'andreani' || method === 'correo') {
+        const a = address;
+        return `${method}: ${a.street}, ${a.city} ${a.province} CP${a.postalCode}`.slice(0, 240);
+    }
+    if (method === 'coordinar') {
+        return `coordinar: ${notes}`.slice(0, 240);
+    }
+    return 'cadete: Córdoba Capital';
+}
+
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -54,13 +110,18 @@ export default async function handler(req, res) {
             });
         }
 
-        const { items, customer } = req.body || {};
+        const { items, customer, shipping: shippingRaw } = req.body || {};
         if (!items || !Array.isArray(items) || items.length === 0) {
             return res.status(400).json({ error: 'El carrito está vacío' });
         }
-        if (!customer?.name || !customer?.phone || !customer?.email || !customer?.address || !customer?.postalCode) {
-            return res.status(400).json({ error: 'Faltan datos del cliente para el envío' });
+        if (!customer?.name || !customer?.phone || !customer?.email) {
+            return res.status(400).json({ error: 'Faltan datos del cliente (nombre, teléfono y email)' });
         }
+        const shipNorm = normalizeShipping(shippingRaw);
+        if (shipNorm.error) {
+            return res.status(400).json({ error: shipNorm.error });
+        }
+        const shipping = shipNorm.shipping;
 
         const normalizedItems = items.map(item => ({
             id: String(item.id || item.productId || '').trim(),
@@ -125,10 +186,9 @@ export default async function handler(req, res) {
                 customer: {
                     name: String(customer.name).trim(),
                     phone: String(customer.phone).trim(),
-                    email: String(customer.email).trim(),
-                    address: String(customer.address).trim(),
-                    postalCode: String(customer.postalCode).trim()
+                    email: String(customer.email).trim()
                 },
+                shipping,
                 items: normalizedItems,
                 total,
                 paymentId: null,
@@ -174,8 +234,8 @@ export default async function handler(req, res) {
                         customer_name: String(customer.name).trim(),
                         customer_phone: String(customer.phone).trim(),
                         customer_email: String(customer.email).trim(),
-                        shipping_address: String(customer.address).trim(),
-                        shipping_postal_code: String(customer.postalCode).trim()
+                        shipping_method: shipping.method,
+                        shipping_summary: shippingSummaryLine(shipping)
                     }
                 }
             });

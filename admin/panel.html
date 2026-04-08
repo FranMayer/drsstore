@@ -1847,6 +1847,49 @@
         
         let allOrders = [];
         let selectedOrder = null;
+
+        function adminShippingHtml(o) {
+            const s = o.shipping;
+            if (s && s.method) {
+                const labels = {
+                    cadete: 'Cadete en moto (Córdoba Capital)',
+                    andreani: 'Andreani',
+                    correo: 'Correo Argentino',
+                    coordinar: 'Coordinar entrega'
+                };
+                const bits = [`<strong>Envío:</strong> ${labels[s.method] || s.method}`];
+                if (s.method === 'andreani' || s.method === 'correo') {
+                    const a = s.address || {};
+                    bits.push(`<strong>Dirección:</strong> ${a.street || '-'}`);
+                    bits.push(`${a.city || '-'}, ${a.province || '-'} — CP ${a.postalCode || '-'}`);
+                } else if (s.method === 'cadete') {
+                    bits.push('<span style="color:rgba(255,255,255,0.5)">Coordinar entrega por WhatsApp</span>');
+                }
+                if (s.notes) bits.push(`<strong>Nota:</strong> ${s.notes}`);
+                return bits.join('<br>');
+            }
+            return `<strong>Dirección:</strong> ${o.customer?.address || '-'}`;
+        }
+
+        function adminShippingPlain(o) {
+            const s = o.shipping;
+            if (s && s.method) {
+                const labels = {
+                    cadete: 'Cadete en moto (Córdoba Capital)',
+                    andreani: 'Andreani',
+                    correo: 'Correo Argentino',
+                    coordinar: 'Coordinar entrega'
+                };
+                let t = `Envío: ${labels[s.method] || s.method}\n`;
+                if (s.method === 'andreani' || s.method === 'correo') {
+                    const a = s.address || {};
+                    t += `Calle: ${a.street || ''}\nCiudad: ${a.city || ''}\nProvincia: ${a.province || ''}\nCP: ${a.postalCode || ''}\n`;
+                }
+                if (s.notes) t += `Nota: ${s.notes}\n`;
+                return t.trimEnd();
+            }
+            return `Direccion: ${o.customer?.address || '-'}`;
+        }
         
         async function loadOrders() {
             const tbody = document.getElementById('ordersTable');
@@ -1980,7 +2023,7 @@
                 <p><strong>Cliente:</strong> ${o.customer?.name || '-'}<br>
                 <strong>Email:</strong> ${o.customer?.email || '-'}<br>
                 <strong>Tel:</strong> ${o.customer?.phone || '-'}<br>
-                <strong>Dirección:</strong> ${o.customer?.address || '-'}</p>
+                ${adminShippingHtml(o)}</p>
                 <ul style="padding-left:18px;">${items}</ul>
                 <p><strong>Total:</strong> $${Number(o.total || 0).toLocaleString('es-AR')}</p>
                 <p><strong>Estado:</strong> <span class="order-status ${getStatusClass(o.status)}">${getStatusLabel(o.status)}</span></p>
@@ -2031,7 +2074,7 @@
             if (!selectedOrder) return;
             const o = selectedOrder;
             const items = (o.items || []).map(i => `- ${i.title || i.name} x${i.quantity}`).join('\n');
-            const text = `Nombre: ${o.customer?.name || '-'}\nTelefono: ${o.customer?.phone || '-'}\nEmail: ${o.customer?.email || '-'}\nDireccion: ${o.customer?.address || '-'}\n\nProductos:\n${items}`;
+            const text = `Nombre: ${o.customer?.name || '-'}\nTelefono: ${o.customer?.phone || '-'}\nEmail: ${o.customer?.email || '-'}\n${adminShippingPlain(o)}\n\nProductos:\n${items}`;
             await navigator.clipboard.writeText(text);
             alert('✅ Datos de envío copiados');
         });
