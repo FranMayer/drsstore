@@ -12,39 +12,11 @@
 document.addEventListener("DOMContentLoaded", () => {
     const checkoutBtn = document.getElementById("checkout-btn");
     const CUSTOMER_STORAGE_KEY = "volt_checkout_customer";
-    /** Respaldo si el objeto devuelto por el modal no trae shipping (caché, race, etc.). */
-    const PENDING_SHIPPING_KEY = "volt_checkout_shipping_pending";
+
+    /** Envío validado al tocar "Continuar" en paso 2; se usa en "IR A PAGAR" y se limpia al cerrar/resetear el modal. */
+    let _shippingConfirmado = null;
 
     if (!checkoutBtn) return;
-
-    function getPendingShippingFromSession() {
-        try {
-            const raw = sessionStorage.getItem(PENDING_SHIPPING_KEY);
-            if (!raw) return null;
-            const p = JSON.parse(raw);
-            return p && typeof p === "object" && !Array.isArray(p) ? p : null;
-        } catch {
-            return null;
-        }
-    }
-
-    function setPendingShippingInSession(shipping) {
-        try {
-            if (shipping && typeof shipping === "object") {
-                sessionStorage.setItem(PENDING_SHIPPING_KEY, JSON.stringify(shipping));
-            }
-        } catch (_) {
-            /* ignore quota / private mode */
-        }
-    }
-
-    function clearPendingShippingSession() {
-        try {
-            sessionStorage.removeItem(PENDING_SHIPPING_KEY);
-        } catch (_) {
-            /* ignore */
-        }
-    }
 
     let checkoutFlowActive = false;
 
@@ -60,6 +32,8 @@ document.addEventListener("DOMContentLoaded", () => {
         correo: "Correo Argentino",
         coordinar: "Coordinar entrega",
     };
+
+    const SHIPPING_METHODS = ["cadete", "andreani", "correo", "coordinar"];
 
     function injectCheckoutStyles() {
         if (document.getElementById("voltCheckoutModalStyles")) return;
@@ -223,17 +197,16 @@ document.addEventListener("DOMContentLoaded", () => {
         );
     }
 
-    function getSelectedShippingMethod(modalEl) {
-        const fromData = modalEl.dataset?.voltSelectedShipping;
-        if (fromData && ["cadete", "andreani", "correo", "coordinar"].includes(fromData)) {
-            return fromData;
-        }
-        const sel = modalEl.querySelector(".volt-ship-card.is-selected");
-        return sel ? sel.getAttribute("data-shipping") : null;
+    function getSelectedCardMethod(modalEl) {
+        const card = modalEl.querySelector(".volt-ship-card.is-selected");
+        if (!card) return null;
+        const method = card.getAttribute("data-shipping");
+        if (!method || !SHIPPING_METHODS.includes(method)) return null;
+        return method;
     }
 
     function updateShippingFieldVisibility(modalEl) {
-        const method = getSelectedShippingMethod(modalEl);
+        const method = getSelectedCardMethod(modalEl);
         const addrBlock = modalEl.querySelector("#shippingAddressFields");
         const coordBlock = modalEl.querySelector("#shippingCoordinarField");
         if (!addrBlock || !coordBlock) return;
@@ -252,39 +225,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
                 btn.classList.add("is-selected");
                 btn.setAttribute("aria-pressed", "true");
-                const m = btn.getAttribute("data-shipping");
-                if (m) modalEl.dataset.voltSelectedShipping = m;
                 updateShippingFieldVisibility(modalEl);
             });
         });
-    }
-
-    function collectShipping(modalEl) {
-        const method = getSelectedShippingMethod(modalEl) || "";
-        const emptyAddr = { street: "", city: "", province: "", postalCode: "" };
-        if (method === "andreani" || method === "correo") {
-            return {
-                method,
-                address: {
-                    street: (modalEl.querySelector("#shipStreet")?.value || "").trim(),
-                    city: (modalEl.querySelector("#shipCity")?.value || "").trim(),
-                    province: (modalEl.querySelector("#shipProvince")?.value || "").trim(),
-                    postalCode: (modalEl.querySelector("#shipPostalCode")?.value || "").trim(),
-                },
-                notes: "",
-            };
-        }
-        if (method === "coordinar") {
-            return {
-                method,
-                address: { ...emptyAddr },
-                notes: (modalEl.querySelector("#shipNotes")?.value || "").trim(),
-            };
-        }
-        if (method === "cadete") {
-            return { method, address: { ...emptyAddr }, notes: "" };
-        }
-        return { method: "", address: { ...emptyAddr }, notes: "" };
     }
 
     function normalizeShippingShape(s) {
@@ -305,34 +248,9 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
-    /** En paso 3 priorizamos el envío validado al salir del paso 2; si no hay snapshot, el DOM. */
-    function resolveShippingForPay(modalEl, step2ShippingSnapshot) {
-        const resolved =
-            step2ShippingSnapshot && step2ShippingSnapshot.method
-                ? normalizeShippingShape(step2ShippingSnapshot)
-                : normalizeShippingShape(collectShipping(modalEl));
-        console.log("[DEBUG] shipping resuelto:", JSON.stringify(resolved, null, 2));
-        return resolved;
-    }
-
-    function validateStep2(modalEl) {
-        const shipping = collectShipping(modalEl);
-        if (!shipping.method) {
-            alert("Elegí un método de envío.");
-            return null;
-        }
-        if (shipping.method === "andreani" || shipping.method === "correo") {
-            const { street, city, province, postalCode } = shipping.address;
-            if (!street || !city || !province || !postalCode) {
-                alert("Completá calle y número, ciudad, provincia y código postal.");
-                return null;
-            }
-        }
-        if (shipping.method === "coordinar" && !shipping.notes) {
-            alert("Contanos cómo preferís recibir tu pedido.");
-            return null;
-        }
-        return shipping;
+    function cloneShipping(s) {
+        const n = normalizeShippingShape(s);
+        return { ...n, address: { ...n.address } };
     }
 
     function formatMoney(n) {
@@ -373,6 +291,50 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /**
+     * Paso 2 → 3: lee `.volt-ship-card.is-selected`, arma objeto y guarda en _shippingConfirmado.
+     * @returns {object|null}
+     */
+    function confirmShippingStep2(modalEl) {
+        const card = modalEl.querySelector(".volt-ship-card.is-selected");
+        if (!card) {
+            alert("Elegí un método de envío.");
+            return null;
+        }
+        const method = card.getAttribute("data-shipping");
+        if (!method || !SHIPPING_METHODS.includes(method)) {
+            alert("Elegí un método de envío.");
+            return null;
+        }
+
+        const emptyAddr = { street: "", city: "", province: "", postalCode: "" };
+
+        if (method === "andreani" || method === "correo") {
+            const address = {
+                street: (modalEl.querySelector("#shipStreet")?.value || "").trim(),
+                city: (modalEl.querySelector("#shipCity")?.value || "").trim(),
+                province: (modalEl.querySelector("#shipProvince")?.value || "").trim(),
+                postalCode: (modalEl.querySelector("#shipPostalCode")?.value || "").trim(),
+            };
+            if (!address.street || !address.city || !address.province || !address.postalCode) {
+                alert("Completá calle y número, ciudad, provincia y código postal.");
+                return null;
+            }
+            return { method, address, notes: "" };
+        }
+
+        if (method === "coordinar") {
+            const notes = (modalEl.querySelector("#shipNotes")?.value || "").trim();
+            if (!notes) {
+                alert("Contanos cómo preferís recibir tu pedido.");
+                return null;
+            }
+            return { method, address: { ...emptyAddr }, notes };
+        }
+
+        return { method, address: { ...emptyAddr }, notes: "" };
+    }
+
+    /**
      * @param {Array} cart — ítems del carrito local
      * @returns {Promise<{customer: object, shipping: object} | null>}
      */
@@ -380,14 +342,14 @@ document.addEventListener("DOMContentLoaded", () => {
         createCustomerModal();
         const modalEl = document.getElementById("customerDataModal");
 
+        _shippingConfirmado = null;
+
         const saved = getSavedCustomerData();
         const authUser = window.VoltStoreAuth?.getCurrentUser();
         modalEl.querySelector("#customerName").value = saved.name || authUser?.displayName || "";
         modalEl.querySelector("#customerEmail").value = saved.email || authUser?.email || "";
         modalEl.querySelector("#customerPhone").value = saved.phone || "";
 
-        delete modalEl.dataset.voltSelectedShipping;
-        clearPendingShippingSession();
         modalEl.querySelectorAll(".volt-ship-card").forEach((b) => {
             b.classList.remove("is-selected");
             b.setAttribute("aria-pressed", "false");
@@ -434,8 +396,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return new Promise((resolve) => {
             const modal = new bootstrap.Modal(modalEl);
             let settled = false;
-            /** Envío validado al pasar del paso 2 al 3 (evita perder método si el DOM cambia antes de pagar). */
-            let step2ShippingSnapshot = null;
 
             const finish = (payload) => {
                 if (settled) return;
@@ -454,14 +414,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const onHidden = () => {
                 if (!settled) {
-                    clearPendingShippingSession();
+                    _shippingConfirmado = null;
                     finish(null);
                 }
             };
 
             const onBack = () => {
                 if (currentStep > 1) {
-                    if (currentStep === 3) step2ShippingSnapshot = null;
+                    if (currentStep === 3) _shippingConfirmado = null;
                     currentStep -= 1;
                     setStepperUI();
                 }
@@ -484,40 +444,35 @@ document.addEventListener("DOMContentLoaded", () => {
                     return;
                 }
                 if (currentStep === 2) {
-                    const shipping = validateStep2(modalEl);
+                    const shipping = confirmShippingStep2(modalEl);
                     if (!shipping) return;
-                    step2ShippingSnapshot = shipping;
-                    setPendingShippingInSession(shipping);
+                    _shippingConfirmado = shipping;
                     const customer = {
                         name: modalEl.querySelector("#customerName").value.trim(),
                         phone: modalEl.querySelector("#customerPhone").value.trim(),
                         email: modalEl.querySelector("#customerEmail").value.trim(),
                     };
-                    renderSummary(modalEl, cart, customer, shipping);
+                    renderSummary(modalEl, cart, customer, _shippingConfirmado);
                     currentStep = 3;
                     setStepperUI();
                 }
             };
 
             const onPay = () => {
-                const customer = {
-                    name: modalEl.querySelector("#customerName").value.trim(),
-                    phone: modalEl.querySelector("#customerPhone").value.trim(),
-                    email: modalEl.querySelector("#customerEmail").value.trim(),
-                };
-                const shipping = resolveShippingForPay(modalEl, step2ShippingSnapshot);
-                if (!shipping.method) {
-                    alert("Elegí un método de envío.");
-                    step2ShippingSnapshot = null;
+                if (!_shippingConfirmado || !String(_shippingConfirmado.method || "").trim()) {
+                    alert("Por favor volvé al paso 2 y elegí un método de envío");
                     currentStep = 2;
                     setStepperUI();
                     return;
                 }
+
+                const shipping = cloneShipping(_shippingConfirmado);
+                const a = shipping.address;
+
                 if (shipping.method === "andreani" || shipping.method === "correo") {
-                    const a = shipping.address;
                     if (!a.street || !a.city || !a.province || !a.postalCode) {
                         alert("Completá la dirección de envío.");
-                        step2ShippingSnapshot = null;
+                        _shippingConfirmado = null;
                         currentStep = 2;
                         setStepperUI();
                         return;
@@ -525,24 +480,28 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
                 if (shipping.method === "coordinar" && !shipping.notes.trim()) {
                     alert("Contanos cómo preferís recibir tu pedido.");
-                    step2ShippingSnapshot = null;
+                    _shippingConfirmado = null;
                     currentStep = 2;
                     setStepperUI();
                     return;
                 }
+
+                const customer = {
+                    name: modalEl.querySelector("#customerName").value.trim(),
+                    phone: modalEl.querySelector("#customerPhone").value.trim(),
+                    email: modalEl.querySelector("#customerEmail").value.trim(),
+                };
                 if (!customer.name || !customer.email || !customer.phone) {
                     alert("Completá tus datos personales.");
                     currentStep = 1;
                     setStepperUI();
                     return;
                 }
+
                 setSavedCustomerData(customer);
-                const shippingPayload = normalizeShippingShape(shipping);
-                setPendingShippingInSession(shippingPayload);
-                finish({
-                    customer,
-                    shipping: { ...shippingPayload, address: { ...shippingPayload.address } },
-                });
+                const payload = { customer, shipping: cloneShipping(_shippingConfirmado) };
+                _shippingConfirmado = null;
+                finish(payload);
             };
 
             btnNext.addEventListener("click", onNext);
@@ -587,7 +546,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 checkoutBtn.disabled = false;
                 return;
             }
-            const { customer, shipping: shippingFromModal } = result;
+            const { customer, shipping } = result;
 
             const missingId = cart.find((item) => !item.id);
             if (missingId) {
@@ -605,25 +564,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 variantSize: item.variantSize || "",
             }));
 
-            const hasValidMethod = (s) =>
-                s && typeof s === "object" && String(s.method || "").trim() !== "";
-
-            const shippingSource = hasValidMethod(shippingFromModal)
-                ? shippingFromModal
-                : getPendingShippingFromSession() || {};
-
             const postBody = {
                 items,
                 customer,
-                shipping: normalizeShippingShape(shippingSource),
+                shipping: normalizeShippingShape(shipping),
             };
-            console.log("[DEBUG] postBody:", JSON.stringify(postBody, null, 2));
-            if (!String(postBody.shipping.method || "").trim()) {
-                clearPendingShippingSession();
-                throw new Error(
-                    "No se pudo obtener el método de envío. Volvé al paso 2, elegí una opción y tocá Continuar otra vez."
-                );
-            }
 
             const response = await fetch(API_URL, {
                 method: "POST",
@@ -650,7 +595,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             localStorage.setItem("volt_current_order", data.orderId);
-            clearPendingShippingSession();
 
             const uid = firebase.auth().currentUser?.uid;
             if (window.VoltCartSync) {
