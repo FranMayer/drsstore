@@ -119,7 +119,21 @@ export default async function handler(req, res) {
             });
         }
 
-        const { items, customer, shipping: shippingRaw } = req.body || {};
+        let body = req.body;
+        if (typeof body === 'string') {
+            try {
+                body = JSON.parse(body);
+            } catch {
+                body = {};
+            }
+        }
+        if (!body || typeof body !== 'object' || Array.isArray(body)) {
+            body = {};
+        }
+
+        const items = body.items;
+        const customer = body.customer;
+        const shippingRaw = body.shipping ?? body.Shipping;
         if (!items || !Array.isArray(items) || items.length === 0) {
             return res.status(400).json({ error: 'El carrito está vacío' });
         }

@@ -12,8 +12,39 @@
 document.addEventListener("DOMContentLoaded", () => {
     const checkoutBtn = document.getElementById("checkout-btn");
     const CUSTOMER_STORAGE_KEY = "volt_checkout_customer";
+    /** Respaldo si el objeto devuelto por el modal no trae shipping (caché, race, etc.). */
+    const PENDING_SHIPPING_KEY = "volt_checkout_shipping_pending";
 
     if (!checkoutBtn) return;
+
+    function getPendingShippingFromSession() {
+        try {
+            const raw = sessionStorage.getItem(PENDING_SHIPPING_KEY);
+            if (!raw) return null;
+            const p = JSON.parse(raw);
+            return p && typeof p === "object" && !Array.isArray(p) ? p : null;
+        } catch {
+            return null;
+        }
+    }
+
+    function setPendingShippingInSession(shipping) {
+        try {
+            if (shipping && typeof shipping === "object") {
+                sessionStorage.setItem(PENDING_SHIPPING_KEY, JSON.stringify(shipping));
+            }
+        } catch (_) {
+            /* ignore quota / private mode */
+        }
+    }
+
+    function clearPendingShippingSession() {
+        try {
+            sessionStorage.removeItem(PENDING_SHIPPING_KEY);
+        } catch (_) {
+            /* ignore */
+        }
+    }
 
     let checkoutFlowActive = false;
 
@@ -276,10 +307,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     /** En paso 3 priorizamos el envío validado al salir del paso 2; si no hay snapshot, el DOM. */
     function resolveShippingForPay(modalEl, step2ShippingSnapshot) {
-        if (step2ShippingSnapshot && step2ShippingSnapshot.method) {
-            return normalizeShippingShape(step2ShippingSnapshot);
-        }
-        return normalizeShippingShape(collectShipping(modalEl));
+        const resolved =
+            step2ShippingSnapshot && step2ShippingSnapshot.method
+                ? normalizeShippingShape(step2ShippingSnapshot)
+                : normalizeShippingShape(collectShipping(modalEl));
+        console.log("[DEBUG] shipping resuelto:", JSON.stringify(resolved, null, 2));
+        return resolved;
     }
 
     function validateStep2(modalEl) {
@@ -354,6 +387,7 @@ document.addEventListener("DOMContentLoaded", () => {
         modalEl.querySelector("#customerPhone").value = saved.phone || "";
 
         delete modalEl.dataset.voltSelectedShipping;
+        clearPendingShippingSession();
         modalEl.querySelectorAll(".volt-ship-card").forEach((b) => {
             b.classList.remove("is-selected");
             b.setAttribute("aria-pressed", "false");
@@ -419,7 +453,10 @@ document.addEventListener("DOMContentLoaded", () => {
             };
 
             const onHidden = () => {
-                if (!settled) finish(null);
+                if (!settled) {
+                    clearPendingShippingSession();
+                    finish(null);
+                }
             };
 
             const onBack = () => {
@@ -450,6 +487,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const shipping = validateStep2(modalEl);
                     if (!shipping) return;
                     step2ShippingSnapshot = shipping;
+                    setPendingShippingInSession(shipping);
                     const customer = {
                         name: modalEl.querySelector("#customerName").value.trim(),
                         phone: modalEl.querySelector("#customerPhone").value.trim(),
@@ -500,7 +538,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
                 setSavedCustomerData(customer);
                 const shippingPayload = normalizeShippingShape(shipping);
-                finish({ customer, shipping: shippingPayload });
+                setPendingShippingInSession(shippingPayload);
+                finish({
+                    customer,
+                    shipping: { ...shippingPayload, address: { ...shippingPayload.address } },
+                });
             };
 
             btnNext.addEventListener("click", onNext);
@@ -545,7 +587,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 checkoutBtn.disabled = false;
                 return;
             }
-            const { customer, shipping } = result;
+            const { customer, shipping: shippingFromModal } = result;
 
             const missingId = cart.find((item) => !item.id);
             if (missingId) {
@@ -563,12 +605,25 @@ document.addEventListener("DOMContentLoaded", () => {
                 variantSize: item.variantSize || "",
             }));
 
+            const hasValidMethod = (s) =>
+                s && typeof s === "object" && String(s.method || "").trim() !== "";
+
+            const shippingSource = hasValidMethod(shippingFromModal)
+                ? shippingFromModal
+                : getPendingShippingFromSession() || {};
+
             const postBody = {
                 items,
                 customer,
-                shipping: normalizeShippingShape(shipping),
+                shipping: normalizeShippingShape(shippingSource),
             };
-            console.log("[VOLT checkout] POST /api/create-preference body:", JSON.stringify(postBody, null, 2));
+            console.log("[DEBUG] postBody:", JSON.stringify(postBody, null, 2));
+            if (!String(postBody.shipping.method || "").trim()) {
+                clearPendingShippingSession();
+                throw new Error(
+                    "No se pudo obtener el método de envío. Volvé al paso 2, elegí una opción y tocá Continuar otra vez."
+                );
+            }
 
             const response = await fetch(API_URL, {
                 method: "POST",
@@ -595,6 +650,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             localStorage.setItem("volt_current_order", data.orderId);
+            clearPendingShippingSession();
 
             const uid = firebase.auth().currentUser?.uid;
             if (window.VoltCartSync) {
