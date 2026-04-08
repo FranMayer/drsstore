@@ -3,34 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Novedades de VOLT - Drops, streetwear y cultura motorsport">
+    <meta name="description" content="Drops, re-stock y noticias de VOLT: streetwear F1 y motorsport. Enterate antes en @volt.culture y en esta página.">
     <meta name="theme-color" content="#c1121f">
-    
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <link rel="canonical" href="https://voltculture.com.ar/pages/novedades.html">
+
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="es_AR">
+    <meta property="og:url" content="https://voltculture.com.ar/pages/novedades.html">
+    <meta property="og:site_name" content="VOLT — Motorsport Culture">
+    <meta property="og:title" content="Novedades VOLT | Drops y streetwear motorsport">
+    <meta property="og:description" content="Avisos de colección, re-stock y cultura racing. Seguinos en Instagram.">
+    <meta property="og:image" content="https://voltculture.com.ar/images-brand/buzoprincipal.png">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Novedades VOLT | Drops y streetwear">
+    <meta name="twitter:description" content="Feed de la marca: drops, shop y más.">
+    <meta name="twitter:image" content="https://voltculture.com.ar/images-brand/buzoprincipal.png">
+
     <link rel="icon" href="../images-brand/Isotipo color.png" type="image/png">
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Teko:wght@300;400;500;600;700&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <link href="/css/style.css" rel="stylesheet" type="text/css">
     <link href="/css/mediaquery.css" rel="stylesheet" type="text/css">
 
-    <title>VOLT - Novedades | Motorsport Culture</title>
+    <title>Novedades VOLT | Drops, re-stock y streetwear motorsport</title>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://voltculture.com.ar/" },
+            { "@type": "ListItem", "position": 2, "name": "Novedades", "item": "https://voltculture.com.ar/pages/novedades.html" }
+          ]
+        },
+        {
+          "@type": "WebPage",
+          "@id": "https://voltculture.com.ar/pages/novedades.html#webpage",
+          "url": "https://voltculture.com.ar/pages/novedades.html",
+          "name": "Novedades — VOLT Motorsport Culture",
+          "description": "Actualizaciones de la marca: drops, catálogo y cultura motorsport.",
+          "isPartOf": { "@id": "https://voltculture.com.ar/#website" },
+          "inLanguage": "es-AR",
+          "publisher": { "@id": "https://voltculture.com.ar/#organization" }
+        }
+      ]
+    }
+    </script>
 </head>
 
 <body>
     <div class="menu-overlay" id="menuOverlay"></div>
     
     <nav class="header" id="mainHeader">
-        <a href="/index.html" class="logo-link" aria-label="VOLT — Inicio">
+        <a href="/" class="logo-link" aria-label="VOLT — Inicio">
             <img class="site-logo site-logo--navbar" src="../images-brand/Isotipo color.png" width="78" height="78" alt="VOLT — Motorsport Culture">
         </a>
 
         <ul id="navMenu">
-            <a href="/pages/catalogo.html" class="nav-link"><li>Shop</li></a>
-            <a href="/pages/about.html" class="nav-link"><li>Nosotros</li></a>
-            <a href="/pages/envios.html" class="nav-link"><li>Envíos</li></a>
-            <a href="/pages/novedades.html" class="nav-link active"><li>Novedades</li></a>
+            <li><a href="/pages/catalogo.html" class="nav-link">Shop</a></li>
+            <li><a href="/pages/about.html" class="nav-link">Nosotros</a></li>
+            <li><a href="/pages/envios.html" class="nav-link">Envíos</a></li>
+            <li><a href="/pages/novedades.html" class="nav-link active">Novedades</a></li>
         </ul>
 
         <div class="header-actions">
@@ -42,7 +82,7 @@
         </div>
     </nav>
 
-    <main class="news-page">
+    <main class="news-page" id="main-content">
         <header class="news-page__header section-panel">
             <p class="section-eyebrow">Feed</p>
             <h1 class="news-page__title">Novedades</h1>
@@ -97,7 +137,7 @@
         </div>
 
         <section class="news-cta-bar reveal" aria-label="Acciones">
-            <a href="/index.html" class="btn btn-secondary">Inicio</a>
+            <a href="/" class="btn btn-secondary">Inicio</a>
             <a href="/pages/catalogo.html" class="btn">Shop</a>
         </section>
     </main>

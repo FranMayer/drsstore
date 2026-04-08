@@ -3,28 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="VOLT Shop - Streetwear, remeras, buzos y accesorios de motorsport y F1">
+    <meta name="description" content="Shop VOLT: remeras, buzos y streetwear motorsport y F1. Talles, colores y pago con Mercado Pago. Envíos a todo Argentina.">
     <meta name="theme-color" content="#c1121f">
-    
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <link rel="canonical" href="https://voltculture.com.ar/pages/catalogo.html">
+
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="es_AR">
+    <meta property="og:url" content="https://voltculture.com.ar/pages/catalogo.html">
+    <meta property="og:site_name" content="VOLT — Motorsport Culture">
+    <meta property="og:title" content="Shop VOLT | Streetwear y motorsport — Comprá online">
+    <meta property="og:description" content="Catálogo de remeras, buzos y más. Pagá con Mercado Pago y recibilo en todo el país.">
+    <meta property="og:image" content="https://voltculture.com.ar/images-brand/buzoprincipal.png">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Shop VOLT | Streetwear y motorsport">
+    <meta name="twitter:description" content="Catálogo online con Mercado Pago y envíos a Argentina.">
+    <meta name="twitter:image" content="https://voltculture.com.ar/images-brand/buzoprincipal.png">
+
     <link rel="icon" href="../images-brand/Isotipo color.png" type="image/png">
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Teko:wght@300;400;500;600;700&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <!-- Bootstrap 5.3 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    
+
     <!-- Styles -->
     <link href="/css/style.css" rel="stylesheet" type="text/css">
     <link href="/css/mediaquery.css" rel="stylesheet" type="text/css">
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <title>Shop VOLT | Streetwear F1 y motorsport — Comprá online | Argentina</title>
 
-    <title>VOLT - Shop | Motorsport Culture</title>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://voltculture.com.ar/" },
+            { "@type": "ListItem", "position": 2, "name": "Shop", "item": "https://voltculture.com.ar/pages/catalogo.html" }
+          ]
+        },
+        {
+          "@type": "CollectionPage",
+          "@id": "https://voltculture.com.ar/pages/catalogo.html#webpage",
+          "url": "https://voltculture.com.ar/pages/catalogo.html",
+          "name": "Shop VOLT — Streetwear y motorsport",
+          "description": "Catálogo de indumentaria streetwear inspirada en F1 y motorsport. Compra online con envíos a Argentina.",
+          "isPartOf": { "@id": "https://voltculture.com.ar/#website" },
+          "inLanguage": "es-AR",
+          "publisher": { "@id": "https://voltculture.com.ar/#organization" }
+        }
+      ]
+    }
+    </script>
 </head>
 
 <body>
@@ -38,15 +73,15 @@
     <div class="menu-overlay" id="menuOverlay"></div>
     
     <nav class="header" id="mainHeader">
-        <a href="/index.html" class="logo-link" aria-label="VOLT — Inicio">
+        <a href="/" class="logo-link" aria-label="VOLT — Inicio">
             <img class="site-logo site-logo--navbar" src="../images-brand/Isotipo color.png" width="78" height="78" alt="VOLT — Motorsport Culture">
         </a>
 
         <ul id="navMenu">
-            <a href="/pages/catalogo.html" class="nav-link active"><li>Shop</li></a>
-            <a href="/pages/about.html" class="nav-link"><li>Nosotros</li></a>
-            <a href="/pages/envios.html" class="nav-link"><li>Envíos</li></a>
-            <a href="/pages/novedades.html" class="nav-link"><li>Novedades</li></a>
+            <li><a href="/pages/catalogo.html" class="nav-link active">Shop</a></li>
+            <li><a href="/pages/about.html" class="nav-link">Nosotros</a></li>
+            <li><a href="/pages/envios.html" class="nav-link">Envíos</a></li>
+            <li><a href="/pages/novedades.html" class="nav-link">Novedades</a></li>
         </ul>
 
         <div class="header-actions">
@@ -97,6 +132,7 @@
         </div>
     </div>
 
+    <main id="main-content">
     <header class="shop-page-header">
         <div class="shop-page-header__deco" aria-hidden="true"></div>
         <img src="../images-brand/brand-elements/2.svg" alt="" class="volt-brand-bg volt-brand-bg--line shop-page-header__brand" width="320" height="320" aria-hidden="true">
@@ -126,6 +162,7 @@
             <!-- Los productos se cargan dinámicamente -->
         </div>
     </div>
+    </main>
 
     <footer class="footer footer--telemetry">
         <div class="footer__scanline" aria-hidden="true"></div>
@@ -198,7 +235,11 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
-    
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
     <!-- VOLT Scripts -->
     <script src="/js/firebase-config.js"></script>
     <script src="/js/cart-sync.js"></script>

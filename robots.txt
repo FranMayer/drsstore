@@ -1,0 +1,7 @@
+# Sitemap alineado con canonical y og:url (voltculture.com.ar).
+User-agent: *
+Allow: /
+
+Disallow: /admin/
+
+Sitemap: https://voltculture.com.ar/sitemap.xml

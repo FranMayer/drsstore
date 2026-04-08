@@ -661,9 +661,11 @@ input[type="submit"],
 .categories-section__label {
     font-family: var(--font-heading);
     font-size: 11px;
+    font-weight: 400;
     letter-spacing: 4px;
     color: var(--color-gray);
     text-transform: uppercase;
+    margin-top: 0;
     margin-bottom: 24px;
     max-width: 1400px;
     margin-left: auto;
@@ -2157,6 +2159,7 @@ body.lightbox-open {
     line-height: 1;
 }
 
+.card h2,
 .card h3 {
     font-family: var(--font-display);
     color: var(--text-primary);
@@ -4072,6 +4075,29 @@ body.lightbox-open {
 .envios__main .container {
     position: relative;
     z-index: 1;
+}
+
+.envios-page__title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+    color: var(--text-primary);
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0 0 0.75rem;
+    width: 100%;
+    flex-basis: 100%;
+}
+
+.envios-page__lead {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    text-align: center;
+    margin: 0 0 2rem;
+    width: 100%;
+    flex-basis: 100%;
+    line-height: 1.5;
 }
 
 .howbuy__main {

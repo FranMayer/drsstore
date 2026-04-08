@@ -3,41 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="VOLT - Motorsport Culture. Streetwear y productos inspirados en la cultura racing y F1 en Argentina.">
+    <meta name="description" content="Streetwear y buzos motorsport en Argentina: F1, MotoGP y cultura racing. Comprá online con Mercado Pago y envíos a todo el país desde Córdoba.">
     <meta name="theme-color" content="#c1121f">
-    
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <link rel="canonical" href="https://voltculture.com.ar/">
+
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="es_AR">
+    <meta property="og:url" content="https://voltculture.com.ar/">
+    <meta property="og:site_name" content="VOLT — Motorsport Culture">
+    <meta property="og:title" content="VOLT | Streetwear F1 y motorsport — Argentina">
+    <meta property="og:description" content="Streetwear y buzos inspirados en la cultura racing. Envíos a todo el país, pagos con Mercado Pago. Vestí el motor.">
+    <meta property="og:image" content="https://voltculture.com.ar/images-brand/buzoprincipal.png">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="VOLT | Streetwear F1 y motorsport — Argentina">
+    <meta name="twitter:description" content="Streetwear racing con envíos a todo el país. Comprá online con Mercado Pago.">
+    <meta name="twitter:image" content="https://voltculture.com.ar/images-brand/buzoprincipal.png">
+
     <link rel="icon" href="images-brand/Isotipo color.png" type="image/png">
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Teko:wght@300;400;500;600;700&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="preload" href="/images-brand/buzoprincipal.png" as="image" type="image/png" fetchpriority="high">
 
     <!-- Bootstrap primero: VOLT (style.css) debe poder sobrescribir el body -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/style.css" rel="stylesheet" type="text/css">
     <link href="/css/mediaquery.css" rel="stylesheet" type="text/css">
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <title>VOLT | Streetwear F1 y motorsport — Argentina | Envíos a todo el país</title>
 
-    <title>VOLT - Motorsport Culture</title>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://voltculture.com.ar/#organization",
+          "name": "VOLT",
+          "alternateName": ["VOLT Motorsport Culture", "volt.culture"],
+          "url": "https://voltculture.com.ar/",
+          "logo": "https://voltculture.com.ar/images-brand/Isotipo%20color.png",
+          "description": "Marca de streetwear y productos inspirados en la cultura racing, F1 y motorsport. Base en Córdoba, Argentina.",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Córdoba",
+            "addressCountry": "AR"
+          },
+          "sameAs": [
+            "https://www.instagram.com/volt.culture/",
+            "https://x.com/voltculturecba"
+          ],
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+54-9-351-8588127",
+            "email": "volt.streetcba@gmail.com",
+            "contactType": "sales",
+            "areaServed": "AR",
+            "availableLanguage": ["es", "Spanish"]
+          }
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://voltculture.com.ar/#website",
+          "url": "https://voltculture.com.ar/",
+          "name": "VOLT — Motorsport Culture",
+          "publisher": { "@id": "https://voltculture.com.ar/#organization" },
+          "inLanguage": "es-AR"
+        }
+      ]
+    }
+    </script>
 </head>
 
 <body>
     <div class="menu-overlay" id="menuOverlay"></div>
     
     <nav class="header" id="mainHeader">
-        <a href="/index.html" class="logo-link" aria-label="VOLT — Inicio">
+        <a href="/" class="logo-link" aria-label="VOLT — Inicio">
             <img class="site-logo site-logo--navbar" src="images-brand/Isotipo color.png" width="78" height="78" alt="VOLT — Motorsport Culture">
         </a>
 
         <ul id="navMenu">
-            <a href="/pages/catalogo.html" class="nav-link"><li>Shop</li></a>
-            <a href="/pages/about.html" class="nav-link"><li>Nosotros</li></a>
-            <a href="/pages/envios.html" class="nav-link"><li>Envíos</li></a>
-            <a href="/pages/novedades.html" class="nav-link"><li>Novedades</li></a>
+            <li><a href="/pages/catalogo.html" class="nav-link">Shop</a></li>
+            <li><a href="/pages/about.html" class="nav-link">Nosotros</a></li>
+            <li><a href="/pages/envios.html" class="nav-link">Envíos</a></li>
+            <li><a href="/pages/novedades.html" class="nav-link">Novedades</a></li>
         </ul>
 
         <div class="header-actions">
@@ -74,7 +128,7 @@
         <div class="hero-split__col hero-split__col--right">
             <div class="hero-split__media">
                 <img src="images-brand/brand-elements/1.svg" alt="" class="volt-brand-bg volt-brand-bg--hero" width="400" height="400" aria-hidden="true">
-                <img src="images-brand/buzoprincipal.png" alt="Modelo con buzo principal de la colección VOLT" class="hero-split__media-img" width="1200" height="1400">
+                <img src="images-brand/buzoprincipal.png" alt="Modelo con buzo principal de la colección VOLT" class="hero-split__media-img" width="1200" height="1400" fetchpriority="high" decoding="async">
                 <div class="hero-split__gridlines" aria-hidden="true"></div>
             </div>
         </div>
@@ -90,7 +144,7 @@
     <section class="categories-section">
         <img src="images-brand/brand-elements/3.svg" alt="" class="volt-brand-bg volt-brand-bg--categories" width="360" height="360" aria-hidden="true">
         <div class="categories-section__wrap reveal">
-        <p class="categories-section__label">Categorías</p>
+        <h2 class="categories-section__label">Categorías</h2>
         <div class="categories-grid">
             <a href="/pages/catalogo.html?cat=streetwear" class="category-card">
                 <span class="category-card__num">01</span>
@@ -107,11 +161,11 @@
                 <h3 class="category-card__title">Autos a escala <span class="category-soon-badge">PRÓXIMAMENTE</span></h3>
                 <p class="category-card__desc">Coleccionables y diecast de los monoplazas más icónicos de la historia.</p>
             </div>
-            <a href="#" class="category-card coming-soon">
+            <div class="category-card coming-soon" role="group" aria-label="Accesorios — Próximamente">
                 <span class="category-card__num">04</span>
                 <h3 class="category-card__title">Accesorios</h3>
                 <p class="category-card__desc">Gorras, mochilas y más para completar tu estilo racing.</p>
-            </a>
+            </div>
         </div>
         </div>
     </section>
@@ -271,6 +325,9 @@
     </a>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="/js/firebase-config.js"></script>
     <script src="/js/products-service.js"></script>
     <script src="/js/home-featured.js"></script>
