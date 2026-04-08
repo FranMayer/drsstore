@@ -141,7 +141,13 @@ document.addEventListener("DOMContentLoaded", () => {
     checkoutBtn.addEventListener("click", async function () {
         if (checkoutFlowActive) return;
 
-        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        let cart;
+        try {
+            cart = JSON.parse(localStorage.getItem("cart")) || [];
+        } catch {
+            alert("Tu carrito tiene un error, por favor recargá la página");
+            return;
+        }
 
         if (cart.length === 0) {
             alert("🛒 El carrito está vacío.");
@@ -168,10 +174,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
+            const missingId = cart.find((item) => !item.id);
+            if (missingId) {
+                throw new Error(
+                    "Un producto del carrito no tiene id. Volvé al shop, vaciá el carrito y agregá los productos de nuevo."
+                );
+            }
+
             const items = cart.map((item) => ({
+                id: item.id,
                 title: item.title,
                 quantity: item.quantity,
                 price: item.price,
+                variantColor: item.variantColor || '',
+                variantSize: item.variantSize || ''
             }));
 
             const response = await fetch(API_URL, {

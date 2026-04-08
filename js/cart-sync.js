@@ -32,14 +32,21 @@
         localStorage.setItem('cart', JSON.stringify(items));
     }
 
+    function lineKey(item) {
+        const id = item.id || '';
+        const c = item.variantColor || '';
+        const s = item.variantSize || '';
+        return `${id}-${c}-${s}`;
+    }
+
     /**
-     * Mergea dos arrays de items. Si el mismo producto (por id) aparece en ambos,
-     * suma las cantidades. Si solo aparece en uno, lo agrega tal cual.
+     * Mergea dos arrays de items. Misma línea = mismo id + color + talle;
+     * suma cantidades. Si solo aparece en uno, lo agrega tal cual.
      */
     function merge(firestoreItems, localItems) {
         const result = firestoreItems.map(item => ({ ...item }));
         for (const local of localItems) {
-            const existing = result.find(m => m.id === local.id);
+            const existing = result.find(m => lineKey(m) === lineKey(local));
             if (existing) {
                 existing.quantity = (existing.quantity || 0) + (local.quantity || 0);
             } else {

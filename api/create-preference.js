@@ -1,6 +1,7 @@
 import { MercadoPagoConfig, Preference } from 'mercadopago';
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
+import { computeAvailableStock } from './_stock.js';
 
 function initAdmin() {
     if (!process.env.FIREBASE_PRIVATE_KEY) {
@@ -62,6 +63,7 @@ export default async function handler(req, res) {
         }
 
         const normalizedItems = items.map(item => ({
+            id: String(item.id || item.productId || '').trim(),
             title: String(item.title || 'Producto'),
             quantity: Math.max(1, Number(item.quantity) || 1),
             price: Math.max(0, Number(item.price) || 0),
@@ -69,9 +71,50 @@ export default async function handler(req, res) {
             variantColor: item.variantColor || '',
             variantSize: item.variantSize || ''
         }));
+
+        for (const it of normalizedItems) {
+            if (!it.id) {
+                return res.status(400).json({
+                    error: 'Cada producto del carrito debe incluir su id de Firestore para validar stock.'
+                });
+            }
+        }
+
+        const db = initAdmin();
+
+        try {
+            await db.runTransaction(async (t) => {
+                for (const item of normalizedItems) {
+                    const pref = db.collection('products').doc(item.id);
+                    const snap = await t.get(pref);
+                    if (!snap.exists) {
+                        const err = new Error(`Producto no encontrado: ${item.title}`);
+                        err.code = 'STOCK_INSUFFICIENT';
+                        throw err;
+                    }
+                    const data = snap.data();
+                    if (data.active === false) {
+                        const err = new Error(`Producto no disponible: ${item.title}`);
+                        err.code = 'STOCK_INSUFFICIENT';
+                        throw err;
+                    }
+                    const available = computeAvailableStock(data, item.variantColor, item.variantSize);
+                    if (available < item.quantity) {
+                        const err = new Error(`Stock insuficiente para ${item.title}`);
+                        err.code = 'STOCK_INSUFFICIENT';
+                        throw err;
+                    }
+                }
+            });
+        } catch (e) {
+            if (e.code === 'STOCK_INSUFFICIENT') {
+                return res.status(400).json({ error: e.message });
+            }
+            throw e;
+        }
+
         const total = normalizedItems.reduce((sum, i) => sum + (i.price * i.quantity), 0);
         const orderId = generateOrderId();
-        const db = initAdmin();
         const orderRef = db.collection('orders').doc(orderId);
 
         try {
@@ -99,10 +142,10 @@ export default async function handler(req, res) {
             });
         }
 
-        const mpItems = normalizedItems.map(item => ({
-            id: item.title.toLowerCase().replace(/\s+/g, '-'),
+        const mpItems = normalizedItems.map((item, index) => ({
+            id: `${item.id}-${index}`,
             title: item.title,
-            description: item.title,
+            description: [item.title, item.variantColor, item.variantSize].filter(Boolean).join(' · ') || item.title,
             category_id: 'fashion',
             quantity: item.quantity,
             currency_id: 'ARS',

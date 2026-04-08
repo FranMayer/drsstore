@@ -662,7 +662,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         const imageSrc = productImgEl ? (productImgEl.getAttribute('src') || '') : '';
 
         if (existingItem) {
-            existingItem.quantity += quantity;
+            const nextQty = (existingItem.quantity || 0) + quantity;
+            existingItem.quantity = Math.min(nextQty, stock);
             if (imageSrc && !existingItem.image) {
                 existingItem.image = imageSrc;
             }
