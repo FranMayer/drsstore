@@ -29,6 +29,8 @@
 
 html {
     scroll-behavior: smooth;
+    overflow-x: hidden !important;
+    max-width: 100%;
 }
 
 body {
@@ -36,6 +38,8 @@ body {
     background-color: var(--volt-ds-black) !important;
     color: var(--volt-ds-white) !important;
     position: relative;
+    overflow-x: hidden !important;
+    max-width: 100%;
 }
 
 /* Grid overlay (same as index) */
@@ -56,6 +60,8 @@ body::before {
 #main-content,
 main.orders-page {
     padding-top: var(--volt-ds-header-h) !important;
+    overflow-x: hidden !important;
+    max-width: 100%;
 }
 
 /* ─── Typography ─── */
@@ -222,6 +228,9 @@ body.page-leaving {
     left: 0 !important;
     right: 0 !important;
     width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
     min-height: 72px !important;
     padding: 6px clamp(16px, 4vw, 48px) !important;
     background: rgba(0, 0, 0, 0.85) !important;

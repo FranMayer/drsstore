@@ -141,6 +141,8 @@
 html {
     scroll-behavior: smooth;
     background-color: var(--color-black);
+    overflow-x: hidden;
+    max-width: 100%;
 }
 
 body {
@@ -149,6 +151,7 @@ body {
     color: var(--text-primary);
     line-height: 1.6;
     overflow-x: hidden;
+    max-width: 100%;
     transition: var(--theme-transition);
 }
 

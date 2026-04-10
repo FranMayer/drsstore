@@ -54,6 +54,8 @@
         html {
             scroll-behavior: smooth;
             scroll-padding-top: var(--nav-h);
+            overflow-x: hidden;
+            max-width: 100%;
         }
 
         @keyframes volt-page-in {
@@ -70,11 +72,15 @@
             font-size: 16px;
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            max-width: 100%;
         }
 
         /* Animación en wrapper: si `transform` está en `body`, position:fixed de hijos deja de ser respecto al viewport */
         .page-shell {
             animation: volt-page-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+            overflow-x: hidden;
+            max-width: 100%;
         }
 
         .page-shell.page-leaving {
@@ -138,6 +144,10 @@
             right: 0;
             z-index: 100;
             height: var(--nav-h);
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            overflow-x: hidden;
             display: flex;
             align-items: center;
             justify-content: space-between;

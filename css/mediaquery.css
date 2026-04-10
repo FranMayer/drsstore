@@ -105,7 +105,8 @@
     .header ul {
         position: fixed;
         top: 0;
-        right: -100%;
+        right: 0;
+        transform: translateX(100%);
         width: 70%;
         max-width: 300px;
         height: 100vh;
@@ -129,7 +130,7 @@
     }
 
     .header ul.active {
-        right: 0;
+        transform: translateX(0);
     }
 
     .header ul a {
