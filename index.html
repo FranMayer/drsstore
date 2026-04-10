@@ -3,337 +3,1139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Streetwear y buzos motorsport en Argentina: F1, MotoGP y cultura racing. Comprá online con Mercado Pago y envíos a todo el país desde Córdoba.">
-    <meta name="theme-color" content="#c1121f">
+    <meta name="description" content="VOLT Drop #01 — May 1, 2026. Motorsport-inspired streetwear from Córdoba, Argentina. Built for the fast lane.">
+    <meta name="theme-color" content="#000000">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <link rel="canonical" href="https://voltculture.com.ar/">
 
     <meta property="og:type" content="website">
     <meta property="og:locale" content="es_AR">
     <meta property="og:url" content="https://voltculture.com.ar/">
-    <meta property="og:site_name" content="VOLT — Motorsport Culture">
-    <meta property="og:title" content="VOLT | Streetwear F1 y motorsport — Argentina">
-    <meta property="og:description" content="Streetwear y buzos inspirados en la cultura racing. Envíos a todo el país, pagos con Mercado Pago. Vestí el motor.">
+    <meta property="og:site_name" content="VOLT Culture">
+    <meta property="og:title" content="VOLT | Drop #01 — May 1, 2026">
+    <meta property="og:description" content="Velocidad es cultura. Drop #01 from Córdoba, ARG.">
     <meta property="og:image" content="https://voltculture.com.ar/images-brand/buzoprincipal.png">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="VOLT | Streetwear F1 y motorsport — Argentina">
-    <meta name="twitter:description" content="Streetwear racing con envíos a todo el país. Comprá online con Mercado Pago.">
+    <meta name="twitter:title" content="VOLT | Drop #01 — May 1, 2026">
+    <meta name="twitter:description" content="Motorsport-inspired streetwear. Córdoba, Argentina.">
     <meta name="twitter:image" content="https://voltculture.com.ar/images-brand/buzoprincipal.png">
 
     <link rel="icon" href="images-brand/Isotipo color.png" type="image/png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@300;400;500;600;700&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400&family=Teko:wght@700&display=swap" rel="stylesheet">
 
-    <link rel="preload" href="/images-brand/buzoprincipal.png" as="image" type="image/png" fetchpriority="high">
-
-    <!-- Bootstrap primero: VOLT (style.css) debe poder sobrescribir el body -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link href="/css/style.css" rel="stylesheet" type="text/css">
-    <link href="/css/mediaquery.css" rel="stylesheet" type="text/css">
 
-    <title>VOLT | Streetwear F1 y motorsport — Argentina | Envíos a todo el país</title>
+    <title>VOLT | Drop #01 — May 1, 2026 · Córdoba, Argentina</title>
 
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "Organization",
-          "@id": "https://voltculture.com.ar/#organization",
-          "name": "VOLT",
-          "alternateName": ["VOLT Motorsport Culture", "volt.culture"],
-          "url": "https://voltculture.com.ar/",
-          "logo": "https://voltculture.com.ar/images-brand/Isotipo%20color.png",
-          "description": "Marca de streetwear y productos inspirados en la cultura racing, F1 y motorsport. Base en Córdoba, Argentina.",
-          "address": {
-            "@type": "PostalAddress",
-            "addressLocality": "Córdoba",
-            "addressCountry": "AR"
-          },
-          "sameAs": [
-            "https://www.instagram.com/volt.culture/",
-            "https://x.com/voltculturecba"
-          ],
-          "contactPoint": {
-            "@type": "ContactPoint",
-            "telephone": "+54-9-351-8588127",
-            "email": "volt.streetcba@gmail.com",
-            "contactType": "sales",
-            "areaServed": "AR",
-            "availableLanguage": ["es", "Spanish"]
-          }
-        },
-        {
-          "@type": "WebSite",
-          "@id": "https://voltculture.com.ar/#website",
-          "url": "https://voltculture.com.ar/",
-          "name": "VOLT — Motorsport Culture",
-          "publisher": { "@id": "https://voltculture.com.ar/#organization" },
-          "inLanguage": "es-AR"
+    <style>
+        :root {
+            --volt-black: #000000;
+            --volt-white: #FFFFFF;
+            --volt-red: #E8001D;
+            --volt-label: #555555;
+            --volt-grid: rgba(255, 255, 255, 0.07);
+            --font-display: 'Teko', sans-serif;
+            --font-mono: 'DM Mono', monospace;
+            --font-body: 'DM Sans', sans-serif;
+            --nav-h: 72px;
         }
-      ]
-    }
-    </script>
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: var(--nav-h);
+        }
+
+        @keyframes volt-page-in {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: var(--volt-black);
+            color: var(--volt-white);
+            font-family: var(--font-body);
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Animación en wrapper: si `transform` está en `body`, position:fixed de hijos deja de ser respecto al viewport */
+        .page-shell {
+            animation: volt-page-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        .page-shell.page-leaving {
+            opacity: 0;
+            transform: translateY(-6px);
+            transition: opacity 0.22s ease, transform 0.22s ease;
+            pointer-events: none;
+        }
+
+        .page-grid {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background-color: var(--volt-black);
+            background-image:
+                linear-gradient(var(--volt-grid) 1px, transparent 1px),
+                linear-gradient(90deg, var(--volt-grid) 1px, transparent 1px);
+            background-size: 80px 80px;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .site-nav__logo.logo-lockup {
+            display: inline-flex;
+            align-items: center;
+            line-height: 0;
+            padding: 0;
+            margin: 0;
+        }
+
+        .site-nav__logo.logo-lockup img {
+            height: 54px;
+            width: auto;
+            max-width: min(280px, 55vw);
+            object-fit: contain;
+            display: block;
+        }
+
+        .site-footer__logo img {
+            height: 22px;
+            width: auto;
+            max-width: none;
+            display: block;
+        }
+
+        /* ——— Nav ——— */
+        .site-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            height: var(--nav-h);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 clamp(16px, 4vw, 48px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .site-nav__center {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: clamp(16px, 3vw, 32px);
+        }
+
+        .site-nav__link {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            color: var(--volt-label);
+            transition: color 0.2s ease;
+            padding: 8px 4px;
+            border: none;
+            background: transparent;
+        }
+
+        .site-nav__link:hover {
+            color: var(--volt-white);
+        }
+
+        .site-nav__link:focus-visible {
+            outline: 2px solid var(--volt-red);
+            outline-offset: 3px;
+        }
+
+        .site-nav__actions {
+            display: flex;
+            align-items: center;
+            gap: clamp(8px, 1.5vw, 14px);
+            flex-wrap: nowrap;
+            flex-shrink: 0;
+        }
+
+        .site-nav .auth-nav {
+            display: flex;
+            align-items: center;
+            flex-wrap: nowrap;
+            gap: 8px;
+            visibility: hidden;
+        }
+
+        .site-nav .auth-nav.loaded {
+            visibility: visible;
+        }
+
+        .site-nav .auth-greeting {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--volt-label);
+            max-width: 12rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .site-nav .auth-btn {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 6px 10px;
+            white-space: nowrap;
+        }
+
+        .site-nav .auth-btn--in {
+            background: var(--volt-white);
+            color: var(--volt-black);
+            border: 2px solid var(--volt-white);
+            padding: 12px 24px;
+            font-weight: 500;
+            font-size: 12px;
+            letter-spacing: 0.14em;
+        }
+
+        .site-nav .auth-btn--in:hover {
+            background: var(--volt-red);
+            color: var(--volt-white);
+            border-color: var(--volt-red);
+        }
+
+        .site-nav .auth-btn--link {
+            padding: 6px 8px;
+        }
+
+        .btn {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            padding: 12px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            background: transparent;
+            color: var(--volt-white);
+            cursor: pointer;
+            transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+        }
+
+        .btn:hover {
+            border-color: var(--volt-red);
+            background: rgba(232, 0, 29, 0.12);
+        }
+
+        .btn--fill {
+            background: var(--volt-white);
+            color: var(--volt-black);
+            border-color: var(--volt-white);
+        }
+
+        .btn--fill:hover {
+            background: var(--volt-red);
+            color: var(--volt-white);
+            border-color: var(--volt-red);
+        }
+
+        /* ——— Sections common ——— */
+        main {
+            position: relative;
+            z-index: 1;
+        }
+
+        section {
+            scroll-margin-top: var(--nav-h);
+        }
+
+        .section-label {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            color: #666666;
+            margin-bottom: 24px;
+        }
+
+        /* ——— Reveal ——— */
+        .reveal {
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .reveal.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ——— Hero ——— */
+        .hero {
+            min-height: 100vh;
+            min-height: 100dvh;
+            padding: calc(var(--nav-h) + clamp(32px, 8vh, 80px)) clamp(16px, 4vw, 48px) clamp(48px, 6vh, 80px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .hero__badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            color: #666666;
+            margin-bottom: 32px;
+        }
+
+        .hero__pulse {
+            width: 8px;
+            height: 8px;
+            border-radius: 0;
+            background: var(--volt-red);
+            animation: pulse-red 1.6s ease-in-out infinite;
+        }
+
+        @keyframes pulse-red {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(232, 0, 29, 0.5); }
+            50% { opacity: 0.85; box-shadow: 0 0 0 10px rgba(232, 0, 29, 0); }
+        }
+
+        .hero__headline {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: clamp(64px, 14vw, 160px);
+            line-height: 0.92;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            max-width: 12ch;
+            margin-bottom: 24px;
+        }
+
+        .hero__headline .accent {
+            color: var(--volt-red);
+        }
+
+        .hero__sub {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: 400;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #666666;
+            margin-bottom: 40px;
+        }
+
+        .hero__ctas {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: clamp(48px, 10vh, 100px);
+        }
+
+        .hero__scroll {
+            position: absolute;
+            bottom: clamp(24px, 4vh, 48px);
+            left: clamp(16px, 4vw, 48px);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            color: #666666;
+        }
+
+        .hero__scroll-line {
+            width: 1px;
+            height: 48px;
+            background: linear-gradient(to bottom, var(--volt-red), rgba(255, 255, 255, 0.15));
+            animation: scroll-line 2s ease-in-out infinite;
+        }
+
+        @keyframes scroll-line {
+            0%, 100% { transform: scaleY(1); opacity: 1; }
+            50% { transform: scaleY(0.6); opacity: 0.5; }
+        }
+
+        /* ——— Ticker ——— */
+        .ticker {
+            background: #000000;
+            border-top: 1px solid rgba(255, 255, 255, 0.07);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+            overflow: hidden;
+            padding: 14px 0;
+        }
+
+        .ticker__track {
+            display: flex;
+            width: max-content;
+            animation: ticker 40s linear infinite;
+        }
+
+        .ticker__group {
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .ticker__item {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            color: #666666;
+        }
+
+        .ticker__dot {
+            width: 4px;
+            height: 4px;
+            background: var(--volt-red);
+            margin: 0 24px;
+            flex-shrink: 0;
+        }
+
+        @keyframes ticker {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* ——— Identity ——— */
+        .identity {
+            padding: clamp(64px, 12vw, 120px) clamp(16px, 4vw, 48px);
+        }
+
+        .identity__grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: #000000;
+        }
+
+        .identity__card {
+            padding: clamp(24px, 4vw, 40px);
+            border-right: 1px solid rgba(255, 255, 255, 0.15);
+            transition: border-color 0.2s ease, background 0.2s ease;
+            background: #000000 !important;
+        }
+
+        .identity__card:last-child {
+            border-right: none;
+        }
+
+        .identity__card:hover {
+            border-color: var(--volt-red);
+            background: rgba(232, 0, 29, 0.12) !important;
+        }
+
+        .identity__num {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            letter-spacing: 0.16em;
+            color: #444444;
+            margin-bottom: 16px;
+        }
+
+        .identity__icon {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 20px;
+            color: var(--volt-red);
+        }
+
+        .identity__title {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 26px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            line-height: 1.1;
+            margin-bottom: 12px;
+        }
+
+        .identity__desc {
+            font-family: var(--font-body);
+            font-size: 13px;
+            font-weight: 400;
+            color: #666666;
+            line-height: 1.55;
+        }
+
+        /* ——— Drop ——— */
+        .drop {
+            padding: clamp(64px, 12vw, 120px) clamp(16px, 4vw, 48px);
+        }
+
+        .drop__split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            min-height: min(70vh, 640px);
+        }
+
+        .drop__visual {
+            position: relative;
+            border-right: 1px solid rgba(255, 255, 255, 0.15);
+            background: var(--volt-black);
+        }
+
+        .drop__visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .drop__tag {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--volt-red);
+            padding: 16px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(0, 0, 0, 0.75);
+        }
+
+        .drop__content {
+            padding: clamp(28px, 4vw, 48px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .drop__meta {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            color: #666666;
+            margin-bottom: 20px;
+        }
+
+        .drop__title {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: clamp(48px, 8vw, 80px);
+            line-height: 0.95;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            margin-bottom: 24px;
+        }
+
+        .drop__copy {
+            font-family: var(--font-body);
+            font-size: 14px;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.85);
+            line-height: 1.65;
+            max-width: 36em;
+            margin-bottom: 32px;
+        }
+
+        .countdown {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            margin-bottom: 32px;
+        }
+
+        .countdown__cell {
+            padding: 16px 12px;
+            text-align: center;
+            border-right: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .countdown__cell:last-child {
+            border-right: none;
+        }
+
+        .countdown__val {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 36px;
+            line-height: 1;
+            letter-spacing: 0.02em;
+        }
+
+        .countdown__lbl {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            color: #666666;
+            margin-top: 8px;
+        }
+
+        /* ——— Manifesto ——— */
+        .manifesto {
+            padding: clamp(80px, 14vw, 140px) clamp(16px, 4vw, 48px);
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            text-align: center;
+        }
+
+        .manifesto__quote {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: clamp(32px, 5.5vw, 72px);
+            line-height: 1.05;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            max-width: 18ch;
+            margin: 0 auto 28px;
+        }
+
+        .manifesto__quote .accent {
+            color: var(--volt-red);
+        }
+
+        .manifesto__sub {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: #666666;
+            margin-bottom: 36px;
+        }
+
+        /* ——— Footer ——— */
+        .site-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 32px clamp(16px, 4vw, 48px);
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .site-footer__nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: clamp(12px, 3vw, 28px);
+        }
+
+        .site-footer__nav a {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            color: #666666;
+            padding: 6px 8px;
+            border: 1px solid transparent;
+            transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+        }
+
+        .site-footer__nav a:hover {
+            color: var(--volt-white);
+            border-color: var(--volt-red);
+            background: rgba(232, 0, 29, 0.12);
+        }
+
+        .site-footer__copy {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #444444;
+            text-align: right;
+        }
+
+        /* WhatsApp — fijo abajo a la izquierda (prioridad sobre style.css) */
+        a.whatsapp-float {
+            position: fixed !important;
+            bottom: clamp(16px, 3vw, 28px) !important;
+            left: clamp(16px, 3vw, 28px) !important;
+            right: auto !important;
+            top: auto !important;
+            z-index: 10050 !important;
+            width: 52px !important;
+            height: 52px !important;
+            padding: 12px !important;
+            margin: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            background: #000000 !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border-radius: 0 !important;
+            color: #ffffff !important;
+            box-shadow: none !important;
+            transition: border-color 0.2s ease, background 0.2s ease, opacity 0.2s ease !important;
+        }
+
+        a.whatsapp-float:hover {
+            border-color: var(--volt-red) !important;
+            background: rgba(232, 0, 29, 0.12) !important;
+            opacity: 1 !important;
+        }
+
+        a.whatsapp-float svg {
+            width: 28px !important;
+            height: 28px !important;
+            fill: currentColor !important;
+        }
+
+        /* ——— Responsive ——— */
+        @media (max-width: 900px) {
+            :root {
+                --nav-h: 56px;
+            }
+
+            html {
+                scroll-padding-top: var(--nav-h);
+            }
+
+            .site-nav {
+                display: grid;
+                grid-template-columns: 1fr auto;
+                grid-template-rows: auto auto;
+                height: auto;
+                min-height: 56px;
+                padding-top: 16px;
+                padding-bottom: 16px;
+                align-items: center;
+            }
+
+            .site-nav__logo {
+                grid-column: 1;
+                grid-row: 1;
+            }
+
+            .site-nav__actions {
+                grid-column: 2;
+                grid-row: 1;
+                align-self: center;
+                justify-self: end;
+                max-width: 100%;
+            }
+
+            .site-nav__notify {
+                padding: 10px 14px;
+                font-size: 10px;
+            }
+
+            .site-nav__center {
+                grid-column: 1 / -1;
+                grid-row: 2;
+                position: static;
+                transform: none;
+                width: 100%;
+                justify-content: center;
+                padding-top: 16px;
+                margin-top: 16px;
+                border-top: 1px solid rgba(255, 255, 255, 0.08);
+            }
+
+            .identity__grid {
+                grid-template-columns: 1fr;
+            }
+
+            .identity__card {
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            }
+
+            .identity__card:last-child {
+                border-bottom: none;
+            }
+
+            .drop__split {
+                grid-template-columns: 1fr;
+                min-height: auto;
+            }
+
+            .drop__visual {
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+                min-height: 360px;
+            }
+
+            .site-footer {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .site-footer__copy {
+                text-align: center;
+            }
+
+            .hero__scroll {
+                position: relative;
+                bottom: auto;
+                left: auto;
+                margin-top: 24px;
+            }
+
+            .site-nav__logo.logo-lockup img {
+                height: 38px;
+                max-width: min(220px, 65vw);
+            }
+        }
+
+        @media (max-width: 560px) {
+            .hero__headline {
+                font-size: clamp(48px, 18vw, 96px);
+            }
+
+            .countdown__val {
+                font-size: 28px;
+            }
+
+            .site-nav__center {
+                flex-wrap: wrap;
+                gap: 8px 16px;
+            }
+
+            .manifesto__quote {
+                font-size: clamp(26px, 8vw, 44px);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            .ticker__track {
+                animation: none;
+            }
+
+            .hero__pulse,
+            .hero__scroll-line,
+            .reveal {
+                animation: none;
+                transition: none;
+            }
+
+            .reveal {
+                opacity: 1;
+                transform: none;
+            }
+        }
+    </style>
 </head>
-
 <body>
-    <div class="menu-overlay" id="menuOverlay"></div>
-    
-    <nav class="header" id="mainHeader">
-        <a href="/" class="logo-link" aria-label="VOLT — Inicio">
-            <img class="site-logo site-logo--navbar" src="images-brand/Isotipo color.png" width="78" height="78" alt="VOLT — Motorsport Culture">
+    <div class="page-grid" aria-hidden="true"></div>
+
+    <header class="site-nav" role="banner">
+        <a href="#" class="site-nav__logo logo-lockup" aria-label="VOLT — Inicio">
+            <img src="images-brand/Logo blanco.png" alt="VOLT — Motorsport Culture" decoding="async">
         </a>
-
-        <ul id="navMenu">
-            <li><a href="/pages/catalogo.html" class="nav-link">Shop</a></li>
-            <li><a href="/pages/about.html" class="nav-link">Nosotros</a></li>
-            <li><a href="/pages/envios.html" class="nav-link">Envíos</a></li>
-            <li><a href="/pages/novedades.html" class="nav-link">Novedades</a></li>
-        </ul>
-
-        <div class="header-actions">
+        <nav class="site-nav__center" aria-label="Principal">
+            <a class="site-nav__link" href="/pages/catalogo.html">Shop</a>
+            <a class="site-nav__link" href="/pages/about.html">Nosotros</a>
+            <a class="site-nav__link" href="/pages/envios.html">Envíos</a>
+            <a class="site-nav__link" href="/pages/novedades.html">Novedades</a>
+        </nav>
+        <div class="site-nav__actions">
             <div id="authNav" class="auth-nav"></div>
-            <div class="menu-toggle" id="menuToggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
+            <a class="btn site-nav__notify" href="https://wa.me/5493518588127?text=Hola%21%20Quiero%20que%20me%20avisen%20cuando%20salga%20el%20drop%20de%20VOLT." target="_blank" rel="noopener noreferrer">Notify Me</a>
         </div>
-    </nav>
+    </header>
 
-    <main id="main-content">
-    <section class="hero-split hero-split--compact" aria-label="Inicio">
-        <div class="hero-split__col hero-split__col--left">
-            <div class="hero-hud" aria-hidden="true">
-                <span class="hero-hud__corner hero-hud__corner--tl"></span>
-                <span class="hero-hud__corner hero-hud__corner--tr"></span>
-                <span class="hero-hud__corner hero-hud__corner--bl"></span>
-                <span class="hero-hud__corner hero-hud__corner--br"></span>
-                <span class="hero-hud__tick hero-hud__tick--a"></span>
-                <span class="hero-hud__tick hero-hud__tick--b"></span>
-            </div>
-            <p class="hero-kicker"><span class="hero-kicker__label">SYS</span><span class="hero-kicker__val">ONLINE</span></p>
-            <p class="hero-eyebrow">Motorsport culture · Streetwear</p>
-            <h1 class="hero-headline">Vestí el motor.</h1>
-            <div class="hero-rule" aria-hidden="true"></div>
-            <p class="hero-desc">Streetwear y piezas inspiradas en la velocidad y la cultura racing. Envíos a todo el país.</p>
-            <div class="hero-cta-row">
-                <a href="/pages/catalogo.html" class="hero-cta">Shop now</a>
-                <a href="/pages/novedades.html" class="hero-cta hero-cta--ghost">Próximos drops</a>
-            </div>
-        </div>
-        <div class="hero-split__col hero-split__col--right">
-            <div class="hero-split__media">
-                <img src="images-brand/brand-elements/1.svg" alt="" class="volt-brand-bg volt-brand-bg--hero" width="400" height="400" aria-hidden="true">
-                <img src="images-brand/buzoprincipal.png" alt="Modelo con buzo principal de la colección VOLT" class="hero-split__media-img" width="1200" height="1400" fetchpriority="high" decoding="async">
-                <div class="hero-split__gridlines" aria-hidden="true"></div>
-            </div>
-        </div>
-    </section>
+    <div class="page-shell">
 
-    <div class="category-strip">
-        <img src="images-brand/brand-elements/2.svg" alt="" class="volt-brand-bg volt-brand-bg--strip volt-brand-bg--on-red" width="320" height="320" aria-hidden="true">
-        <span>F1 · MotoGP · Rally · TC</span>
-        <span>Envíos a todo el país</span>
-        <span>@volt.culture</span>
-    </div>
-
-    <section class="categories-section">
-        <img src="images-brand/brand-elements/3.svg" alt="" class="volt-brand-bg volt-brand-bg--categories" width="360" height="360" aria-hidden="true">
-        <div class="categories-section__wrap reveal">
-        <h2 class="categories-section__label">Categorías</h2>
-        <div class="categories-grid">
-            <a href="/pages/catalogo.html?cat=streetwear" class="category-card">
-                <span class="category-card__num">01</span>
-                <h3 class="category-card__title">Streetwear</h3>
-                <p class="category-card__desc">Remeras, buzos y hoodies con diseños exclusivos de F1 y motorsport.</p>
-            </a>
-            <a href="/pages/catalogo.html?cat=motorsport" class="category-card">
-                <span class="category-card__num">02</span>
-                <h3 class="category-card__title">Motorsport</h3>
-                <p class="category-card__desc">Indumentaria oficial y réplicas de tus equipos favoritos de la grilla.</p>
-            </a>
-            <div class="category-card category-card--soon" role="group" aria-label="Autos a escala — Próximamente">
-                <span class="category-card__num">03</span>
-                <h3 class="category-card__title">Autos a escala <span class="category-soon-badge">PRÓXIMAMENTE</span></h3>
-                <p class="category-card__desc">Coleccionables y diecast de los monoplazas más icónicos de la historia.</p>
+    <main>
+        <section class="hero" id="top" aria-label="Hero">
+            <div class="hero__badge">
+                <span class="hero__pulse" aria-hidden="true"></span>
+                <span>Drop #01 — May 1, 2026 — Córdoba, ARG</span>
             </div>
-            <div class="category-card coming-soon" role="group" aria-label="Accesorios — Próximamente">
-                <span class="category-card__num">04</span>
-                <h3 class="category-card__title">Accesorios</h3>
-                <p class="category-card__desc">Gorras, mochilas y más para completar tu estilo racing.</p>
+            <h1 class="hero__headline">Built for the <span class="accent">fast</span> lane</h1>
+            <p class="hero__sub">Velocidad es cultura / Vol. 01</p>
+            <div class="hero__ctas">
+                <a class="btn btn--fill" href="#drop">View Drop #01</a>
+                <a class="btn" href="#about">Our Manifesto →</a>
             </div>
-        </div>
-        </div>
-    </section>
-
-    <section class="home-featured section-panel" aria-labelledby="featured-heading">
-        <img src="images-brand/brand-elements/4.svg" alt="" class="volt-brand-bg volt-brand-bg--featured" width="380" height="380" aria-hidden="true">
-        <div class="section-panel__head">
-            <div class="section-panel__rail" aria-hidden="true">
-                <svg class="volt-icon volt-icon--sm" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true">
-                    <path d="M4 16h8l2-6 4 12 2-6h8"/>
-                    <circle cx="16" cy="16" r="14" stroke-dasharray="4 3"/>
-                </svg>
+            <div class="hero__scroll" aria-hidden="true">
+                <span class="hero__scroll-line"></span>
+                <span>scroll</span>
             </div>
-            <div>
-                <p class="section-eyebrow">Catálogo</p>
-                <h2 id="featured-heading" class="section-title">Destacados</h2>
-            </div>
-            <a href="/pages/catalogo.html" class="section-panel__link">Ver todo <span aria-hidden="true">→</span></a>
-        </div>
-        <p id="homeFeaturedStatus" class="home-featured__status" hidden></p>
-        <div id="homeFeaturedGrid" class="home-featured__grid"></div>
-    </section>
+        </section>
 
-    <section class="drop-banner" aria-labelledby="drop-banner-title">
-        <div class="drop-banner__grid" aria-hidden="true"></div>
-        <div class="drop-banner__inner">
-            <p class="drop-banner__eyebrow">Colección</p>
-            <h2 id="drop-banner-title" class="drop-banner__title">DROP 01</h2>
-            <p class="drop-banner__desc">Piezas limitadas con estética circuito y calidad premium. Hecho para la tribuna y la calle.</p>
-            <a href="/pages/catalogo.html" class="drop-banner__cta">Explorar shop</a>
-        </div>
-        <div class="drop-banner__deco" aria-hidden="true">
-            <svg viewBox="0 0 120 120" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="0.8" class="drop-banner__svg">
-                <rect x="8" y="8" width="104" height="104"/>
-                <line x1="8" y1="60" x2="112" y2="60"/>
-                <line x1="60" y1="8" x2="60" y2="112"/>
-                <circle cx="60" cy="60" r="28"/>
-            </svg>
-        </div>
-        <div class="drop-banner__brand" aria-hidden="true">
-            <img src="images-brand/brand-elements/5.svg" alt="" class="volt-brand-bg volt-brand-bg--drop" width="400" height="400">
-        </div>
-    </section>
-
-    <section class="nueva-era section-panel section-panel--alt">
-        <img src="images-brand/brand-elements/brutalism2.svg" alt="" class="volt-brand-bg volt-brand-bg--line volt-brand-bg--nueva-era" width="380" height="380" aria-hidden="true">
-        <div class="nueva-era__inner reveal">
-            <div class="nueva-era__accent" aria-hidden="true"></div>
-            <h2 class="nueva-era__title">Nueva era, misma pasión</h2>
-            <p>En 2023 comenzamos como DRS Store. Ahora evolucionamos a <strong>VOLT</strong> — energía, velocidad y cultura del motorsport.</p>
-            <p>Más que ropa: piezas que conectan con tu pasión por las carreras.</p>
-            <p><strong>Bienvenido a la nueva generación del streetwear racing.</strong></p>
-        </div>
-    </section>
-
-    <section class="benefits-strip" aria-label="Beneficios de compra">
-        <img src="images-brand/brand-elements/brutalism%201.svg" alt="" class="volt-brand-bg volt-brand-bg--line volt-brand-bg--benefits" width="340" height="340" aria-hidden="true">
-        <div class="benefits-strip__inner">
-            <div class="benefit-item">
-                <svg class="benefit-item__icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true">
-                    <path d="M8 20 L24 8 L40 20 V38 H8 Z"/>
-                    <path d="M18 38 V26 H30 V38"/>
-                    <circle cx="24" cy="16" r="3"/>
-                </svg>
-                <h3 class="benefit-item__title">Envíos</h3>
-                <p class="benefit-item__text">A todo el país y entrega en Córdoba.</p>
-            </div>
-            <div class="benefit-item__sep" aria-hidden="true"></div>
-            <div class="benefit-item">
-                <svg class="benefit-item__icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true">
-                    <path d="M12 14h24v22H12Z"/>
-                    <path d="M16 14V10h16v4"/>
-                    <path d="M20 22h8M20 28h8"/>
-                </svg>
-                <h3 class="benefit-item__title">Compra simple</h3>
-                <p class="benefit-item__text">Carrito y pago con Mercado Pago.</p>
-            </div>
-            <div class="benefit-item__sep" aria-hidden="true"></div>
-            <div class="benefit-item">
-                <svg class="benefit-item__icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true">
-                    <rect x="10" y="18" width="28" height="20" rx="2"/>
-                    <path d="M14 18V14a10 10 0 0110-10 10 10 0 0110 10v4"/>
-                    <circle cx="24" cy="28" r="3"/>
-                </svg>
-                <h3 class="benefit-item__title">Pagos seguros</h3>
-                <p class="benefit-item__text">Checkout protegido y seguimiento claro.</p>
-            </div>
-        </div>
-    </section>
-    </main>
-
-    <footer class="footer footer--telemetry">
-        <div class="footer__scanline" aria-hidden="true"></div>
-        <div class="footer__top-rule" aria-hidden="true">
-            <span class="footer__rule-dot"></span>
-            <span class="footer__rule-line"></span>
-            <span class="footer__rule-dot"></span>
-        </div>
-        <div class="footer-container footer-container--dense">
-            <div class="footer-section footer-brand">
-                <img class="footer-logo-img" src="images-brand/Logo blanco.png" width="200" height="36" alt="VOLT — Motorsport Culture">
-                <p class="footer-tagline">Motorsport Culture</p>
-                <p class="footer-brand-desc">Streetwear inspirado en la velocidad y la cultura racing.</p>
-            </div>
-
-            <nav class="footer-section footer-nav" aria-label="Navegación pie de página">
-                <h3 class="footer-heading">Tienda</h3>
-                <ul class="footer-links">
-                    <li><a href="/pages/catalogo.html">Shop</a></li>
-                    <li><a href="/pages/about.html">Nosotros</a></li>
-                    <li><a href="/pages/envios.html">Envíos</a></li>
-                    <li><a href="/pages/novedades.html">Novedades</a></li>
-                </ul>
-            </nav>
-
-            <div class="footer-section">
-                <h3 class="footer-heading">Contacto</h3>
-                <p><a href="mailto:volt.streetcba@gmail.com">volt.streetcba@gmail.com</a></p>
-                <p><a href="tel:+5493518588127">+54 9 351 858-8127</a></p>
-            </div>
-
-            <div class="footer-section footer-section--news">
-                <h3 class="footer-heading">Newsletter</h3>
-                <p class="footer-newsletter-hint">Novedades y drops — dejanos tu mail.</p>
-                <form class="footer-newsletter js-newsletter-form">
-                    <label for="footer-email" class="visually-hidden">Email</label>
-                    <input type="email" id="footer-email" class="footer-newsletter__input" placeholder="tu@email.com" autocomplete="email" inputmode="email" required>
-                    <button type="submit" class="footer-newsletter__btn">Enviar</button>
-                </form>
-                <p class="footer-note js-newsletter-msg"></p>
-                <h3 class="footer-heading footer-heading--social">Redes</h3>
-                <div class="social-icons">
-                    <a href="https://www.instagram.com/volt.culture/" target="_blank" rel="noopener" aria-label="Instagram @volt.culture">
-                        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                        </svg>
-                    </a>
-                    <a href="https://x.com/voltculturecba" target="_blank" rel="noopener" aria-label="X (Twitter) @voltculturecba">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                        </svg>
-                    </a>
+        <div class="ticker" aria-hidden="true">
+            <div class="ticker__track">
+                <div class="ticker__group">
+                    <span class="ticker__item">VOLT Culture</span><span class="ticker__dot"></span>
+                    <span class="ticker__item">Córdoba, Argentina</span><span class="ticker__dot"></span>
+                    <span class="ticker__item">Drop #01 — May 1</span><span class="ticker__dot"></span>
+                    <span class="ticker__item">Motorsport-Inspired Streetwear</span><span class="ticker__dot"></span>
+                    <span class="ticker__item">Built for the Fast Lane</span><span class="ticker__dot"></span>
+                    <span class="ticker__item">Limited Units Only</span><span class="ticker__dot"></span>
+                    <span class="ticker__item">voltculture.com.ar</span><span class="ticker__dot"></span>
+                </div>
+                <div class="ticker__group" aria-hidden="true">
+                    <span class="ticker__item">VOLT Culture</span><span class="ticker__dot"></span>
+                    <span class="ticker__item">Córdoba, Argentina</span><span class="ticker__dot"></span>
+                    <span class="ticker__item">Drop #01 — May 1</span><span class="ticker__dot"></span>
+                    <span class="ticker__item">Motorsport-Inspired Streetwear</span><span class="ticker__dot"></span>
+                    <span class="ticker__item">Built for the Fast Lane</span><span class="ticker__dot"></span>
+                    <span class="ticker__item">Limited Units Only</span><span class="ticker__dot"></span>
+                    <span class="ticker__item">voltculture.com.ar</span><span class="ticker__dot"></span>
                 </div>
             </div>
         </div>
-        <p class="footer-bottom">&copy; 2026 VOLT - Motorsport Culture. Todos los derechos reservados.</p>
-    </footer>
 
-    <a href="https://wa.me/5493518588127?text=Hola!%20Quiero%20consultar%20sobre%20productos%20de%20VOLT" 
-       class="whatsapp-float" 
-       target="_blank" 
-       rel="noopener"
+        <section class="identity" id="identity" aria-labelledby="identity-heading">
+            <p class="section-label reveal" id="identity-heading">/ 001 — Identity</p>
+            <div class="identity__grid">
+                <article class="identity__card reveal">
+                    <p class="identity__num">01</p>
+                    <svg class="identity__icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <circle cx="20" cy="20" r="14" stroke="currentColor" stroke-width="1.5"/>
+                        <circle cx="20" cy="20" r="4" fill="currentColor"/>
+                        <path d="M20 6V12M20 28V34M6 20H12M28 20H34" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                    <h2 class="identity__title">Precision</h2>
+                    <p class="identity__desc">Alineación tipo pit lane: cortes, gráfica y construcción medidos al milímetro. Nada sobra en circuito.</p>
+                </article>
+                <article class="identity__card reveal">
+                    <p class="identity__num">02</p>
+                    <svg class="identity__icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M8 12H32V28H8V12Z" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M8 18H32M8 22H32M14 12V28M20 12V28M26 12V28" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                    <h2 class="identity__title">Structure</h2>
+                    <p class="identity__desc">Jerarquía clara, bloques definidos. La pieza responde a reglas de paddock: orden bajo tensión.</p>
+                </article>
+                <article class="identity__card reveal">
+                    <p class="identity__num">03</p>
+                    <svg class="identity__icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M8 28L16 12L24 20L32 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/>
+                        <path d="M10 32H34" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                    <h2 class="identity__title">Velocity</h2>
+                    <p class="identity__desc">Lectura instantánea en movimiento. Pensado para quienes operan en la zona roja del cronómetro.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="drop" id="drop" aria-labelledby="drop-heading">
+            <div class="drop__split reveal">
+                <div class="drop__visual">
+                    <img src="images-brand/buzoprincipal.png" alt="Drop #01 — pieza principal VOLT" width="1200" height="1400" loading="lazy" decoding="async">
+                    <p class="drop__tag">/// COMING MAY 1 ///</p>
+                </div>
+                <div class="drop__content">
+                    <p class="drop__meta">Collection 01 / Limited Run / CBA, ARG</p>
+                    <h2 class="drop__title" id="drop-heading">Drop #01</h2>
+                    <p class="drop__copy">
+                        Primera salida a pista: volúmenes de calle con lectura racing. Telas y siluetas pensadas para transición paddock–asfalto. Unidades acotadas; sin reposición en caliente. El drop abre el 1 de mayo de 2026, 00:00 ART. Señal en vivo abajo.
+                    </p>
+                    <div class="countdown" id="countdown" aria-live="polite">
+                        <div class="countdown__cell">
+                            <div class="countdown__val" id="cd-days">00</div>
+                            <div class="countdown__lbl">Days</div>
+                        </div>
+                        <div class="countdown__cell">
+                            <div class="countdown__val" id="cd-hours">00</div>
+                            <div class="countdown__lbl">Hours</div>
+                        </div>
+                        <div class="countdown__cell">
+                            <div class="countdown__val" id="cd-min">00</div>
+                            <div class="countdown__lbl">Min</div>
+                        </div>
+                        <div class="countdown__cell">
+                            <div class="countdown__val" id="cd-sec">00</div>
+                            <div class="countdown__lbl">Sec</div>
+                        </div>
+                    </div>
+                    <a class="btn btn--fill" href="https://wa.me/5493518588127?text=Hola%21%20Quiero%20que%20me%20avisen%20cuando%20salga%20el%20drop%20de%20VOLT." target="_blank" rel="noopener noreferrer">Get Notified</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="manifesto" id="about" aria-labelledby="manifesto-heading">
+            <p class="section-label reveal">/ 003 — Manifesto</p>
+            <h2 class="manifesto__quote reveal" id="manifesto-heading">
+                No hacemos ropa. Hacemos <span class="accent">equipamiento</span> para quienes viven en la <span class="accent">zona roja.</span>
+            </h2>
+            <p class="manifesto__sub reveal">Córdoba, Argentina · Est. 2025 · voltculture.com.ar</p>
+            <a class="btn btn--fill reveal" href="#drop">See Drop #01</a>
+        </section>
+    </main>
+
+    <footer class="site-footer" role="contentinfo">
+        <div class="site-footer__logo">
+            <img class="volt-logo" src="images-brand/Isotipo color.png" alt="VOLT" height="22" decoding="async">
+        </div>
+        <nav class="site-footer__nav" aria-label="Pie de página">
+            <a href="https://www.instagram.com/volt.culture/" target="_blank" rel="noopener noreferrer">Instagram</a>
+            <a href="#drop">Drop #01</a>
+            <a href="mailto:volt.streetcba@gmail.com">Contact</a>
+            <a href="https://voltculture.com.ar/">voltculture.com.ar</a>
+        </nav>
+        <p class="site-footer__copy">© 2026 VOLT Culture</p>
+    </footer>
+    </div>
+
+    <a id="whatsappFloat"
+       href="https://wa.me/5493518588127?text=Hola!%20Quiero%20consultar%20sobre%20VOLT"
+       class="whatsapp-float"
+       target="_blank"
+       rel="noopener noreferrer"
        aria-label="Contactar por WhatsApp">
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
         </svg>
     </a>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function () {
+            var logoPaths = [
+                'images-brand/Isotipo color.png',
+                'images-brand/isotipo-alternativo.png',
+                'images-brand/isotipo.png',
+                'images-brand/logo.png',
+                'images-brand/logo-white.png'
+            ];
+            document.querySelectorAll('img.volt-logo').forEach(function (img) {
+                var i = 0;
+                img.addEventListener('error', function onLogoErr() {
+                    i += 1;
+                    if (i < logoPaths.length) {
+                        img.src = logoPaths[i];
+                    } else {
+                        img.removeEventListener('error', onLogoErr);
+                    }
+                });
+            });
+        })();
+
+        (function () {
+            var target = new Date('2026-05-01T00:00:00-03:00');
+            var dEl = document.getElementById('cd-days');
+            var hEl = document.getElementById('cd-hours');
+            var mEl = document.getElementById('cd-min');
+            var sEl = document.getElementById('cd-sec');
+
+            function pad(n) {
+                return String(Math.max(0, n)).padStart(2, '0');
+            }
+
+            function tick() {
+                var now = Date.now();
+                var diff = target.getTime() - now;
+                if (diff <= 0) {
+                    dEl.textContent = '00';
+                    hEl.textContent = '00';
+                    mEl.textContent = '00';
+                    sEl.textContent = '00';
+                    return;
+                }
+                var sec = Math.floor(diff / 1000);
+                var days = Math.floor(sec / 86400);
+                sec -= days * 86400;
+                var hours = Math.floor(sec / 3600);
+                sec -= hours * 3600;
+                var min = Math.floor(sec / 60);
+                sec -= min * 60;
+                dEl.textContent = pad(days);
+                hEl.textContent = pad(hours);
+                mEl.textContent = pad(min);
+                sEl.textContent = pad(sec);
+            }
+
+            tick();
+            setInterval(tick, 1000);
+        })();
+
+        (function () {
+            var nodes = document.querySelectorAll('.reveal');
+            if (!('IntersectionObserver' in window)) {
+                nodes.forEach(function (el) { el.classList.add('is-visible'); });
+                return;
+            }
+            var io = new IntersectionObserver(
+                function (entries) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                            io.unobserve(entry.target);
+                        }
+                    });
+                },
+                { root: null, rootMargin: '0px 0px -8% 0px', threshold: 0.08 }
+            );
+            nodes.forEach(function (el) { io.observe(el); });
+        })();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="/js/firebase-config.js"></script>
-    <script src="/js/products-service.js"></script>
-    <script src="/js/home-featured.js"></script>
+    <script src="/js/cart-sync.js"></script>
     <script src="/js/store-auth.js"></script>
-    <script src="/js/animations.js"></script>
-    <script src="/js/admin-access.js"></script>
-    <script src="/js/newsletter.js"></script>
+    <script>
+    // Transición de salida de página
+    document.addEventListener('click', function (e) {
+        const link = e.target.closest('a[href]');
+        if (!link) return;
+        const href = link.getAttribute('href');
+        if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:') || link.target === '_blank') return;
+        if (/^https?:\/\/(wa\.me|api\.whatsapp\.com)\//i.test(href)) return;
+        try {
+            const dest = new URL(href, location.href);
+            if (dest.pathname === location.pathname && dest.search === location.search) return;
+        } catch (_) { return; }
+        e.preventDefault();
+        var shell = document.querySelector('.page-shell');
+        if (shell) shell.classList.add('page-leaving');
+        setTimeout(function () { window.location.href = href; }, 230);
+    });
+    </script>
 </body>
 </html>

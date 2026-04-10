@@ -9,8 +9,8 @@
 @media screen and (max-width: 1024px) {
     /* Header */
     .header {
-        padding: 0 1.5rem;
-        min-height: 65px;
+        padding: 10px 1.5rem;
+        min-height: var(--header-sticky-height);
     }
 
     .header ul {
@@ -87,10 +87,15 @@
    MOBILE LANDSCAPE & SMALL TABLETS (768px)
    ===================================================== */
 @media screen and (max-width: 768px) {
+    :root {
+        --navbar-logo-size: 88px;
+        --header-sticky-height: 111px;
+    }
+
     /* Header - Menú hamburguesa */
     .header {
-        padding: 0 1rem;
-        min-height: 65px;
+        padding: 10px 1rem;
+        min-height: var(--header-sticky-height);
     }
 
     .menu-toggle {
@@ -104,10 +109,12 @@
         width: 70%;
         max-width: 300px;
         height: 100vh;
+        min-height: unset;
         background: rgba(11, 11, 11, 0.94);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
         flex-direction: column;
+        align-items: stretch;
         padding: 5rem 2rem 2rem;
         gap: 0;
         box-shadow: -5px 0 30px rgba(0, 0, 0, 0.5);
@@ -116,12 +123,20 @@
         border-left: 1px solid var(--border-color);
     }
 
+    .header ul li {
+        display: block;
+        min-height: unset;
+    }
+
     .header ul.active {
         right: 0;
     }
 
     .header ul a {
         display: block;
+        align-items: unset;
+        line-height: normal;
+        min-height: unset;
         padding: 1rem 0;
         border-bottom: 1px solid var(--border-color);
         font-size: 1rem;
@@ -610,9 +625,14 @@
    EXTRA SMALL DEVICES (320px)
    ===================================================== */
 @media screen and (max-width: 320px) {
+    :root {
+        --navbar-logo-size: 76px;
+        --header-sticky-height: 100px;
+    }
+
     .header {
-        padding: 0 0.5rem;
-        min-height: 65px;
+        padding: 8px 0.5rem;
+        min-height: var(--header-sticky-height);
     }
 
     .product-grid {

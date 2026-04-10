@@ -1,0 +1,1571 @@
+/**
+ * VOLT design system — overrides for legacy pages (loads after style.css + mediaquery.css)
+ * Palette: #000000 / #FFFFFF / #E8001D only (+ label grays #444–#888)
+ * Load fonts via page <link>: DM Mono400/500, DM Sans 300/400, Teko 700
+ */
+
+:root {
+    --volt-ds-black: #000000;
+    --volt-ds-white: #ffffff;
+    --volt-ds-red: #e8001d;
+    --volt-ds-border: rgba(255, 255, 255, 0.07);
+    /* Bordes de controles (mejor contraste no-texto que --volt-ds-border) */
+    --volt-ds-border-control: rgba(255, 255, 255, 0.22);
+    --volt-ds-grid-line: rgba(255, 255, 255, 0.07);
+    --volt-ds-label: #666666;
+    --volt-ds-body: #888888;
+    --volt-ds-header-h: 72px;
+    --font-ds-display: "Teko", sans-serif;
+    --font-ds-mono: "DM Mono", monospace;
+    --font-ds-body: "DM Sans", sans-serif;
+}
+
+/* ─── Global reset: sharp corners, base colors ─── */
+*,
+*::before,
+*::after {
+    border-radius: 0 !important;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-ds-body) !important;
+    background-color: var(--volt-ds-black) !important;
+    color: var(--volt-ds-white) !important;
+    position: relative;
+}
+
+/* Grid overlay (same as index) */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-color: var(--volt-ds-black);
+    background-image:
+        linear-gradient(var(--volt-ds-grid-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--volt-ds-grid-line) 1px, transparent 1px);
+    background-size: 80px 80px;
+}
+
+/* Main offset for fixed header */
+#main-content,
+main.orders-page {
+    padding-top: var(--volt-ds-header-h) !important;
+}
+
+/* ─── Typography ─── */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.about-hero__title,
+.about-split__heading,
+.about-pillar__title,
+.section-title,
+.section-panel__link,
+.drop-banner__title,
+.nueva-era__title,
+.category-card__title,
+.benefit-item__title,
+.hero-headline,
+.hero-headline__accent,
+.orders-heading,
+.cart-offcanvas-title,
+.modal-title {
+    font-family: var(--font-ds-display) !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    line-height: 0.95 !important;
+    letter-spacing: 0.02em !important;
+    color: var(--volt-ds-white) !important;
+}
+
+.about-pillar__text,
+.about-hero__lead,
+.footer-brand-desc,
+.footer-section p,
+.category-card__desc,
+.benefit-item__text,
+.hero-desc,
+.nueva-era__inner p,
+.drop-banner__desc,
+.order-item,
+.orders-subheading,
+.about-split__text p,
+.news-card__excerpt,
+.news-page__intro,
+.envios-page__lead,
+.howbuy__main p,
+.envios__main .card p {
+    font-family: var(--font-ds-body) !important;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    line-height: 1.6 !important;
+    color: var(--volt-ds-body) !important;
+}
+
+.section-eyebrow,
+.section-panel__eyebrow,
+.drop-banner__eyebrow,
+.categories-section__label,
+.footer-newsletter-hint,
+.order-card__total-label {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 10px !important;
+    font-weight: 400 !important;
+    letter-spacing: 0.16em !important;
+    text-transform: uppercase !important;
+    color: var(--volt-ds-label) !important;
+}
+
+/* Section rhythm */
+main > section,
+main > header,
+.section-panel,
+.about-pillars,
+.about-split,
+.categories-section,
+.home-featured,
+.drop-banner,
+.nueva-era,
+.benefits-strip,
+.envios__main,
+.howbuy__main {
+    padding: 100px 0 !important;
+}
+
+/* Envíos: sin banda gris en la sección; cards y “Cómo comprar” llevan panel #000 opaco */
+.envios__main {
+    background: none !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+
+.howbuy__main {
+    background: #000000 !important;
+    background-color: #000000 !important;
+    border: 1px solid var(--volt-ds-border) !important;
+    box-shadow: none !important;
+}
+
+@media screen and (max-width: 768px) {
+    main > section,
+    main > header,
+    .section-panel,
+    .about-pillars,
+    .about-split,
+    .categories-section,
+    .home-featured,
+    .drop-banner,
+    .nueva-era,
+    .benefits-strip,
+    .envios__main,
+    .howbuy__main {
+        padding: 64px 0 !important;
+    }
+}
+
+/* ─── Page transitions ─── */
+@keyframes volt-page-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+body {
+    animation: volt-page-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+body.page-leaving {
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity 0.22s ease, transform 0.22s ease;
+    pointer-events: none;
+}
+
+/* ─── Scroll reveal (animations.js adds .active) ─── */
+.reveal,
+.reveal-left,
+.reveal-right {
+    opacity: 0 !important;
+    transform: translateY(28px) !important;
+    transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+.reveal.active,
+.reveal-left.active,
+.reveal-right.active {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .reveal,
+    .reveal-left,
+    .reveal-right {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+}
+
+/* ─── Header / nav ─── */
+.header {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    min-height: 72px !important;
+    padding: 6px clamp(16px, 4vw, 48px) !important;
+    background: rgba(0, 0, 0, 0.85) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border-bottom: 1px solid var(--volt-ds-border) !important;
+    z-index: 1000 !important;
+}
+
+.header.scrolled {
+    background: rgba(0, 0, 0, 0.92) !important;
+}
+
+.logo-lockup {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0 !important;
+    line-height: 0 !important;
+    text-decoration: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.header .logo-link,
+.header .logo-lockup {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.site-logo--navbar {
+    height: 52px !important;
+    width: auto !important;
+    max-width: min(280px, 52vw) !important;
+    object-fit: contain !important;
+    display: block !important;
+}
+
+@media screen and (max-width: 900px) {
+    .header {
+        min-height: 56px !important;
+        padding-top: 4px !important;
+        padding-bottom: 4px !important;
+    }
+
+    :root {
+        --volt-ds-header-h: 56px;
+    }
+
+    .site-logo--navbar {
+        height: 36px !important;
+        max-width: min(220px, 62vw) !important;
+    }
+}
+
+.logo-link img {
+    filter: none !important;
+}
+
+.header ul {
+    gap: clamp(12px, 2vw, 28px) !important;
+}
+
+.header ul li {
+    min-height: unset !important;
+}
+
+.header ul a,
+.header ul a.nav-link {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 13px !important;
+    font-weight: 400 !important;
+    letter-spacing: 0.14em !important;
+    text-transform: uppercase !important;
+    color: var(--volt-ds-label) !important;
+    padding: 8px 10px !important;
+    border: none !important;
+    background: transparent !important;
+    transition: color 0.2s ease, border-color 0.2s ease !important;
+}
+
+.header ul a.nav-link::after,
+.header ul a::after {
+    display: none !important;
+}
+
+.header ul a.nav-link:hover,
+.header ul a.nav-link:focus-visible,
+.header ul a:hover,
+.header ul a:focus-visible {
+    color: var(--volt-ds-white) !important;
+    border: none !important;
+    background: transparent !important;
+}
+
+.header ul a.nav-link.active {
+    color: var(--volt-ds-white) !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: inset 0 -2px 0 0 var(--volt-ds-red) !important;
+}
+
+.menu-toggle span {
+    background: var(--volt-ds-white) !important;
+    border-radius: 0 !important;
+}
+
+.auth-nav {
+    gap: 10px !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+    min-width: 0;
+    max-width: none;
+    display: flex !important;
+    justify-content: flex-end !important;
+    flex-shrink: 0 !important;
+    visibility: hidden;
+}
+
+.nav-auth {
+    min-width: 0;
+    display: flex !important;
+    align-items: center;
+    gap: 16px;
+    justify-content: flex-end;
+    flex-shrink: 1;
+    visibility: hidden;
+}
+
+.nav-auth.loaded,
+.auth-nav.loaded {
+    visibility: visible;
+}
+
+.auth-greeting {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 10px !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+    color: var(--volt-ds-label) !important;
+    max-width: 14rem !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+.auth-btn {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 10px !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+    border: 1px solid var(--volt-ds-border-control) !important;
+    background: transparent !important;
+    color: var(--volt-ds-white) !important;
+    border-radius: 0 !important;
+}
+
+.auth-btn:hover {
+    border-color: var(--volt-ds-red) !important;
+    background: rgba(232, 0, 29, 0.12) !important;
+    color: var(--volt-ds-white) !important;
+}
+
+.auth-btn--in {
+    padding: 12px 24px !important;
+    background: var(--volt-ds-white) !important;
+    color: var(--volt-ds-black) !important;
+    border: 2px solid var(--volt-ds-white) !important;
+    font-weight: 500 !important;
+    font-size: 12px !important;
+    letter-spacing: 0.14em !important;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset !important;
+}
+
+.auth-btn--in:hover {
+    background: var(--volt-ds-red) !important;
+    color: var(--volt-ds-white) !important;
+    border-color: var(--volt-ds-red) !important;
+}
+
+.auth-btn--out {
+    padding: 8px 12px !important;
+}
+
+.auth-btn--link {
+    border-color: transparent !important;
+    text-decoration: none !important;
+}
+
+.auth-btn--link:hover {
+    border-color: var(--volt-ds-red) !important;
+}
+
+@media screen and (max-width: 768px) {
+    .header ul {
+        background: rgba(0, 0, 0, 0.96) !important;
+        border-left: 1px solid var(--volt-ds-border) !important;
+        box-shadow: none !important;
+    }
+
+    .header ul a,
+    .header ul a.nav-link {
+        border-bottom: 1px solid var(--volt-ds-border) !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-top: none !important;
+        color: var(--volt-ds-label) !important;
+    }
+
+    .header ul a.nav-link.active {
+        box-shadow: inset 3px 0 0 0 var(--volt-ds-red) !important;
+    }
+}
+
+/* ─── Footer ─── */
+.footer,
+.footer.footer--telemetry {
+    background: var(--volt-ds-black) !important;
+    border-top: 1px solid var(--volt-ds-border) !important;
+    color: var(--volt-ds-white) !important;
+}
+
+.footer-section h3,
+.footer-heading {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 10px !important;
+    letter-spacing: 0.16em !important;
+    text-transform: uppercase !important;
+    color: var(--volt-ds-label) !important;
+}
+
+.footer-section h3::after,
+.footer-heading::after {
+    display: none !important;
+}
+
+.footer-section a,
+.footer-nav .footer-links a {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 11px !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+    color: var(--volt-ds-label) !important;
+    border: 1px solid transparent !important;
+    padding: 6px 8px !important;
+    transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease !important;
+}
+
+.footer-section a:hover,
+.footer-nav .footer-links a:hover {
+    color: var(--volt-ds-white) !important;
+    border-color: var(--volt-ds-red) !important;
+    background: rgba(232, 0, 29, 0.12) !important;
+}
+
+.footer-newsletter__input {
+    background: var(--volt-ds-black) !important;
+    color: var(--volt-ds-white) !important;
+    border: 1px solid var(--volt-ds-border) !important;
+    border-radius: 0 !important;
+}
+
+.footer-newsletter__input:focus {
+    outline: none !important;
+    border-color: var(--volt-ds-red) !important;
+    box-shadow: 0 0 0 1px var(--volt-ds-red) !important;
+}
+
+.footer-newsletter__input::placeholder {
+    color: #555 !important;
+}
+
+.footer-newsletter__btn {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 10px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.12em !important;
+    background: var(--volt-ds-white) !important;
+    color: var(--volt-ds-black) !important;
+    border: 1px solid var(--volt-ds-white) !important;
+    border-radius: 0 !important;
+}
+
+.footer-newsletter__btn:hover {
+    background: var(--volt-ds-red) !important;
+    color: var(--volt-ds-white) !important;
+    border-color: var(--volt-ds-red) !important;
+}
+
+.footer-bottom {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 10px !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+    color: #444444 !important;
+}
+
+.footer-tagline {
+    font-family: var(--font-ds-mono) !important;
+    color: var(--volt-ds-label) !important;
+}
+
+/* ─── Cards, panels, category grid ─── */
+.category-card,
+.benefit-item,
+.about-pillar,
+.product-card,
+.section-panel,
+.order-card {
+    border: 1px solid var(--volt-ds-border) !important;
+    background: var(--volt-ds-black) !important;
+    box-shadow: none !important;
+}
+
+.category-card:hover,
+.about-pillar:hover,
+.product-card:hover,
+.order-card:hover {
+    border-color: var(--volt-ds-red) !important;
+    background: #000000 !important;
+}
+
+.category-card__num,
+.about-pillar__icon,
+.benefit-item__icon {
+    color: var(--volt-ds-red) !important;
+}
+
+.coming-soon {
+    opacity: 1 !important;
+}
+
+/* ─── Buttons & links (site) ─── */
+.hero-cta,
+.drop-banner__cta,
+.section-panel__link,
+.novedades-card__link,
+.envios-cta {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 11px !important;
+    letter-spacing: 0.14em !important;
+    text-transform: uppercase !important;
+    border: 1px solid var(--volt-ds-border-control) !important;
+    background: transparent !important;
+    color: var(--volt-ds-white) !important;
+    border-radius: 0 !important;
+}
+
+.hero-cta:hover,
+.drop-banner__cta:hover,
+.section-panel__link:hover,
+.hero-cta--ghost:hover {
+    border-color: var(--volt-ds-red) !important;
+    background: rgba(232, 0, 29, 0.12) !important;
+    color: var(--volt-ds-white) !important;
+}
+
+.hero-cta:not(.hero-cta--ghost) {
+    background: var(--volt-ds-white) !important;
+    color: var(--volt-ds-black) !important;
+    border-color: var(--volt-ds-white) !important;
+}
+
+.hero-cta:not(.hero-cta--ghost):hover {
+    background: var(--volt-ds-red) !important;
+    color: var(--volt-ds-white) !important;
+    border-color: var(--volt-ds-red) !important;
+}
+
+.whatsapp-float {
+    border: 1px solid var(--volt-ds-border) !important;
+    background: #000000 !important;
+    border-radius: 0 !important;
+    z-index: 1100 !important;
+    left: 2rem !important;
+    right: auto !important;
+}
+
+.whatsapp-float:hover {
+    border-color: var(--volt-ds-red) !important;
+    background: rgba(232, 0, 29, 0.12) !important;
+}
+
+.btn-cart {
+    border: 1px solid var(--volt-ds-border-control) !important;
+    background: rgba(0, 0, 0, 0.85) !important;
+    backdrop-filter: blur(12px) !important;
+    color: var(--volt-ds-white) !important;
+}
+
+.btn-cart:hover {
+    border-color: var(--volt-ds-red) !important;
+    background: rgba(232, 0, 29, 0.12) !important;
+}
+
+.cart-badge {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 10px !important;
+    background: var(--volt-ds-red) !important;
+    color: var(--volt-ds-white) !important;
+    border: 1px solid var(--volt-ds-red) !important;
+}
+
+/* ─── Loader (catálogo) ─── */
+.loader-overlay {
+    background: var(--volt-ds-black) !important;
+}
+
+.loader-overlay p {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 11px !important;
+    letter-spacing: 0.14em !important;
+    text-transform: uppercase !important;
+    color: var(--volt-ds-label) !important;
+}
+
+.loader {
+    border-radius: 0 !important;
+    border: 3px solid var(--volt-ds-border) !important;
+    border-top-color: var(--volt-ds-red) !important;
+    width: 40px !important;
+    height: 40px !important;
+}
+
+/* ─── Cart offcanvas ─── */
+.cart-offcanvas,
+.cart-offcanvas .offcanvas-header,
+.cart-offcanvas .offcanvas-body {
+    background: var(--volt-ds-black) !important;
+    color: var(--volt-ds-white) !important;
+}
+
+.cart-offcanvas-header {
+    border-bottom: 1px solid var(--volt-ds-border) !important;
+}
+
+.cart-offcanvas-title {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 12px !important;
+    letter-spacing: 0.14em !important;
+}
+
+.cart-empty__text {
+    font-family: var(--font-ds-display) !important;
+    font-size: clamp(28px, 5vw, 42px) !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    line-height: 0.95 !important;
+    color: var(--volt-ds-white) !important;
+}
+
+.cart-empty__link {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 11px !important;
+    letter-spacing: 0.14em !important;
+    text-transform: uppercase !important;
+    color: var(--volt-ds-white) !important;
+    border: 1px solid var(--volt-ds-red) !important;
+    background: rgba(232, 0, 29, 0.12) !important;
+    padding: 10px 16px !important;
+    display: inline-block !important;
+    margin-top: 12px !important;
+}
+
+.cart-empty__link:hover {
+    color: var(--volt-ds-white) !important;
+    border-color: var(--volt-ds-red) !important;
+}
+
+/* ─── Auth modal ─── */
+#voltAuthModal .modal-dialog.modal-dialog-centered {
+    min-height: calc(100vh - 2rem) !important;
+    min-height: calc(100dvh - 2rem) !important;
+}
+
+#voltAuthModal .modal-content.auth-modal-content,
+.auth-modal-content {
+    background: var(--volt-ds-black) !important;
+    border: 1px solid var(--volt-ds-border) !important;
+    color: var(--volt-ds-white) !important;
+}
+
+.auth-modal-header {
+    border-bottom: 1px solid var(--volt-ds-border) !important;
+}
+
+.auth-tab-btn {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 10px !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+    border: 1px solid var(--volt-ds-border-control) !important;
+    background: transparent !important;
+    color: var(--volt-ds-label) !important;
+}
+
+.auth-tab-btn.active {
+    border-color: var(--volt-ds-red) !important;
+    background: rgba(232, 0, 29, 0.12) !important;
+    color: var(--volt-ds-white) !important;
+}
+
+.auth-label {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 10px !important;
+    color: var(--volt-ds-label) !important;
+}
+
+.auth-input {
+    background: var(--volt-ds-black) !important;
+    color: var(--volt-ds-white) !important;
+    border: 1px solid var(--volt-ds-border) !important;
+}
+
+.auth-input:focus {
+    border-color: var(--volt-ds-red) !important;
+    box-shadow: 0 0 0 1px var(--volt-ds-red) !important;
+    outline: none !important;
+}
+
+.auth-submit-btn {
+    font-family: var(--font-ds-mono) !important;
+    background: var(--volt-ds-white) !important;
+    color: var(--volt-ds-black) !important;
+    border: 1px solid var(--volt-ds-white) !important;
+}
+
+.auth-submit-btn:hover:not(:disabled) {
+    background: var(--volt-ds-red) !important;
+    color: var(--volt-ds-white) !important;
+    border-color: var(--volt-ds-red) !important;
+}
+
+.auth-google-btn {
+    border: 1px solid var(--volt-ds-border-control) !important;
+    background: var(--volt-ds-black) !important;
+    color: var(--volt-ds-white) !important;
+}
+
+/* ─── Bootstrap overrides (catálogo / mis-pedidos) ─── */
+.btn-primary,
+.btn-danger {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 11px !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+    border-radius: 0 !important;
+    background: var(--volt-ds-white) !important;
+    color: var(--volt-ds-black) !important;
+    border: 1px solid var(--volt-ds-white) !important;
+}
+
+.btn-primary:hover,
+.btn-danger:hover {
+    background: var(--volt-ds-red) !important;
+    color: var(--volt-ds-white) !important;
+    border-color: var(--volt-ds-red) !important;
+}
+
+.btn-secondary,
+.btn-outline-light,
+.btn-outline-secondary {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 11px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.12em !important;
+    background: transparent !important;
+    color: var(--volt-ds-white) !important;
+    border: 1px solid var(--volt-ds-border-control) !important;
+}
+
+.btn-secondary:hover,
+.btn-outline-light:hover {
+    border-color: var(--volt-ds-red) !important;
+    background: rgba(232, 0, 29, 0.12) !important;
+    color: var(--volt-ds-white) !important;
+}
+
+.form-control,
+.form-select {
+    background-color: var(--volt-ds-black) !important;
+    color: var(--volt-ds-white) !important;
+    border: 1px solid var(--volt-ds-border) !important;
+    border-radius: 0 !important;
+    font-family: var(--font-ds-body) !important;
+    font-size: 14px !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--volt-ds-red) !important;
+    box-shadow: 0 0 0 1px var(--volt-ds-red) !important;
+    outline: none !important;
+}
+
+.form-label {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 10px !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+    color: var(--volt-ds-label) !important;
+}
+
+.table {
+    --bs-table-bg: transparent !important;
+    --bs-table-color: var(--volt-ds-body) !important;
+    border-collapse: collapse !important;
+    border-color: var(--volt-ds-border) !important;
+    font-family: var(--font-ds-body) !important;
+    font-size: 14px !important;
+}
+
+.table thead th {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 10px !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+    color: var(--volt-ds-white) !important;
+    border-bottom: 1px solid var(--volt-ds-border) !important;
+    background: var(--volt-ds-black) !important;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid var(--volt-ds-border) !important;
+}
+
+.offcanvas {
+    background: var(--volt-ds-black) !important;
+    color: var(--volt-ds-white) !important;
+    border-left: 1px solid var(--volt-ds-border) !important;
+}
+
+.modal-content {
+    background: var(--volt-ds-black) !important;
+    color: var(--volt-ds-white) !important;
+    border: 1px solid var(--volt-ds-border) !important;
+}
+
+.modal-header,
+.modal-footer {
+    border-color: var(--volt-ds-border) !important;
+}
+
+.btn-close {
+    filter: invert(1) !important;
+}
+
+.order-card__id,
+.order-card__total-amount {
+    font-family: var(--font-ds-display) !important;
+    font-weight: 700 !important;
+    color: var(--volt-ds-white) !important;
+}
+
+.order-card__date {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 10px !important;
+    letter-spacing: 0.12em !important;
+    color: var(--volt-ds-label) !important;
+}
+
+/* ─── Envíos & Novedades ─── */
+.envios-page__title,
+.news-page__title {
+    font-family: var(--font-ds-display) !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    line-height: 0.95 !important;
+    color: var(--volt-ds-white) !important;
+}
+
+.news-page__intro a {
+    color: var(--volt-ds-red) !important;
+}
+
+.envios-page__lead {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 11px !important;
+    letter-spacing: 0.14em !important;
+    text-transform: uppercase !important;
+    color: var(--volt-ds-label) !important;
+}
+
+.envios__main .card,
+.howbuy__main .card {
+    --bs-card-bg: #000000 !important;
+    background: #000000 !important;
+    background-color: #000000 !important;
+    background-image: none !important;
+    border: 1px solid var(--volt-ds-border) !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
+}
+
+.envios__main .card:hover,
+.howbuy__main .card:hover {
+    border-color: var(--volt-ds-red) !important;
+    background: #000000 !important;
+}
+
+.envios__main .card h2,
+.howbuy__main .card h2,
+.howbuy__main h2 {
+    font-family: var(--font-ds-display) !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    color: var(--volt-ds-white) !important;
+}
+
+.howbuy__main strong {
+    color: var(--volt-ds-white) !important;
+}
+
+.howbuy__steps {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.5rem !important;
+    max-width: 560px !important;
+    margin: 2rem auto 0 !important;
+    text-align: left !important;
+}
+
+.howbuy__step {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 1rem !important;
+}
+
+.howbuy__step-icon {
+    font-size: 2rem !important;
+    line-height: 1 !important;
+    flex-shrink: 0 !important;
+}
+
+.howbuy__step-text {
+    margin: 0.25rem 0 0 !important;
+    color: var(--volt-ds-body) !important;
+}
+
+.howbuy__cta-wrap {
+    margin: 2.5rem 0 0 !important;
+}
+
+.envios-card__cta {
+    margin-top: 1rem !important;
+    align-self: center !important;
+}
+
+/* ─── Envíos: iconos Bootstrap Icons ─── */
+.envios__main .card .icon,
+.howbuy__step-icon {
+    font-size: 1.5rem !important;
+    line-height: 1 !important;
+    color: var(--volt-ds-red) !important;
+    margin-bottom: 1rem !important;
+    display: block !important;
+}
+
+.howbuy__step-icon {
+    margin-bottom: 0 !important;
+    flex-shrink: 0 !important;
+    width: 2rem !important;
+    text-align: center !important;
+}
+
+.howbuy__main .btn,
+.envios__main .btn {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 11px !important;
+    letter-spacing: 0.14em !important;
+    text-transform: uppercase !important;
+    border: 1px solid var(--volt-ds-border-control) !important;
+    background: #000000 !important;
+    background-color: #000000 !important;
+    color: var(--volt-ds-white) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 0.65rem 1.25rem !important;
+}
+
+.howbuy__main .btn::before,
+.envios__main .btn::before {
+    display: none !important;
+}
+
+.howbuy__main .btn:hover,
+.envios__main .btn:hover {
+    background: #000000 !important;
+    background-color: #000000 !important;
+    color: var(--volt-ds-white) !important;
+    border-color: var(--volt-ds-red) !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.news-card {
+    border: 1px solid var(--volt-ds-border) !important;
+    background: var(--volt-ds-black) !important;
+    box-shadow: none !important;
+}
+
+.news-card:hover {
+    border-color: var(--volt-ds-red) !important;
+}
+
+.news-card__tag {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 10px !important;
+    letter-spacing: 0.14em !important;
+    text-transform: uppercase !important;
+    color: var(--volt-ds-red) !important;
+    border: 1px solid var(--volt-ds-red) !important;
+    background: #000000 !important;
+}
+
+.news-card__heading,
+.news-card__heading a {
+    font-family: var(--font-ds-display) !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    color: var(--volt-ds-white) !important;
+}
+
+.news-card__date {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 10px !important;
+    color: var(--volt-ds-label) !important;
+}
+
+.news-card__read {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 11px !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+    color: var(--volt-ds-label) !important;
+    border: 1px solid transparent !important;
+}
+
+.news-card__read:hover {
+    color: var(--volt-ds-white) !important;
+    border-color: var(--volt-ds-red) !important;
+    background: rgba(232, 0, 29, 0.12) !important;
+}
+
+.news-cta-bar .btn,
+.news-cta-bar .btn-secondary {
+    border-radius: 0 !important;
+}
+
+/* ─── Mis pedidos: badges & reorder (palette-safe) ─── */
+.order-badge {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 10px !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+    border-radius: 0 !important;
+    border: 1px solid var(--volt-ds-border) !important;
+    background: transparent !important;
+    color: var(--volt-ds-label) !important;
+}
+
+.order-badge--paid {
+    border-color: rgba(45, 198, 83, 0.5) !important;
+    color: #2dc653 !important;
+    background: rgba(45, 198, 83, 0.1) !important;
+}
+
+.order-badge--pending,
+.order-badge--pending_payment {
+    border-color: rgba(240, 165, 0, 0.5) !important;
+    color: #f0a500 !important;
+    background: rgba(240, 165, 0, 0.1) !important;
+}
+
+.order-badge--failed,
+.order-badge--mp_error {
+    border-color: rgba(232, 25, 44, 0.5) !important;
+    color: #E8192C !important;
+    background: rgba(232, 25, 44, 0.12) !important;
+}
+
+.btn-reorder {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 10px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.12em !important;
+    border: 1px solid var(--volt-ds-border-control) !important;
+    background: transparent !important;
+    color: var(--volt-ds-label) !important;
+    border-radius: 0 !important;
+}
+
+.btn-reorder:hover {
+    border-color: var(--volt-ds-red) !important;
+    background: rgba(232, 0, 29, 0.12) !important;
+    color: var(--volt-ds-white) !important;
+}
+
+.btn-reorder--done {
+    border-color: var(--volt-ds-white) !important;
+    color: var(--volt-ds-white) !important;
+}
+
+.btn-reorder--done:hover {
+    border-color: var(--volt-ds-red) !important;
+    background: rgba(232, 0, 29, 0.12) !important;
+    color: var(--volt-ds-white) !important;
+}
+
+.orders-error {
+    border: 1px solid var(--volt-ds-border) !important;
+    background: rgba(232, 0, 29, 0.12) !important;
+    color: var(--volt-ds-white) !important;
+    font-family: var(--font-ds-body) !important;
+}
+
+.orders-heading span,
+.orders-empty__title span,
+.hero-headline__accent,
+.accent {
+    color: var(--volt-ds-red) !important;
+}
+
+.orders-empty__title {
+    font-family: var(--font-ds-display) !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    line-height: 0.95 !important;
+    color: var(--volt-ds-white) !important;
+}
+
+.orders-empty__desc {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 11px !important;
+    letter-spacing: 0.12em !important;
+    color: var(--volt-ds-label) !important;
+}
+
+.orders-empty__cta {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 11px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.14em !important;
+    background: var(--volt-ds-white) !important;
+    color: var(--volt-ds-black) !important;
+    border: 1px solid var(--volt-ds-white) !important;
+    border-radius: 0 !important;
+}
+
+.orders-empty__cta:hover {
+    background: var(--volt-ds-red) !important;
+    color: var(--volt-ds-white) !important;
+    border-color: var(--volt-ds-red) !important;
+}
+
+#pageLoader {
+    background: var(--volt-ds-black) !important;
+}
+
+.loader-spinner {
+    border-radius: 0 !important;
+    border: 3px solid var(--volt-ds-border) !important;
+    border-top-color: var(--volt-ds-red) !important;
+    width: 40px !important;
+    height: 40px !important;
+}
+
+/* ─── Standalone payment result pages: body:has(> main.box) ─── */
+body:has(> main.box) {
+    display: grid !important;
+    place-items: center !important;
+    min-height: 100vh !important;
+    padding: 24px !important;
+}
+
+main.box {
+    max-width: 680px !important;
+    width: 100% !important;
+    border: 1px solid var(--volt-ds-border) !important;
+    padding: 28px !important;
+    background: var(--volt-ds-black) !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+main.box h1 {
+    margin: 0 0 12px !important;
+    font-family: var(--font-ds-display) !important;
+    font-size: clamp(36px, 8vw, 52px) !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    line-height: 0.95 !important;
+    color: var(--volt-ds-white) !important;
+}
+
+main.box p {
+    margin: 0 0 16px !important;
+    font-family: var(--font-ds-body) !important;
+    font-size: 14px !important;
+    color: var(--volt-ds-body) !important;
+    line-height: 1.6 !important;
+}
+
+main.box .actions {
+    display: flex !important;
+    gap: 12px !important;
+    flex-wrap: wrap !important;
+    margin-top: 20px !important;
+}
+
+main.box a {
+    display: inline-block !important;
+    margin-top: 0 !important;
+    padding: 12px 20px !important;
+    font-family: var(--font-ds-mono) !important;
+    font-size: 11px !important;
+    letter-spacing: 0.14em !important;
+    text-transform: uppercase !important;
+    text-decoration: none !important;
+    transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease !important;
+}
+
+main.box a.primary,
+main.box > a:not(.secondary) {
+    border: 1px solid var(--volt-ds-white) !important;
+    color: var(--volt-ds-black) !important;
+    background: var(--volt-ds-white) !important;
+}
+
+main.box > a:not(.secondary) {
+    margin-top: 8px !important;
+}
+
+main.box .actions a.primary {
+    margin-top: 0 !important;
+}
+
+main.box a.primary:hover,
+main.box > a:not(.secondary):hover {
+    background: var(--volt-ds-red) !important;
+    color: var(--volt-ds-white) !important;
+    border-color: var(--volt-ds-red) !important;
+}
+
+main.box a.secondary {
+    border: 1px solid var(--volt-ds-border-control) !important;
+    background: transparent !important;
+    color: var(--volt-ds-white) !important;
+}
+
+main.box a.secondary:hover {
+    border-color: var(--volt-ds-red) !important;
+    background: rgba(232, 0, 29, 0.12) !important;
+    color: var(--volt-ds-white) !important;
+}
+
+/* ─── Catálogo: filtros, cards, vacío ─── */
+.category-list {
+    border: 1px solid var(--volt-ds-border) !important;
+    background: var(--volt-ds-black) !important;
+}
+
+.category-list h3 {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 10px !important;
+    letter-spacing: 0.16em !important;
+    text-transform: uppercase !important;
+    color: var(--volt-ds-label) !important;
+}
+
+.category-list li {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 11px !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+    color: var(--volt-ds-label) !important;
+    border-color: var(--volt-ds-border) !important;
+}
+
+.category-list li:hover,
+.category-list li.active {
+    color: var(--volt-ds-white) !important;
+    border-color: var(--volt-ds-red) !important;
+    background: #000000 !important;
+}
+
+.product-card {
+    background: #000000 !important;
+    background-image: none !important;
+    border: 1px solid rgba(255, 255, 255, 0.07) !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
+
+.product-card .product-image,
+.product-card > .product-image {
+    background: #111111 !important;
+}
+
+.product-card:hover {
+    transform: none !important;
+    box-shadow: none !important;
+    border-color: var(--volt-ds-red) !important;
+    background: #000000 !important;
+}
+
+.product-card:hover .product-image {
+    transform: none !important;
+}
+
+.product-title {
+    font-family: var(--font-ds-display) !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    line-height: 0.95 !important;
+    color: var(--volt-ds-white) !important;
+}
+
+.product-price {
+    font-family: var(--font-ds-body) !important;
+    font-weight: 400 !important;
+    color: var(--volt-ds-body) !important;
+}
+
+.product-stock {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 10px !important;
+    letter-spacing: 0.1em !important;
+    text-transform: uppercase !important;
+    color: var(--volt-ds-label) !important;
+}
+
+.product-stock span {
+    color: var(--volt-ds-white) !important;
+}
+
+.product-stock.product-stock--out,
+.product-stock.product-stock--out span {
+    color: var(--volt-ds-red) !important;
+}
+
+.product-expand-toggle {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 10px !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+    border: 1px solid var(--volt-ds-border) !important;
+    background: transparent !important;
+    color: var(--volt-ds-white) !important;
+    border-radius: 0 !important;
+}
+
+.product-expand-toggle:hover {
+    border-color: var(--volt-ds-red) !important;
+    background: rgba(232, 0, 29, 0.12) !important;
+}
+
+.variant-label {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 10px !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+    color: var(--volt-ds-label) !important;
+}
+
+.no-products-message {
+    background: var(--volt-ds-black) !important;
+    border: 1px solid var(--volt-ds-border) !important;
+    border-radius: 0 !important;
+    color: var(--volt-ds-body) !important;
+    padding: 2.5rem 1.5rem !important;
+}
+
+.no-products-message p:first-child {
+    font-family: var(--font-ds-display) !important;
+    font-size: clamp(26px, 5vw, 40px) !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    line-height: 0.95 !important;
+    color: var(--volt-ds-white) !important;
+    margin-bottom: 1rem !important;
+}
+
+.no-products-message p:last-child {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 11px !important;
+    letter-spacing: 0.14em !important;
+    text-transform: uppercase !important;
+    color: var(--volt-ds-label) !important;
+    border: 1px solid var(--volt-ds-red) !important;
+    display: inline-block !important;
+    padding: 8px 14px !important;
+    background: #000000 !important;
+    color: var(--volt-ds-red) !important;
+}
+
+.bigbox,
+.catalog-wrap,
+.product-grid {
+    background: transparent !important;
+}
+
+/* ─── Shop page: header compacto (override del padding 100px de main > header) ─── */
+main > .shop-page-header {
+    padding: 20px clamp(20px, 3vw, 32px) 4px !important;
+}
+
+/* ─── Index landing (if volt-ds linked): identity grid + ticker ─── */
+.specs-grid,
+.identity__grid {
+    background: #000000 !important;
+}
+
+.spec-card,
+.identity__card {
+    background: #000000 !important;
+}
+
+.ticker {
+    background: #000000 !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.07) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+}
+
+.product-card.is-expanded .product-expanded {
+    border-top-color: var(--volt-ds-border) !important;
+}
+
+.size-btn {
+    font-family: var(--font-ds-mono) !important;
+    border: 1px solid var(--volt-ds-border) !important;
+    background: var(--volt-ds-black) !important;
+    color: var(--volt-ds-white) !important;
+    border-radius: 0 !important;
+}
+
+.size-btn.is-active {
+    border-color: var(--volt-ds-red) !important;
+    background: #000000 !important;
+    color: var(--volt-ds-red) !important;
+}
+
+.add-to-cart {
+    font-family: var(--font-ds-mono) !important;
+    font-size: 11px !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+    border: 1px solid var(--volt-ds-white) !important;
+    background: var(--volt-ds-white) !important;
+    color: var(--volt-ds-black) !important;
+    border-radius: 0 !important;
+}
+
+.add-to-cart:hover:not(:disabled) {
+    background: var(--volt-ds-red) !important;
+    color: var(--volt-ds-white) !important;
+    border-color: var(--volt-ds-red) !important;
+}
+
+.add-to-cart:disabled {
+    opacity: 0.45 !important;
+}
+
+/* ─── Opaque text surfaces (grid bleed-through) ─── */
+.countdown-block,
+.spec-card,
+.drop-visual,
+.drop-content,
+.data-table td,
+.data-table th,
+.manifesto,
+.hero-badge,
+.ticker-item,
+.status-pill,
+.countdown__cell,
+.hero__badge,
+.ticker__item,
+.drop__visual,
+.drop__content,
+.identity__card {
+    background: #000000 !important;
+}
+
+[class*="card"]:not(img):not(svg),
+[class*="block"]:not(img):not(svg),
+[class*="panel"]:not(img):not(svg),
+[class*="box"]:not(img):not(svg) {
+    background: #000000 !important;
+}
+
+.drop-countdown,
+#countdown,
+.countdown {
+    background: #000000 !important;
+}
+
+.drop-countdown .countdown-block,
+.countdown .countdown-block,
+.countdown .countdown__cell,
+.countdown-block {
+    background: #000000 !important;
+    border: 1px solid rgba(255, 255, 255, 0.07) !important;
+}
+
+/* ─── Header: links centrados en viewport (columnas 1fr / auto / 1fr) ─── */
+@media screen and (min-width: 769px) {
+    nav.header,
+    #mainHeader,
+    .header {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important;
+        align-items: center !important;
+        justify-content: unset !important;
+        column-gap: 0.75rem !important;
+    }
+
+    .header .logo-link {
+        grid-column: 1 !important;
+        justify-self: start !important;
+    }
+
+    .header > ul {
+        grid-column: 2 !important;
+        justify-self: center !important;
+    }
+
+    .header-actions {
+        grid-column: 3 !important;
+        justify-self: end !important;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .header,
+    .navbar,
+    nav.header,
+    #mainHeader {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+    }
+}
+
+.header-actions {
+    display: flex !important;
+    align-items: center !important;
+    flex-shrink: 0 !important;
+}

@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Feedback visual
         button.innerText = "✓ Añadido";
         button.disabled = true;
-        button.style.background = "var(--accent, #00D2BE)";
+        button.style.background = "var(--volt-ds-black, #000)";
         
         // Animación del badge
         triggerCartBadgeBounce();
@@ -201,7 +201,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (inCart) {
                 button.innerText = "✓ Añadido";
                 button.disabled = true;
-                button.style.background = "var(--accent, #00D2BE)";
+                button.style.background = "var(--volt-ds-black, #000)";
             } else {
                 button.innerText = "Añadir al carrito";
                 button.disabled = false;

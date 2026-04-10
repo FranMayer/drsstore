@@ -101,7 +101,8 @@
                 document.getElementById('voltSignOutBtn')
                     .addEventListener('click', () => this.signOut());
 
-                // Si es admin → mostrar acceso directo al panel
+                nav.classList.add('loaded');
+
                 user.getIdTokenResult().then(tok => {
                     if (tok.claims.admin) {
                         const link = document.createElement('a');
@@ -110,13 +111,14 @@
                         link.textContent = '⚡ Panel';
                         nav.prepend(link);
                     }
-                });
+                }).catch(() => {});
             } else {
                 nav.innerHTML = `
                     <button class="auth-btn auth-btn--in" id="voltSignInBtn">Ingresar</button>
                 `;
                 document.getElementById('voltSignInBtn')
                     .addEventListener('click', () => this._showModal());
+                nav.classList.add('loaded');
             }
         },
 

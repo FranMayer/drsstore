@@ -5,27 +5,112 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>VOLT | Pago rechazado</title>
-  <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;600;700&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="../images-brand/Isotipo color.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400&family=Teko:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link href="/css/volt-ds.css" rel="stylesheet">
   <style>
-    body{margin:0;background:#0b0b0b;color:#f2f2f2;font-family:Barlow,sans-serif;display:grid;place-items:center;min-height:100vh;padding:24px}
-    .box{max-width:680px;border:1px solid #44464c;padding:28px;background:#111}
-    h1{margin:0 0 10px;font-family:Teko,sans-serif;font-size:48px;letter-spacing:.04em}
-    .accent{color:#c1121f}
-    .actions{display:flex;gap:10px;flex-wrap:wrap}
-    a{display:inline-block;margin-top:18px;padding:10px 16px;text-decoration:none;font-family:Teko,sans-serif;letter-spacing:.08em}
-    .primary{background:#c1121f;color:#fff}
-    .secondary{border:1px solid #44464c;color:#f2f2f2}
+    .result-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      position: relative;
+      z-index: 1;
+    }
+    .result-box {
+      width: 100%;
+      max-width: 440px;
+      border: 1px solid rgba(232, 25, 44, 0.25);
+      padding: 3rem 2.5rem;
+      text-align: center;
+    }
+    .result-icon {
+      font-size: 3rem;
+      color: #E8192C;
+      margin-bottom: 1.5rem;
+      display: block;
+    }
+    .result-heading {
+      font-family: "Teko", sans-serif;
+      font-size: clamp(2rem, 6vw, 2.8rem);
+      font-weight: 700;
+      text-transform: uppercase;
+      line-height: 0.95;
+      letter-spacing: 0.02em;
+      color: #fff;
+      margin-bottom: 0.75rem;
+    }
+    .result-heading .accent { color: #E8192C; }
+    .result-body {
+      font-family: "DM Sans", sans-serif;
+      font-size: 14px;
+      color: #888;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+    .result-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .btn-result-primary {
+      font-family: "DM Mono", monospace;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      background: #fff;
+      color: #000;
+      border: 1px solid #fff;
+      padding: 0.75rem 1.5rem;
+      text-decoration: none;
+      display: block;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+    .btn-result-primary:hover {
+      background: #E8192C;
+      border-color: #E8192C;
+      color: #fff;
+    }
+    .btn-result-ghost {
+      font-family: "DM Mono", monospace;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      background: transparent;
+      color: #666;
+      border: 1px solid rgba(255,255,255,0.07);
+      padding: 0.75rem 1.5rem;
+      text-decoration: none;
+      display: block;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-result-ghost:hover {
+      border-color: #E8192C;
+      color: #fff;
+    }
+    .result-divider {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      margin: 2rem 0;
+    }
   </style>
 </head>
 <body>
-  <main class="box">
-    <h1>Pago <span class="accent">no completado</span></h1>
-    <p>Hubo un problema con el pago. Podes intentar nuevamente.</p>
-    <div class="actions">
-      <a class="primary" href="/pages/catalogo.html">Intentar de nuevo</a>
-      <a class="secondary" href="/pages/catalogo.html">Volver al catalogo</a>
+  <main class="result-page">
+    <div class="result-box">
+      <i class="bi bi-x-circle-fill result-icon"></i>
+      <h1 class="result-heading">Pago <span class="accent">no completado</span></h1>
+      <p class="result-body">Hubo un problema con el pago. Podés intentar de nuevo con otro método o contactarnos si el problema persiste.</p>
+      <hr class="result-divider">
+      <div class="result-actions">
+        <a href="/pages/catalogo.html" class="btn-result-primary">Intentar de nuevo</a>
+        <a href="https://wa.me/5493518588127?text=Hola!%20Tuve%20un%20problema%20con%20mi%20pago%20en%20VOLT" target="_blank" rel="noopener" class="btn-result-ghost">Contactar por WhatsApp</a>
+      </div>
     </div>
   </main>
 </body>
 </html>
-

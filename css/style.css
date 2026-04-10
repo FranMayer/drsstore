@@ -104,6 +104,10 @@
     --transition-normal: 0.3s ease;
     --transition-slow: 0.5s ease;
 
+    /* Navbar — isotipo y alto útil para hero calc(100svh − …) */
+    --navbar-logo-size: 160px;
+    --header-sticky-height: 125px;
+
     /* Ornamentos tech/Y2K: solo este SVG vectorial (dibujado a mano, inspirado en tu referencia). No se usa ninguna foto/PNG en el sitio. */
     --volt-ornament-svg: url('/images-ui/volt-ornaments.svg');
 }
@@ -219,8 +223,8 @@ input[type="submit"],
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 18px 2rem;
-    min-height: 84px;
+    padding: 12px 2rem;
+    min-height: var(--header-sticky-height);
     background: var(--color-black);
     border-bottom: 1px solid var(--color-border);
     position: sticky;
@@ -243,9 +247,7 @@ input[type="submit"],
     display: flex;
     align-items: center;
     line-height: 0;
-    padding-top: 6px;
-    padding-bottom: 6px;
-    height: 60px;
+    padding: 0;
 }
 
 .logo-link img {
@@ -267,8 +269,8 @@ input[type="submit"],
 }
 
 .site-logo--navbar {
-    height: 78px !important;
-    max-height: 78px;
+    height: var(--navbar-logo-size) !important;
+    max-height: var(--navbar-logo-size);
     width: auto !important;
     display: block !important;
 }
@@ -290,6 +292,15 @@ input[type="submit"],
     align-items: center;
 }
 
+.header ul li {
+    display: flex;
+    align-items: center;
+    min-height: var(--navbar-logo-size);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    margin: 0;
+}
+
 .header ul a {
     text-decoration: none;
     color: var(--color-white);
@@ -299,14 +310,20 @@ input[type="submit"],
     letter-spacing: 2.4px;
     text-transform: uppercase;
     position: relative;
-    padding: 0.5rem 0;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+    padding: 0 0 5px;
+    box-sizing: border-box;
     transition: color 0.2s ease;
 }
 
 /* Navbar links — reset Bootstrap .nav-link en Shop (catalogo) */
 .header ul a.nav-link {
-    display: inline-block;
-    padding: 0.5rem 0;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+    padding: 0 0 5px;
     border: none;
     background: none;
     color: var(--color-white);
@@ -320,7 +337,7 @@ input[type="submit"],
 .header ul a.nav-link::after {
     content: '';
     position: absolute;
-    bottom: -3px;
+    bottom: 1px;
     left: 0;
     width: 0;
     height: 2px;
@@ -389,11 +406,6 @@ input[type="submit"],
 
 .header ul a:hover {
     color: var(--color-white);
-}
-
-.header ul li {
-    cursor: pointer;
-    transition: var(--transition-fast);
 }
 
 /* Menú hamburguesa */
@@ -685,7 +697,7 @@ input[type="submit"],
 }
 
 .category-card {
-    background: #0f0f0f;
+    background: #000000;
     border: none;
     border-bottom: 2px solid var(--color-red);
     border-radius: 0;
@@ -700,7 +712,7 @@ input[type="submit"],
 }
 
 .category-card:hover {
-    background: #161616;
+    background: #000000;
     transform: none;
     box-shadow: none;
 }
@@ -756,6 +768,7 @@ input[type="submit"],
     transform: rotate(45deg);
 }
 
+/* Badge compacto (ej. sidebar catálogo); en home las cards usan cinta .coming-soon::after */
 .category-soon-badge {
     display: inline-block;
     margin-left: 8px;
@@ -767,12 +780,6 @@ input[type="submit"],
     border-radius: 2px;
     background: transparent;
     vertical-align: middle;
-}
-
-.category-card--soon {
-    opacity: 0.6;
-    cursor: not-allowed;
-    pointer-events: none;
 }
 
 /* =====================================================
@@ -1159,6 +1166,7 @@ input[type="submit"],
    ===================================================== */
 .bigbox {
     display: flex;
+    align-items: flex-start;
     gap: 2rem;
     padding: 2rem;
     max-width: 1600px;
@@ -1240,7 +1248,7 @@ input[type="submit"],
     display: none;
 }
 
-/* Grid de productos */
+/* Grid de productos — padding-top desktop: alinea fila 1 con ítems del sidebar (debajo del h3) */
 .product-grid {
     flex: 1;
     display: grid;
@@ -1248,6 +1256,12 @@ input[type="submit"],
     gap: 1.5rem;
     align-content: start;
     align-items: start;
+}
+
+@media screen and (min-width: 769px) {
+    .bigbox .product-grid {
+        padding-top: 3.65rem;
+    }
 }
 
 @media (min-width: 760px) {
@@ -2299,7 +2313,7 @@ body.lightbox-open {
     justify-content: center;
     box-shadow: none;
     transition: opacity 0.2s ease, background 0.2s ease;
-    z-index: 100;
+    z-index: 1100;
     animation: none;
 }
 
@@ -2363,12 +2377,16 @@ body.lightbox-open {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    flex-wrap: nowrap;
 }
 
 .auth-greeting {
     font-size: 0.78rem;
     color: rgba(255, 255, 255, 0.65);
     white-space: nowrap;
+    max-width: 14rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
     display: none; /* oculto en móvil */
 }
 
@@ -2426,6 +2444,12 @@ body.lightbox-open {
 /* =====================================================
    AUTH MODAL — Login / Registro
    ===================================================== */
+
+/* Solo centrado vertical: no tocar display del .modal (Bootstrap / .show) */
+#voltAuthModal .modal-dialog.modal-dialog-centered {
+    min-height: calc(100vh - 2rem);
+    min-height: calc(100dvh - 2rem);
+}
 
 /* Bootstrap 5 fuerza fondo claro en .modal-content; este bloque gana por especificidad */
 #voltAuthModal.modal .modal-dialog .modal-content.auth-modal-content,
@@ -2687,26 +2711,14 @@ body.lightbox-open {
 
 /* Hero compact + HUD */
 .hero-split.hero-split--compact {
-    min-height: clamp(380px, 67vh, 860px);
+    /* Una pantalla bajo el header sticky: la tira roja y el resto quedan al hacer scroll */
+    min-height: calc(100svh - var(--header-sticky-height));
 }
 
 .hero-split.hero-split--compact .hero-split__col--left {
     position: relative;
     padding: clamp(28px, 4vw, 44px) clamp(28px, 4vw, 48px);
     overflow: hidden;
-}
-
-.hero-split.hero-split--compact .hero-split__col--left::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image:
-        linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-    background-size: 28px 28px;
-    pointer-events: none;
-    opacity: 0.55;
-    z-index: 0;
 }
 
 .hero-split.hero-split--compact .hero-split__col--left > * {
@@ -2801,7 +2813,12 @@ body.lightbox-open {
 
 .hero-split.hero-split--compact .hero-headline {
     font-size: clamp(2.75rem, 7vw, 4.5rem);
-    line-height: 0.92;
+    line-height: 0.9;
+    letter-spacing: 0.04em;
+}
+
+.hero-headline__accent {
+    color: var(--color-red);
 }
 
 .hero-split.hero-split--compact .hero-desc {
