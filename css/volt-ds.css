@@ -230,7 +230,9 @@ body.page-leaving {
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
-    overflow-x: hidden !important;
+    /* Sin overflow hidden: si no, el <ul> fixed del menú móvil queda recortado y no se ven los links */
+    overflow-x: visible !important;
+    overflow-y: visible !important;
     min-height: 72px !important;
     padding: 6px clamp(16px, 4vw, 48px) !important;
     background: rgba(0, 0, 0, 0.85) !important;
@@ -330,6 +332,23 @@ body.page-leaving {
     border: none !important;
     background: transparent !important;
     box-shadow: inset 0 -2px 0 0 var(--volt-ds-red) !important;
+}
+
+/* Hamburguesa solo en móvil; nunca fuerza layout en desktop */
+@media screen and (min-width: 769px) {
+    .menu-toggle {
+        display: none !important;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .menu-toggle {
+        display: flex !important;
+        flex-direction: column !important;
+        position: relative !important;
+        /* Por encima del drawer (#navMenu z-index 1002) para ver la X al cerrar */
+        z-index: 1004 !important;
+    }
 }
 
 .menu-toggle span {
@@ -875,6 +894,13 @@ body.page-leaving {
 
 .btn-close {
     filter: invert(1) !important;
+}
+
+/* btn-close-white ya trae el icono claro; invert() lo oscurece y desaparece en modal oscuro */
+#voltAuthModal .btn-close,
+.auth-modal-header .btn-close {
+    filter: none !important;
+    opacity: 1 !important;
 }
 
 .order-card__id,

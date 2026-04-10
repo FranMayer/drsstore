@@ -106,11 +106,16 @@
         position: fixed;
         top: 0;
         right: 0;
-        transform: translateX(100%);
-        width: 70%;
+        left: auto;
+        width: min(70vw, 300px);
         max-width: 300px;
         height: 100vh;
+        height: 100dvh;
         min-height: unset;
+        margin: 0;
+        /* Fuera de pantalla; pointer-events evita interacción residual */
+        transform: translate3d(100%, 0, 0);
+        pointer-events: none;
         background: rgba(11, 11, 11, 0.94);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
@@ -119,8 +124,9 @@
         padding: 5rem 2rem 2rem;
         gap: 0;
         box-shadow: -5px 0 30px rgba(0, 0, 0, 0.5);
-        transition: var(--transition-normal);
-        z-index: 1000;
+        transition: transform var(--transition-normal);
+        /* Por encima del overlay (999) y del propio header bar */
+        z-index: 1002;
         border-left: 1px solid var(--border-color);
     }
 
@@ -130,7 +136,8 @@
     }
 
     .header ul.active {
-        transform: translateX(0);
+        transform: translate3d(0, 0, 0);
+        pointer-events: auto;
     }
 
     .header ul a {
