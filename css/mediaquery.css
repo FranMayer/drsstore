@@ -341,17 +341,19 @@
         justify-content: center;
     }
 
-    /* Catálogo */
+    /* Catálogo — una card por fila, ancho completo (sin canal lateral en el grid) */
     .bigbox {
         flex-direction: column;
-        padding: 1rem;
+        padding: 1rem 0;
+        max-width: none;
+        width: 100%;
     }
 
     .category-list {
         flex: none;
-        width: 100%;
+        width: auto;
         position: static;
-        margin-bottom: 1rem;
+        margin: 0 1rem 1rem;
     }
 
     .category-list ul {
@@ -381,12 +383,19 @@
     }
 
     .product-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 0;
+        width: 100%;
+    }
+
+    .bigbox .product-card {
+        border-radius: 0 !important;
+        border-left: none !important;
+        border-right: none !important;
     }
 
     .product-image {
-        height: 200px;
+        height: min(72vw, 380px);
     }
 
     .product-title {
@@ -528,14 +537,14 @@
         font-size: 1.25rem;
     }
 
-    /* Catálogo */
+    /* Catálogo — una columna en pantallas muy angostas */
     .product-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 0.75rem;
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 0;
     }
 
     .product-image {
-        height: 160px;
+        height: min(78vw, 360px);
     }
 
     .product-title {

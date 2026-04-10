@@ -349,6 +349,21 @@ body.page-leaving {
         /* Por encima del drawer (#navMenu z-index 1002) para ver la X al cerrar */
         z-index: 1004 !important;
     }
+
+    /*
+     * backdrop-filter en el header crea un bloque de contención: el <ul> fixed del drawer
+     * deja de anclarse al viewport y el panel desplazado ensancha el scroll horizontal.
+     * El blur del panel sigue en .header ul (mediaquery.css); la barra usa fondo sólido.
+     */
+    .header {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background: rgba(0, 0, 0, 0.92) !important;
+    }
+
+    .header.scrolled {
+        background: rgba(0, 0, 0, 0.96) !important;
+    }
 }
 
 .menu-toggle span {

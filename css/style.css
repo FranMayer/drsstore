@@ -2085,7 +2085,7 @@ body.lightbox-open {
 .about-photo-placeholder {
     width: 100%;
     min-height: 280px;
-    background: #111111;
+    background: #000000;
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-lg);
     display: flex;
@@ -3536,7 +3536,7 @@ body.lightbox-open {
 
 .about-pillars {
     padding: clamp(32px, 5vw, 56px) clamp(20px, 4vw, 40px);
-    background: #111111;
+    background: #000000;
     border-top: 1px solid #1a1a1a;
 }
 
@@ -3549,7 +3549,7 @@ body.lightbox-open {
 }
 
 .about-pillar {
-    background: #0b0b0b;
+    background: #000000;
     border: 1px solid #222;
     padding: 22px 20px;
     transition: border-color 0.2s ease, transform 0.2s ease;
@@ -3591,7 +3591,7 @@ body.lightbox-open {
     max-width: 1200px;
     margin: 0 auto;
     padding: clamp(32px, 5vw, 56px) clamp(20px, 4vw, 40px);
-    background: #0b0b0b;
+    background: #000000;
     border-top: 1px solid #1a1a1a;
 }
 

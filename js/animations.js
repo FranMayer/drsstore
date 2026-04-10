@@ -20,8 +20,10 @@ document.addEventListener('DOMContentLoaded', function() {
             if (menuOverlay) {
                 menuOverlay.classList.toggle('active');
             }
-            // Prevenir scroll del body cuando el menú está abierto
-            document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+            // Prevenir scroll (body + html evita arrastre lateral residual en móvil)
+            const lock = navMenu.classList.contains('active');
+            document.body.style.overflow = lock ? 'hidden' : '';
+            document.documentElement.style.overflow = lock ? 'hidden' : '';
         });
 
         // Cerrar menú al hacer clic en el overlay
@@ -31,6 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 navMenu.classList.remove('active');
                 menuOverlay.classList.remove('active');
                 document.body.style.overflow = '';
+                document.documentElement.style.overflow = '';
             });
         }
 
@@ -43,6 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     menuOverlay.classList.remove('active');
                 }
                 document.body.style.overflow = '';
+                document.documentElement.style.overflow = '';
             });
         });
     }
